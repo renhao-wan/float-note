@@ -303,13 +303,13 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
 
   // Mode toggle component for the title bar
   const modeToggle = (
-    <div className="flex items-center bg-background/40 border border-border/30 rounded-xl">
+    <div className="flex items-center bg-card/50 border border-border/30 rounded-xl">
       <button
         onClick={() => setIsPreviewMode(false)}
         className={`w-5 h-4 flex items-center justify-center rounded-2xl transition-all duration-200 ${
-          !isPreviewMode 
-            ? 'bg-primary/25 text-primary shadow-sm' 
-            : 'text-muted-foreground/60 hover:text-foreground hover:bg-white/5'
+          !isPreviewMode
+            ? 'bg-primary/20 text-primary shadow-sm'
+            : 'text-muted-foreground/60 hover:text-foreground hover:bg-primary/5'
         }`}
         title="Edit mode"
       >
@@ -321,9 +321,9 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
       <button
         onClick={() => setIsPreviewMode(true)}
         className={`w-5 h-4 flex items-center justify-center rounded-2xl transition-all duration-200 ${
-          isPreviewMode 
-            ? 'bg-primary/25 text-primary shadow-sm' 
-            : 'text-muted-foreground/60 hover:text-foreground hover:bg-white/5'
+          isPreviewMode
+            ? 'bg-primary/20 text-primary shadow-sm'
+            : 'text-muted-foreground/60 hover:text-foreground hover:bg-primary/5'
         }`}
         title="Preview mode"
       >
@@ -383,7 +383,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
           className="flex-1 flex flex-col overflow-hidden"
           editorClassName="p-6 pt-5"
           renderFooter={() => (
-            <div className="bg-card/20 border-t border-border/15 px-4 py-2 flex items-center justify-between">
+            <div className="bg-card/40 border-t border-border/20 px-4 py-2 flex items-center justify-between backdrop-blur-md">
               <div className="flex items-center gap-3">
                 {/* Vim mode indicator */}
                 {config?.appearance?.vimMode && !isPreviewMode && (

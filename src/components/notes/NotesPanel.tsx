@@ -87,23 +87,23 @@ export function NotesPanel({
       maxWidth={480}
       className="h-full"
     >
-      <div className="h-full bg-card border-r border-border/30 flex flex-col" data-notes-sidebar>
+      <div className="h-full bg-card/80 border-r border-border/30 flex flex-col" data-notes-sidebar>
           {/* Header - Standardized 76px height */}
           <div className="h-[76px] flex flex-col justify-center px-4 border-b border-border/20 pt-5">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 pt-1">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-primary/70">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-primary/80">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14,2 14,8 20,8"/>
                   <line x1="16" y1="13" x2="8" y2="13"/>
                   <line x1="16" y1="17" x2="8" y2="17"/>
                   <line x1="10" y1="9" x2="8" y2="9"/>
                 </svg>
-                <h2 className="text-sm font-medium text-foreground">{t('sidebar.notes')}</h2>
+                <h2 className="text-sm font-medium text-foreground/90">{t('sidebar.notes')}</h2>
               </div>
               <button
                 onClick={onCreateNewNote}
-                className="text-muted-foreground hover:text-foreground p-1 rounded-lg transition-colors"
+                className="text-muted-foreground hover:text-primary p-1 rounded-md transition-all duration-200 hover:bg-primary/10"
                 title={`${t('notes.create')} (⌘N)`}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -124,7 +124,7 @@ export function NotesPanel({
                 placeholder={t('commandPalette.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-8 py-1.5 bg-background border border-border/20 rounded-lg text-xs placeholder-muted-foreground/60 focus:outline-none focus:border-primary/40"
+                className="w-full pl-9 pr-8 py-1.5 bg-background/60 border border-border/30 rounded-lg text-xs placeholder-muted-foreground/50 focus:outline-none focus:border-primary/40 focus:bg-background/80 transition-all duration-200"
               />
               {searchQuery && (
                 <button
@@ -170,11 +170,11 @@ export function NotesPanel({
                   <div
                     key={note.id}
                     data-note-id={note.id}
-                    className={`group relative cursor-pointer transition-all ${
+                    className={`group relative cursor-pointer transition-all duration-200 ${
                       selectedNoteId === note.id
-                        ? 'bg-primary/10 border-l-4 border-l-primary ml-0 pl-4 pr-4 py-3'
-                        : 'hover:bg-background/50 border-l-4 border-l-transparent ml-1 pl-3 pr-4 py-3'
-                    } ${index > 0 ? 'border-t border-border/10' : ''}`}
+                        ? 'bg-primary/8 border-l-2 border-l-primary ml-0 pl-4 pr-4 py-3 shadow-glow'
+                        : 'hover:bg-primary/4 border-l-2 border-l-transparent ml-1 pl-3 pr-4 py-3'
+                    } ${index > 0 ? 'border-t border-border/8' : ''}`}
                     onClick={() => onSelectNote(note.id)}
                     onContextMenu={(e) => onShowContextMenu(e.clientX, e.clientY, note.id)}
                     onMouseDown={(e) => {
@@ -199,9 +199,9 @@ export function NotesPanel({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start gap-2">
                           <h3 className={`text-sm font-medium leading-tight transition-colors flex-1 ${
-                            selectedNoteId === note.id 
-                              ? 'text-primary' 
-                              : 'text-foreground/90 group-hover:text-foreground'
+                            selectedNoteId === note.id
+                              ? 'text-primary'
+                              : 'text-foreground/80 group-hover:text-foreground'
                           }`}>
                             {note.title || 'Untitled'}
                           </h3>

@@ -70,24 +70,24 @@
    ENHANCED CURSOR SYSTEM - MODE-AWARE STYLING
    ================================================================= */
 
-/* Define mode-specific color variables with fallbacks */
+/* Define mode-specific color variables — warm amber palette */
 :root {
-  --cursor-normal: #3b82f6;     /* Blue for normal mode */
-  --cursor-insert: #10b981;     /* Green for insert mode */
-  --cursor-visual: #8b5cf6;     /* Purple for visual mode */
-  --cursor-command: #f59e0b;    /* Amber for command mode */
-  --cursor-replace: #ef4444;    /* Red for replace mode */
-  --cursor-operator: #06b6d4;   /* Cyan for operator pending */
+  --cursor-normal: #d4a053;     /* Amber gold for normal mode */
+  --cursor-insert: #5a9e96;     /* Teal for insert mode */
+  --cursor-visual: #7c9a6e;     /* Sage green for visual mode */
+  --cursor-command: #d4a053;    /* Amber for command mode */
+  --cursor-replace: #d45858;    /* Warm coral for replace mode */
+  --cursor-operator: #9e8a6e;   /* Warm taupe for operator pending */
 }
 
 /* Fallback cursor colors for dark themes */
 [data-theme="dark"] {
-  --cursor-normal: #60a5fa;     /* Lighter blue for dark mode */
-  --cursor-insert: #34d399;     /* Lighter green for dark mode */
-  --cursor-visual: #a78bfa;     /* Lighter purple for dark mode */
-  --cursor-command: #fbbf24;    /* Lighter amber for dark mode */
-  --cursor-replace: #f87171;    /* Lighter red for dark mode */
-  --cursor-operator: #22d3ee;   /* Lighter cyan for dark mode */
+  --cursor-normal: #d4a053;     /* Amber gold */
+  --cursor-insert: #6ab0a8;     /* Lighter teal */
+  --cursor-visual: #8fb07e;     /* Lighter sage */
+  --cursor-command: #e0b060;    /* Lighter amber */
+  --cursor-replace: #e06868;    /* Lighter coral */
+  --cursor-operator: #b09a7e;   /* Lighter taupe */
 }
 
 /* High contrast mode support */
@@ -117,41 +117,41 @@
    VIM NORMAL MODE - Block cursor (Blue) - AGGRESSIVE OVERRIDES
    ================================================================= */
 
-/* Normal mode - Simple block cursor */
+/* Normal mode - Amber block cursor */
 .cm-editor.cm-vim-normal-mode .cm-cursor,
 .cm-editor.cm-vim-normal-mode .cm-cursor-primary {
   border-left: none !important;
-  background-color: #3b82f6 !important;
+  background-color: #d4a053 !important;
   width: 0.8em !important;
   opacity: 0.8 !important;
 }
 
-/* Insert mode - Thin green cursor */
+/* Insert mode - Teal thin cursor */
 .cm-editor.cm-vim-insert-mode .cm-cursor,
 .cm-editor.cm-vim-insert-mode .cm-cursor-primary {
-  border-left: 2px solid #10b981 !important;
+  border-left: 2px solid #5a9e96 !important;
   background: transparent !important;
   width: auto !important;
 }
 
 @keyframes cursor-normal-strong-pulse {
-  0%, 100% { 
+  0%, 100% {
     opacity: 1;
     transform: scale(1) translateZ(0);
-    box-shadow: 
-      0 0 16px #3b82f6,
-      0 0 8px #3b82f6,
-      0 0 4px #3b82f6,
-      inset 0 0 8px rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 0 16px #d4a053,
+      0 0 8px #d4a053,
+      0 0 4px #d4a053,
+      inset 0 0 8px rgba(255, 255, 255, 0.15);
   }
-  50% { 
+  50% {
     opacity: 0.85;
     transform: scale(1.02) translateZ(0);
-    box-shadow: 
-      0 0 24px #3b82f6,
-      0 0 12px #3b82f6,
-      0 0 6px #3b82f6,
-      inset 0 0 12px rgba(255, 255, 255, 0.3);
+    box-shadow:
+      0 0 24px #d4a053,
+      0 0 12px #d4a053,
+      0 0 6px #d4a053,
+      inset 0 0 12px rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -254,7 +254,7 @@
 
 /* Visual mode - Single selection style to avoid duplicates */
 .cm-editor.cm-vim-visual-mode .cm-selectionLayer .cm-selectionBackground {
-  background-color: rgba(139, 92, 246, 0.3) !important;
+  background-color: rgba(90, 158, 150, 0.25) !important;
   mix-blend-mode: normal !important; /* Don't use multiply to avoid darkening */
 }
 
@@ -275,7 +275,7 @@
 
 /* Style the fat cursor in visual mode */
 .cm-editor.cm-vim-visual-mode .cm-fat-cursor {
-  background-color: #8b5cf6 !important;
+  background-color: #5a9e96 !important;
   color: white !important;
   border-radius: 2px !important;
   opacity: 0.9 !important;
@@ -289,19 +289,19 @@
 }
 
 @keyframes cursor-visual-edge-pulse {
-  0%, 100% { 
+  0%, 100% {
     opacity: 1;
     width: 3px;
-    box-shadow: 
-      0 0 12px #8b5cf6,
-      0 0 6px #8b5cf6;
+    box-shadow:
+      0 0 12px #5a9e96,
+      0 0 6px #5a9e96;
   }
-  50% { 
+  50% {
     opacity: 0.8;
     width: 4px;
-    box-shadow: 
-      0 0 20px #8b5cf6,
-      0 0 10px #8b5cf6;
+    box-shadow:
+      0 0 20px #5a9e96,
+      0 0 10px #5a9e96;
   }
 }
 
@@ -401,7 +401,7 @@
 
 /* Insert mode selection (if any) */
 .cm-editor.cm-vim-insert-mode .cm-selectionBackground {
-  background-color: rgba(16, 185, 129, 0.15) !important; /* Green with transparency */
+  background-color: rgba(90, 158, 150, 0.15) !important; /* Teal with transparency */
 }
 
 /* =================================================================
@@ -413,8 +413,8 @@
   left: 0 !important; /* Start from left edge of editor container */
   right: 0 !important; /* Extend to right edge of editor container */
   height: 28px !important; /* Very compact height */
-  background: rgba(0, 0, 0, 0.9) !important; /* 90% opaque black background */
-  background-color: rgba(0, 0, 0, 0.9) !important; /* Ensure background is set */
+  background: hsl(var(--background) / 0.95) !important;
+  background-color: hsl(var(--background) / 0.95) !important;
   background-image: none !important; /* Explicitly remove any gradient */
   border: none !important; /* Remove all borders first */
   border-top: 1px solid var(--cursor-command) !important; /* Add back only top border */
@@ -499,21 +499,21 @@
 .cm-header-1 {
   font-size: 2em;
   font-weight: 700;
-  color: hsl(var(--foreground));
+  color: hsl(var(--primary));
   line-height: 1.2;
 }
 
 .cm-header-2 {
   font-size: 1.5em;
   font-weight: 600;
-  color: hsl(var(--foreground));
+  color: hsl(var(--primary) / 0.9);
   line-height: 1.3;
 }
 
 .cm-header-3 {
   font-size: 1.25em;
   font-weight: 600;
-  color: hsl(var(--foreground));
+  color: hsl(var(--primary) / 0.8);
   line-height: 1.4;
 }
 
@@ -524,49 +524,54 @@
 }
 
 .cm-link {
-  color: hsl(var(--primary));
+  color: hsl(var(--accent));
   text-decoration: underline;
 }
 
 .cm-url {
-  color: hsl(var(--primary) / 0.7);
+  color: hsl(var(--accent) / 0.7);
 }
 
 .cm-emphasis {
   font-style: italic;
+  color: hsl(var(--foreground) / 0.95);
 }
 
 .cm-strong {
   font-weight: 700;
+  color: hsl(var(--foreground));
 }
 
 .cm-strikethrough {
   text-decoration: line-through;
+  opacity: 0.6;
 }
 
 .cm-quote {
   color: hsl(var(--muted-foreground));
   border-left: 3px solid hsl(var(--primary) / 0.3);
   padding-left: 1em;
+  font-style: italic;
 }
 
 .cm-list {
-  color: hsl(var(--primary) / 0.8);
+  color: hsl(var(--primary) / 0.7);
 }
 
 .cm-code {
-  background-color: hsl(var(--muted) / 0.3);
+  background-color: hsl(var(--primary) / 0.08);
   padding: 0.1em 0.3em;
   border-radius: 3px;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-editor);
   font-size: 0.9em;
+  color: hsl(var(--primary) / 0.9);
 }
 
 .cm-codeblock {
-  background-color: hsl(var(--muted) / 0.2);
+  background-color: hsl(var(--primary) / 0.05);
   padding: 0.5em;
   border-radius: 6px;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-editor);
 }
 
 /* Line wrapping */

@@ -76,7 +76,7 @@ export function AppFooter({ theme, themeId, config }: AppFooterProps) {
     }
   };
   return (
-    <footer className="app-footer w-full bg-background/90 border-t border-border/30 px-3 flex items-center justify-between text-xs text-muted-foreground/80 h-6 min-h-[1.5rem] gap-4 select-none">
+    <footer className="app-footer w-full bg-card/40 border-t border-border/20 px-3 flex items-center justify-between text-xs text-muted-foreground/70 h-6 min-h-[1.5rem] gap-4 select-none backdrop-blur-md">
       <div className="flex items-center gap-3">
         {/* Theme swatch and name */}
         <span className="flex items-center gap-1">
@@ -123,7 +123,7 @@ export function AppFooter({ theme, themeId, config }: AppFooterProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         disabled={isLoading}
-        className="flex items-center gap-2 text-foreground/90 hover:text-primary transition-colors cursor-pointer px-2 py-1 rounded-xl hover:bg-background/40 disabled:opacity-50"
+        className="flex items-center gap-2 text-foreground/70 hover:text-primary transition-all duration-200 cursor-pointer px-2 py-1 rounded-lg hover:bg-primary/8 disabled:opacity-50"
         title="Click to open notes directory in Finder"
       >
         {isLoading ? (

@@ -15,15 +15,15 @@ export function NavigationSidebar({
 }: NavigationSidebarProps) {
   const { t } = useTranslation();
   return (
-    <div className="w-8 bg-muted/80 flex flex-col items-center justify-between border-r border-primary/30 flex-shrink-0 relative z-10 backdrop-blur-sm" data-sidebar>
+    <div className="w-8 bg-card/60 flex flex-col items-center justify-between border-r border-border/40 flex-shrink-0 relative z-10 backdrop-blur-md" data-sidebar>
       <div className="flex flex-col items-center pt-4">
         {/* Notes view icon */}
         <button
           onClick={onNotesClick}
-          className={`w-6 h-6 flex items-center justify-center m-0.5 rounded transition-colors hover:animate-flip-x ${
+          className={`w-6 h-6 flex items-center justify-center m-0.5 rounded-md transition-all duration-200 hover:animate-flip-x ${
             currentView === 'notes'
-              ? 'bg-primary text-background'
-              : 'text-primary/80 hover:text-primary hover:bg-primary/20'
+              ? 'bg-primary text-primary-foreground shadow-glow'
+              : 'text-muted-foreground hover:text-primary hover:bg-primary/15'
           }`}
           title={sidebarVisible && currentView === 'notes' ? t('sidebar.hideNotes') : t('sidebar.notes')}
         >
@@ -40,10 +40,10 @@ export function NavigationSidebar({
         {/* Settings icon */}
         <button
           onClick={onSettingsClick}
-          className={`w-6 h-6 flex items-center justify-center m-0.5 mb-1 rounded transition-colors hover:animate-spin-fast ${
+          className={`w-6 h-6 flex items-center justify-center m-0.5 mb-1 rounded-md transition-all duration-200 hover:animate-spin-fast ${
             currentView === 'settings'
-              ? 'bg-primary text-background'
-              : 'text-primary/80 hover:text-primary hover:bg-primary/20'
+              ? 'bg-primary text-primary-foreground shadow-glow'
+              : 'text-muted-foreground hover:text-primary hover:bg-primary/15'
           }`}
           title={sidebarVisible && currentView === 'settings' ? t('sidebar.hideSettings') : `${t('sidebar.settings')} (⌘,)`}
         >

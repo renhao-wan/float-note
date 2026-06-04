@@ -46,9 +46,27 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        ui: ['var(--font-ui)', 'system-ui', 'sans-serif'],
+        content: ['var(--font-preview)', 'Georgia', 'serif'],
+        mono: ['var(--font-editor)', 'monospace'],
+      },
       animation: {
         'flip-x': 'flip-x 0.35s cubic-bezier(0.4,0,0.2,1)',
         'spin-fast': 'spin-fast 0.35s linear',
+        'glow-pulse': 'glow-pulse 3s ease-in-out infinite',
+        'fade-in': 'fade-in 0.4s ease-out',
+        'slide-up': 'slide-up 0.4s ease-out',
+      },
+      keyframes: {
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'slide-up': {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
     },
   },

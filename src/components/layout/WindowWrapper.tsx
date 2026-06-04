@@ -13,9 +13,9 @@ export function WindowWrapper({ children, className = '', style }: WindowWrapper
   // Defensive check for config
   if (!config) {
     return (
-      <div 
-        className={`w-full h-full text-foreground flex flex-col rounded-xl overflow-hidden border border-border/30 shadow-xl ${className}`}
-        style={{ 
+      <div
+        className={`w-full h-full text-foreground flex flex-col rounded-xl overflow-hidden border border-border/30 shadow-elegant ${className}`}
+        style={{
           backgroundColor: `hsl(var(--background))`,
           height: '100%',
           ...style,
@@ -29,13 +29,13 @@ export function WindowWrapper({ children, className = '', style }: WindowWrapper
   const windowOpacity = config.appearance?.windowOpacity;
   
   return (
-    <div 
-      className={`w-full h-full text-foreground flex flex-col rounded-xl overflow-hidden border border-border/30 shadow-xl ${className}`}
-      style={{ 
-        backgroundColor: windowOpacity !== undefined 
-          ? `hsl(var(--background) / ${windowOpacity})` 
-          : `hsl(var(--background))`, // Ensure background is always visible
-        height: '100%', // Use 100% instead of 100vh to match container
+    <div
+      className={`w-full h-full text-foreground flex flex-col rounded-xl overflow-hidden border border-border/30 shadow-elegant ${className}`}
+      style={{
+        backgroundColor: windowOpacity !== undefined
+          ? `hsl(var(--background) / ${windowOpacity})`
+          : `hsl(var(--background))`,
+        height: '100%',
         ...style,
       }}
     >

@@ -73,15 +73,15 @@ export function CommandPalette({
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-start justify-center pt-[20vh]"
+    <div
+      className="fixed inset-0 bg-background/70 backdrop-blur-md z-50 flex items-start justify-center pt-[20vh]"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
       }}
     >
-      <div className="bg-card border border-border/30 rounded-2xl shadow-xl w-[500px] max-w-[90vw] overflow-hidden">
+      <div className="bg-card/95 border border-border/40 rounded-2xl shadow-glow w-[500px] max-w-[90vw] overflow-hidden backdrop-blur-xl">
         {/* Header */}
         <div className="p-4 border-b border-border/20">
           <div className="relative">
@@ -104,7 +104,7 @@ export function CommandPalette({
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               onKeyDown={onKeyDown}
-              className="w-full pl-10 pr-4 py-2 bg-background border border-border/20 rounded-xl text-sm placeholder-muted-foreground/60 focus:outline-none focus:border-primary/40"
+              className="w-full pl-10 pr-4 py-2 bg-background/60 border border-border/30 rounded-xl text-sm placeholder-muted-foreground/50 focus:outline-none focus:border-primary/40 focus:bg-background/80 transition-all duration-200"
             />
           </div>
         </div>
@@ -121,10 +121,10 @@ export function CommandPalette({
                 <button
                   key={command.id}
                   onClick={() => onExecuteCommand(command)}
-                  className={`w-full text-left px-4 py-2 flex items-center gap-3 transition-colors ${
+                  className={`w-full text-left px-4 py-2.5 flex items-center gap-3 transition-all duration-150 ${
                     index === selectedIndex
                       ? 'bg-primary/10 text-foreground'
-                      : 'text-muted-foreground hover:bg-background/60 hover:text-foreground'
+                      : 'text-muted-foreground hover:bg-primary/5 hover:text-foreground'
                   }`}
                   onMouseEnter={() => onSelectedIndexChange(index)}
                 >
@@ -153,7 +153,7 @@ export function CommandPalette({
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-border/20 bg-muted/20">
+        <div className="p-3 border-t border-border/20 bg-card/40">
           <div className="flex items-center justify-between text-xs text-muted-foreground/60">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">

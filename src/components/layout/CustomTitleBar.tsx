@@ -77,8 +77,8 @@ export function CustomTitleBar({
   };
 
   return (
-    <div 
-      className="h-8 flex items-center px-4 border-b border-border/30 bg-background/90 backdrop-blur-sm"
+    <div
+      className="h-8 flex items-center px-4 border-b border-border/30 bg-card/40 backdrop-blur-md"
       data-tauri-drag-region
       style={{ 
         userSelect: 'none', 
@@ -169,7 +169,7 @@ export function CustomTitleBar({
             </div>
           </div>
         ) : (
-          <span className="text-foreground/80 font-semibold select-none tracking-wide" style={{ fontSize: '13px' }} title="Middle-click to shade">
+          <span className="text-foreground/70 font-medium select-none tracking-wide" style={{ fontSize: '13px', fontFamily: 'var(--font-ui)' }} title="Middle-click to shade">
             {title}
           </span>
         )}

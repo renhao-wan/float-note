@@ -1,4 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+/* ═══════════════════════════════════════════════════════════
+   FloatNote — Obsidian Observatory Theme
+
+   A warm, atmospheric design language. Amber candlelight
+   on dark volcanic glass. Notes glow like manuscripts
+   in a dimly-lit observatory.
+   ═══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css');
 @import './styles/codemirror.css';
 
@@ -8,277 +16,286 @@
 
 @layer base {
   :root {
-    /* Rich dark theme - not pure black */
-    --background: 220 8% 8%;      /* Rich dark gray #121317 */
-    --foreground: 220 6% 90%;     /* Soft white */
-    --card: 220 10% 10%;          /* Slightly lighter panels */
-    --card-foreground: 220 6% 88%;
-    --popover: 220 10% 10%;
-    --popover-foreground: 220 6% 88%;
-    --primary: 217 91% 60%;       /* Soft modern blue */
-    --primary-foreground: 220 8% 8%;
-    --secondary: 220 8% 14%;      /* Subtle secondary */
-    --secondary-foreground: 220 6% 78%;
-    --muted: 220 8% 14%;
-    --muted-foreground: 220 6% 65%;
-    --accent: 220 8% 18%;
-    --accent-foreground: 220 6% 88%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 220 6% 88%;
-    --border: 220 8% 18%;         /* Subtle borders */
-    --input: 220 8% 18%;
-    --ring: 217 91% 60%;
-    --radius: 0.375rem;
-    
-    /* Sidebar specific */
-    --sidebar-background: 220 10% 10%;
-    --content-background: 220 8% 8%;
-    --footer-background: 220 12% 6%;
-    
-    /* Theme system variables */
-    --font-editor: 'JetBrains Mono', monospace;
-    --font-preview: 'Inter', -apple-system, sans-serif;
-    --font-ui: system-ui, -apple-system, sans-serif;
-    --texture-opacity: 0.05;
+    /* ─── Obsidian Observatory palette ─── */
+    --background: 24 10% 8%;          /* #141311 deep warm charcoal */
+    --foreground: 36 28% 89%;         /* #e8e2d6 warm parchment white */
+    --card: 24 10% 11%;               /* #1e1c18 warm surface */
+    --card-foreground: 36 24% 87%;    /* #e4ddd0 */
+    --popover: 24 10% 11%;
+    --popover-foreground: 36 24% 87%;
+    --primary: 34 62% 60%;            /* #d4a053 warm amber gold */
+    --primary-foreground: 24 10% 8%;
+    --secondary: 24 8% 14%;           /* #252320 warm secondary */
+    --secondary-foreground: 36 18% 72%;
+    --muted: 24 8% 14%;               /* #252320 */
+    --muted-foreground: 36 14% 55%;   /* #9e917e */
+    --accent: 172 22% 46%;            /* #5a9e96 muted teal */
+    --accent-foreground: 36 28% 93%;
+    --destructive: 4 58% 56%;         /* #d45858 warm coral */
+    --destructive-foreground: 36 28% 93%;
+    --border: 24 8% 18%;              /* #2e2b27 subtle warm lines */
+    --input: 24 8% 18%;
+    --ring: 34 62% 60%;               /* amber glow */
+    --radius: 0.5rem;
+
+    /* ─── Layout surfaces ─── */
+    --sidebar-background: 24 10% 10%;
+    --content-background: 24 10% 8%;
+    --footer-background: 24 12% 6%;
+
+    /* ─── Typography ─── */
+    --font-editor: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    --font-preview: 'Source Serif 4', 'Georgia', 'Times New Roman', serif;
+    --font-ui: 'Outfit', system-ui, -apple-system, sans-serif;
+
+    /* ─── Texture ─── */
+    --texture-opacity: 0.025;
     --texture-color: currentColor;
   }
-
 }
 
 @layer base {
   * {
     @apply border-border;
   }
-  
+
   html, body, #root {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: var(--font-ui, system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+    font-family: var(--font-ui);
     background: transparent;
   }
-  
+
   body {
-    color: hsl(var(--foreground, 220 6% 90%));
-    /* Transparent background for proper window transparency */
+    color: hsl(var(--foreground));
     background: transparent;
-    /* System font for UI elements - can be overridden by theme */
     font-feature-settings: 'liga' 1, 'calt' 1;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.015em;
     line-height: 1.5;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 400;
   }
-  
+
   #root {
     background: transparent;
   }
-  
-  /* Content font for note text - optimized for reading */
+
+  /* ─── Content typography — the reading experience ─── */
   .content-font {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-preview);
     font-weight: 400;
-    line-height: 1.65;
-    letter-spacing: -0.011em;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    line-height: 1.72;
+    letter-spacing: -0.008em;
+    font-feature-settings: 'kern' 1, 'liga' 1;
   }
-  
-  /* Monospace for code */
+
+  /* ─── Monospace for code ─── */
   .mono-font {
-    font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+    font-family: var(--font-editor);
     font-feature-settings: 'liga' 1, 'calt' 1;
   }
-  
-  /* Beautiful headings */
+
+  /* ─── Headings — warm and authoritative ─── */
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     line-height: 1.3;
   }
-  
+
   h1 { font-size: 1.25rem; }
   h2 { font-size: 1.125rem; }
   h3 { font-size: 1rem; }
-  
-  /* Custom scrollbar styles - minimal and theme-appropriate */
+
+  /* ─── Scrollbar — minimal warm accent ─── */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--foreground) / 0.1);
+    background: hsl(var(--primary) / 0.12);
     border-radius: 3px;
-    transition: background 0.2s;
+    transition: background 0.3s ease;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--foreground) / 0.2);
+    background: hsl(var(--primary) / 0.25);
   }
-  
-  /* Hide scrollbar by default, show on hover for specific containers */
+
+  /* Hide scrollbar by default, show on hover */
   .scrollbar-hide::-webkit-scrollbar {
     width: 0;
     height: 0;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 0;
-    transition: width 0.2s;
+    transition: width 0.3s ease;
   }
-  
+
   .scrollbar-thin:hover::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
   }
-  
-  /* Ensure scrollbar appears during active scrolling */
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background: transparent;
   }
-  
+
   .scrollbar-thin:hover::-webkit-scrollbar-thumb {
-    background: hsl(var(--foreground) / 0.1);
+    background: hsl(var(--primary) / 0.12);
   }
 }
 
 @layer utilities {
-  /* Glassmorphism for transparency */
+  /* ═══════════════════════════════════════════
+     Glassmorphism — warm tinted glass
+     ═══════════════════════════════════════════ */
   .glass-panel {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow:
+      0 8px 32px hsl(var(--background) / 0.4),
+      inset 0 1px 0 hsl(var(--foreground) / 0.04);
   }
-  
+
   .glass-subtle {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: hsl(var(--card) / 0.3);
+    backdrop-filter: blur(12px) saturate(140%);
+    border: 1px solid hsl(var(--border) / 0.3);
   }
-  
-  /* Modern shadows */
+
+  /* ─── Shadows — warm depth ─── */
   .shadow-elegant {
-    box-shadow: 
-      0 4px 16px rgba(0, 0, 0, 0.1),
-      0 1px 4px rgba(0, 0, 0, 0.05);
+    box-shadow:
+      0 4px 16px hsl(var(--background) / 0.3),
+      0 1px 4px hsl(var(--background) / 0.15);
   }
-  
-  /* Text styles */
+
+  .shadow-glow {
+    box-shadow:
+      0 0 20px hsl(var(--primary) / 0.15),
+      0 0 40px hsl(var(--primary) / 0.05);
+  }
+
+  /* ─── Text ─── */
   .text-soft {
     color: hsl(var(--muted-foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  
-  /* Custom slider styling */
+
+  /* ─── Slider ─── */
   .slider {
     background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--muted)) 100%);
     outline: none;
     opacity: 0.8;
     transition: opacity 0.2s;
   }
-  
+
   .slider:hover {
     opacity: 1;
   }
-  
+
   .slider::-webkit-slider-thumb {
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: hsl(var(--primary));
     cursor: pointer;
     border: 2px solid hsl(var(--background));
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px hsl(var(--background) / 0.3);
     transition: all 0.2s ease;
   }
-  
+
   .slider::-webkit-slider-thumb:hover {
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 12px hsl(var(--primary) / 0.3);
   }
-  
+
   .slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: hsl(var(--primary));
     cursor: pointer;
     border: 2px solid hsl(var(--background));
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px hsl(var(--background) / 0.3);
   }
-  
-  /* Hide scrollbars */
+
+  /* ─── Scrollbar hide ─── */
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
-  .scrollbar-hide::-webkit-scrollbar { 
-    display: none;  /* Safari and Chrome */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
-  
-  /* Background Patterns */
+
+  /* ═══════════════════════════════════════════
+     Background patterns
+     ═══════════════════════════════════════════ */
   .bg-pattern-paper {
     background-color: hsl(var(--background));
-    background-image: 
+    background-image:
       repeating-linear-gradient(
         0deg,
         transparent,
         transparent 1px,
-        hsl(var(--border) / 0.05) 1px,
-        hsl(var(--border) / 0.05) 2px
+        hsl(var(--border) / 0.04) 1px,
+        hsl(var(--border) / 0.04) 2px
       );
   }
-  
+
   .bg-pattern-canvas {
     background-color: hsl(var(--background));
-    background-image: 
+    background-image:
       repeating-linear-gradient(
         45deg,
         transparent,
         transparent 10px,
-        hsl(var(--border) / 0.03) 10px,
-        hsl(var(--border) / 0.03) 11px
+        hsl(var(--border) / 0.025) 10px,
+        hsl(var(--border) / 0.025) 11px
       ),
       repeating-linear-gradient(
         -45deg,
         transparent,
         transparent 10px,
-        hsl(var(--border) / 0.03) 10px,
-        hsl(var(--border) / 0.03) 11px
+        hsl(var(--border) / 0.025) 10px,
+        hsl(var(--border) / 0.025) 11px
       );
   }
-  
+
   .bg-pattern-grid {
     background-color: hsl(var(--background));
-    background-image: 
-      linear-gradient(hsl(var(--border) / 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.08) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-  
-  .bg-pattern-dots {
-    background-color: hsl(var(--background));
-    background-image: 
-      radial-gradient(circle at 1px 1px, hsl(var(--border) / 0.15) 1px, transparent 1px);
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.06) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 
-  /* Theme Background Textures */
+  .bg-pattern-dots {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(circle at 1px 1px, hsl(var(--border) / 0.12) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* ═══════════════════════════════════════════
+     Background textures — atmospheric depth
+     ═══════════════════════════════════════════ */
   .bg-texture-paper::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     opacity: var(--texture-opacity);
-    background-image: 
+    background-image:
       repeating-linear-gradient(
         100deg,
         transparent,
@@ -293,12 +310,9 @@
   .bg-texture-canvas::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     opacity: var(--texture-opacity);
-    background-image: 
+    background-image:
       repeating-linear-gradient(
         45deg,
         transparent,
@@ -320,12 +334,9 @@
   .bg-texture-grid::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     opacity: var(--texture-opacity);
-    background-image: 
+    background-image:
       linear-gradient(var(--texture-color, hsl(var(--foreground))) 1px, transparent 1px),
       linear-gradient(90deg, var(--texture-color, hsl(var(--foreground))) 1px, transparent 1px);
     background-size: 20px 20px;
@@ -336,12 +347,9 @@
   .bg-texture-dots::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     opacity: var(--texture-opacity);
-    background-image: 
+    background-image:
       radial-gradient(circle at 1px 1px, var(--texture-color, hsl(var(--foreground))) 1px, transparent 1px);
     background-size: 20px 20px;
     pointer-events: none;
@@ -351,10 +359,7 @@
   .bg-texture-noise::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     opacity: var(--texture-opacity);
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
     pointer-events: none;
@@ -364,10 +369,7 @@
   .bg-texture-gradient::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     opacity: var(--texture-opacity);
     background: radial-gradient(ellipse at top, var(--texture-color, hsl(var(--primary))), transparent 70%);
     pointer-events: none;
@@ -385,96 +387,97 @@
     z-index: 2;
   }
 
-  /* Notebook Paper Styles */
+  /* ═══════════════════════════════════════════
+     Notebook paper styles
+     ═══════════════════════════════════════════ */
   .note-paper-dotted-grid {
-    background-image: 
-      radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.25) 1px, transparent 1px);
+    background-image:
+      radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.2) 1px, transparent 1px);
     background-size: 16px 16px;
     background-position: 0 0;
   }
 
   .note-paper-lines {
-    background-image: 
+    background-image:
       repeating-linear-gradient(
         transparent,
         transparent 23px,
-        hsl(var(--muted-foreground) / 0.2) 24px,
-        hsl(var(--muted-foreground) / 0.2) 25px
+        hsl(var(--muted-foreground) / 0.15) 24px,
+        hsl(var(--muted-foreground) / 0.15) 25px
       );
     background-size: 100% 24px;
   }
 
   .note-paper-ruled {
-    background-image: 
+    background-image:
       repeating-linear-gradient(
         transparent,
         transparent 23px,
-        hsl(var(--muted-foreground) / 0.25) 24px,
-        hsl(var(--muted-foreground) / 0.25) 25px
+        hsl(var(--muted-foreground) / 0.2) 24px,
+        hsl(var(--muted-foreground) / 0.2) 25px
       ),
       linear-gradient(
         to right,
         transparent 0px,
         transparent 79px,
-        hsl(var(--destructive) / 0.4) 80px,
-        hsl(var(--destructive) / 0.4) 81px,
+        hsl(var(--destructive) / 0.3) 80px,
+        hsl(var(--destructive) / 0.3) 81px,
         transparent 82px
       );
     background-size: 100% 24px, 100% 100%;
   }
-  
-  /* Focus Mode - hide some UI elements for minimal distraction */
-  /* Note: Navigation bar should always remain visible */
+
+  /* ═══════════════════════════════════════════
+     Focus mode
+     ═══════════════════════════════════════════ */
   .focus-mode [data-sidebar]:not(.w-8) {
     display: none;
   }
-  
-  /* Apply extra padding to the editor area in focus mode for better focus */
+
   .focus-mode textarea {
     padding: 2rem 3rem !important;
   }
-  
-  /* Ensure status footer remains visible in focus mode */
+
   .focus-mode .status-footer {
     display: flex !important;
     position: relative;
     z-index: 10;
     flex-shrink: 0;
   }
-  
-  /* Make sure the editor container uses proper flex layout */
+
   .focus-mode .flex-col {
     display: flex !important;
     flex-direction: column !important;
   }
-  
-  /* Force status footer to always be visible */
+
   .status-footer {
     display: flex !important;
     flex-shrink: 0 !important;
   }
-  
-  /* Typewriter Mode */
+
+  /* Typewriter mode */
   .typewriter-mode {
     scroll-behavior: smooth;
   }
-  
-  /* Enhanced slider with tick marks */
+
+  /* ═══════════════════════════════════════════
+     Enhanced slider with tick marks
+     ═══════════════════════════════════════════ */
   .slider-container {
     position: relative;
   }
-  
+
   .slider-track {
     position: absolute;
     top: 50%;
     left: 0;
     right: 0;
     height: 3px;
-    background: hsl(var(--border) / 0.5);
+    background: hsl(var(--border) / 0.4);
     border-radius: 1.5px;
     transform: translateY(-50%);
   }
-  
+
   .slider-ticks {
     position: absolute;
     top: 50%;
@@ -484,17 +487,17 @@
     transform: translateY(-50%);
     pointer-events: none;
   }
-  
+
   .slider-tick {
     position: absolute;
     top: 50%;
-    width: 6px;
-    height: 6px;
-    background: hsl(var(--border) / 0.4);
+    width: 5px;
+    height: 5px;
+    background: hsl(var(--border) / 0.35);
     border-radius: 50%;
     transform: translate(-50%, -50%);
   }
-  
+
   .slider-input {
     position: relative;
     z-index: 2;
@@ -505,144 +508,135 @@
     -webkit-appearance: none;
     appearance: none;
   }
-  
+
   .slider-input::-webkit-slider-track {
     @apply bg-transparent h-full;
   }
-  
+
   .slider-input::-webkit-slider-thumb {
     @apply w-4 h-4 bg-primary rounded-full cursor-pointer appearance-none;
     @apply shadow-md hover:shadow-lg transition-all hover:scale-110;
     position: relative;
     z-index: 3;
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.3);
   }
-  
+
   .slider-input::-moz-range-track {
     @apply bg-transparent h-full;
   }
-  
+
   .slider-input::-moz-range-thumb {
     @apply w-4 h-4 bg-primary rounded-full cursor-pointer border-0;
     @apply shadow-md hover:shadow-lg transition-all hover:scale-110;
     position: relative;
     z-index: 3;
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.3);
   }
-  
-  /* Disable text selection for UI elements */
+
+  /* ─── Selection ─── */
   .select-none {
     user-select: none;
     -webkit-user-select: none;
   }
-  
-  /* Window roll animation */
+
+  /* ─── Window roll animation ─── */
   .window-content-transition {
-    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 opacity 0.2s ease-out;
   }
-  
-  /* Remove hover effect on title bar */
+
+  /* ─── Drag regions ─── */
   [data-tauri-drag-region] {
     -webkit-user-select: none;
     user-select: none;
   }
-  
-  /* Better text rendering */
-  .text-soft {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  /* Ensure drag ghost doesn't block events */
+
+  /* ─── Drag ghost ─── */
   .drag-ghost {
     pointer-events: none;
     user-select: none;
     -webkit-user-drag: none;
   }
-  
-  /* Prevent text selection during drag */
+
+  /* ─── Dragging state ─── */
   body.dragging,
   body.is-dragging {
     user-select: none;
     -webkit-user-select: none;
     cursor: grabbing !important;
   }
-  
+
   body.dragging *,
   body.is-dragging * {
     cursor: grabbing !important;
   }
-  
-  /* Ensure all child elements respect the grabbing cursor */
+
   body.is-dragging [data-note-id],
   body.is-dragging [data-note-id] *,
   body.is-dragging [data-note-id]:hover,
   body.is-dragging [data-note-id]:active {
     cursor: grabbing !important;
   }
-  
-  
+
   /* Title bars always show grab cursor */
   [data-tauri-drag-region] {
     cursor: grab !important;
   }
-  
-  /* Override any child elements */
+
   [data-tauri-drag-region] * {
     cursor: inherit !important;
   }
-  
-  /* Active dragging state for title bar */
+
   [data-tauri-drag-region]:active {
     cursor: grabbing !important;
   }
-  
-  /* Ensure grabbing cursor during window drag */
+
   body:has([data-tauri-drag-region]:active) {
     cursor: grabbing !important;
   }
-  
+
   body:has([data-tauri-drag-region]:active) * {
     cursor: grabbing !important;
   }
-  
-  /* Visual feedback for middle-click */
+
+  /* Middle-click feedback */
   [data-tauri-drag-region]:active:not(:active[data-left-click]) {
-    opacity: 0.8;
+    opacity: 0.85;
     transition: opacity 0.1s;
   }
-  
-  /* Draggable items - show grab cursor on hover */
+
+  /* ─── Draggable items ─── */
   [data-note-id] {
     cursor: grab;
   }
-  
+
   [data-note-id]:hover {
     cursor: grab;
   }
-  
+
   [data-note-id]:active {
     cursor: grabbing !important;
   }
-  
+
   /* Dragging state styles */
   [data-note-id].dragging {
-    opacity: 0.4;
-    transform: scale(0.95);
-    background-color: rgba(59, 130, 246, 0.1) !important;
-    border-color: rgba(59, 130, 246, 0.4) !important;
+    opacity: 0.35;
+    transform: scale(0.96);
+    background-color: hsl(var(--primary) / 0.08) !important;
+    border-color: hsl(var(--primary) / 0.3) !important;
     transition: all 200ms ease-out;
     cursor: grabbing !important;
   }
-  
-  
-  /* Window background is controlled by theme system */
-  
-  /* Window container styling for detached notes */
+
+  /* Detached window styling */
   .detached-note-window {
-    /* Custom window styling is handled inline in the component */
+    /* Custom window styling handled inline */
   }
 }
 
+/* ═══════════════════════════════════════════
+   Animations
+   ═══════════════════════════════════════════ */
 @keyframes spin-fast {
   100% { transform: rotate(360deg); }
 }
@@ -679,7 +673,6 @@
   animation: spin-hover 0.4s ease-in-out;
 }
 
-/* Alternative approach with transform for continuous hover effect */
 .hover-flip {
   transition: transform 0.3s ease;
 }
@@ -692,4 +685,14 @@
 }
 .hover-spin:hover {
   transform: rotate(180deg);
+}
+
+/* ─── Warm glow pulse for primary elements ─── */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px hsl(var(--primary) / 0.15); }
+  50% { box-shadow: 0 0 16px hsl(var(--primary) / 0.25); }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
 }

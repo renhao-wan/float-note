@@ -64,8 +64,8 @@ export function EditorArea({
 
   // Header component with mode toggle
   const renderHeader = () => (
-    <div className="flex items-center justify-between px-5 py-3 border-b border-border/10 relative">
-      <h2 className="text-lg font-medium text-foreground/90 truncate flex-1">
+    <div className="flex items-center justify-between px-5 py-3 border-b border-border/15 relative">
+      <h2 className="text-lg font-medium text-foreground/85 truncate flex-1" style={{ fontFamily: 'var(--font-ui)' }}>
         {extractTitleFromContent(currentContent) || 'Untitled'}
       </h2>
       
@@ -77,7 +77,7 @@ export function EditorArea({
       )}
       
       {/* Mode toggle */}
-      <div className="relative flex items-center gap-1 bg-background/40 border border-border/30 rounded-xl">
+      <div className="relative flex items-center gap-1 bg-card/50 border border-border/30 rounded-xl">
         {/* Sliding pill background - positioned absolutely but same z-level as buttons */}
         <div 
           className="absolute bg-primary/20 rounded-xl shadow-sm transition-all duration-200 ease-out pointer-events-none"
@@ -125,7 +125,7 @@ export function EditorArea({
 
   // Footer component
   const renderFooter = () => (
-    <div className="status-footer bg-background/90 border-t border-border/30 px-6 h-8 flex items-center justify-between backdrop-blur-sm">
+    <div className="status-footer bg-card/40 border-t border-border/20 px-6 h-8 flex items-center justify-between backdrop-blur-md">
       <div className="flex items-center gap-3">
         {/* Save status */}
         <div className="flex items-center gap-1.5">
@@ -190,8 +190,8 @@ export function EditorArea({
           previewClassName="absolute inset-0 bg-background z-10"
         />
       ) : (
-        <div className="flex-1 flex items-center justify-center text-muted-foreground/60">
-          <p>Select a note to start editing</p>
+        <div className="flex-1 flex items-center justify-center text-muted-foreground/40">
+          <p style={{ fontFamily: 'var(--font-ui)' }}>Select a note to start editing</p>
         </div>
       )}
     </div>

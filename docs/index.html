@@ -23,8 +23,8 @@
     <link rel="apple-touch-icon" href="icon-128.png">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -32,14 +32,15 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'sans': ['Outfit', 'system-ui', 'sans-serif'],
                         'mono': ['JetBrains Mono', 'Monaco', 'monospace']
                     },
                     colors: {
-                        'blink-blue': '#3b82f6',
-                        'blink-purple': '#8b5cf6',
-                        'blink-dark': '#0f172a',
-                        'blink-gray': '#1e293b'
+                        'fn-amber': '#d4a053',
+                        'fn-teal': '#5a9e96',
+                        'fn-dark': '#141311',
+                        'fn-surface': '#1e1c18',
+                        'fn-border': '#2e2b27'
                     },
                     animation: {
                         'subtle-float': 'subtleFloat 12s ease-in-out infinite',
@@ -63,8 +64,8 @@
                             '92%, 96%': { transform: 'scaleY(0.25)' }
                         },
                         glow: {
-                            '0%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' },
-                            '100%': { boxShadow: '0 0 30px rgba(59, 130, 246, 0.8)' }
+                            '0%': { boxShadow: '0 0 20px rgba(212, 160, 83, 0.5)' },
+                            '100%': { boxShadow: '0 0 30px rgba(212, 160, 83, 0.8)' }
                         },
                         slideUp: {
                             '0%': { opacity: '0', transform: 'translateY(30px)' },
@@ -83,7 +84,7 @@
     <!-- Custom CSS -->
     <style>
         body {
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Outfit', system-ui, sans-serif;
             font-weight: 300;
         }
         
@@ -128,14 +129,14 @@
         }
         
         .gradient-text {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #d4a053 0%, #5a9e96 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .hero-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #581c87 100%);
+            background: linear-gradient(135deg, #141311 0%, #1e1c18 50%, #252320 100%);
         }
         
         .macos-desktop {
@@ -240,11 +241,11 @@
                     <span class="text-xl font-semibold gradient-text">FloatNote</span>
                 </div>
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#features" class="hover:text-blink-blue transition-colors">Features</a>
-                    <a href="#download" class="hover:text-blink-blue transition-colors">Download</a>
-                    <a href="https://github.com/renhao-wan/float-note" class="hover:text-blink-blue transition-colors">GitHub</a>
+                    <a href="#features" class="hover:text-fn-amber transition-colors">Features</a>
+                    <a href="#download" class="hover:text-fn-amber transition-colors">Download</a>
+                    <a href="https://github.com/renhao-wan/float-note" class="hover:text-fn-amber transition-colors">GitHub</a>
                 </div>
-                <a href="#download" class="bg-blink-blue hover:bg-blue-600 px-4 py-2 rounded-lg font-medium transition-colors">
+                <a href="#download" class="bg-fn-amber hover:bg-amber-600 px-4 py-2 rounded-lg font-medium transition-colors">
                     Download v0.1.0
                 </a>
             </div>
@@ -264,11 +265,11 @@
                     
                     <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed font-light">
                         Drag notes into floating windows. Work across multiple spaces. 
-                        Experience the future of note-taking with <strong class="text-blink-blue font-normal">FloatNote</strong>.
+                        Experience the future of note-taking with <strong class="text-fn-amber font-normal">FloatNote</strong>.
                     </p>
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <a href="#download" class="bg-blink-blue hover:bg-blue-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all hover:scale-105 animate-glow">
+                        <a href="#download" class="bg-fn-amber hover:bg-amber-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all hover:scale-105 animate-glow">
                             Download Free
                         </a>
                         <a href="#demo" class="glass px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-all">
@@ -316,7 +317,7 @@
                     </div>
                     <div class="p-6 h-full overflow-hidden">
                         <div class="text-left space-y-3 text-sm font-light">
-                            <div class="text-blink-blue font-normal"># Product Launch Strategy</div>
+                            <div class="text-fn-amber font-normal"># Product Launch Strategy</div>
                             <div class="text-gray-300 font-light">## Phase 1: Core Features</div>
                             <div class="text-gray-400">- ✅ Spatial multi-window design</div>
                             <div class="text-gray-400">- ✅ Glass-morphism UI</div>
@@ -396,7 +397,7 @@
                             </div>
                             <div class="p-4 h-full overflow-hidden">
                                 <div class="text-left space-y-2 text-xs font-mono font-light">
-                                    <div class="text-blue-400">// Drag-to-detach hook</div>
+                                    <div class="text-amber-400">// Drag-to-detach hook</div>
                                     <div class="text-purple-400">const</div>
                                     <div class="text-gray-300">useDragToDetach = () => {</div>
                                     <div class="text-gray-400 ml-2">const [isDragging, setDragging] =</div>
@@ -443,7 +444,7 @@
                             <div class="w-8 h-8 bg-gray-600 rounded-lg"></div>
                             <div class="w-8 h-8 bg-orange-500 rounded-lg"></div>
                             <div class="w-8 h-8 bg-green-500 rounded-lg"></div>
-                            <div class="w-8 h-8 bg-blue-600 rounded-lg"></div>
+                            <div class="w-8 h-8 bg-teal-600 rounded-lg"></div>
                             <div class="w-8 h-8 bg-purple-500 rounded-lg"></div>
                             <div class="w-px h-6 bg-gray-400 mx-1"></div>
                             <div class="w-8 h-8 bg-gray-400 rounded-lg"></div>
@@ -475,7 +476,7 @@
                     <div class="text-4xl mb-4">🪟</div>
                     <h3 class="text-xl font-bold mb-3">Spatial Multi-Windows</h3>
                     <p class="text-gray-300 mb-4">Drag any note to create floating windows. Arrange them across your desktop for spatial thinking.</p>
-                    <div class="text-sm text-blink-blue font-medium">Perfect for research & brainstorming</div>
+                    <div class="text-sm text-fn-amber font-medium">Perfect for research & brainstorming</div>
                 </div>
                 
                 <!-- Glass Design -->
@@ -483,7 +484,7 @@
                     <div class="text-4xl mb-4">🎨</div>
                     <h3 class="text-xl font-bold mb-3">Glass-morphism Design</h3>
                     <p class="text-gray-300 mb-4">Beautiful translucent UI with blur effects that integrates seamlessly with your desktop.</p>
-                    <div class="text-sm text-blink-blue font-medium">Elegant & non-intrusive</div>
+                    <div class="text-sm text-fn-amber font-medium">Elegant & non-intrusive</div>
                 </div>
                 
                 <!-- Live Preview -->
@@ -491,7 +492,7 @@
                     <div class="text-4xl mb-4">⚡</div>
                     <h3 class="text-xl font-bold mb-3">Live Markdown Preview</h3>
                     <p class="text-gray-300 mb-4">Toggle between edit and rendered modes instantly. See your formatting come to life.</p>
-                    <div class="text-sm text-blink-blue font-medium">Real-time rendering</div>
+                    <div class="text-sm text-fn-amber font-medium">Real-time rendering</div>
                 </div>
                 
                 <!-- Keyboard First -->
@@ -499,7 +500,7 @@
                     <div class="text-4xl mb-4">⌨️</div>
                     <h3 class="text-xl font-bold mb-3">Keyboard-First Workflow</h3>
                     <p class="text-gray-300 mb-4">Command palette (⌘K), global shortcuts, and vim-inspired navigation for power users.</p>
-                    <div class="text-sm text-blink-blue font-medium">Lightning fast workflow</div>
+                    <div class="text-sm text-fn-amber font-medium">Lightning fast workflow</div>
                 </div>
                 
                 <!-- Themes -->
@@ -507,7 +508,7 @@
                     <div class="text-4xl mb-4">🌈</div>
                     <h3 class="text-xl font-bold mb-3">Beautiful Themes</h3>
                     <p class="text-gray-300 mb-4">Multiple built-in themes with live preview. Customize fonts, colors, and visual style.</p>
-                    <div class="text-sm text-blink-blue font-medium">Make it yours</div>
+                    <div class="text-sm text-fn-amber font-medium">Make it yours</div>
                 </div>
                 
                 <!-- Native Performance -->
@@ -515,7 +516,7 @@
                     <div class="text-4xl mb-4">🚀</div>
                     <h3 class="text-xl font-bold mb-3">Native Performance</h3>
                     <p class="text-gray-300 mb-4">Built with Tauri v2 for optimal speed and minimal memory usage. Lightning fast startup.</p>
-                    <div class="text-sm text-blink-blue font-medium">Rust-powered efficiency</div>
+                    <div class="text-sm text-fn-amber font-medium">Rust-powered efficiency</div>
                 </div>
             </div>
         </div>
@@ -539,11 +540,11 @@
                 
                 <div class="grid md:grid-cols-3 gap-6 text-left">
                     <div>
-                        <div class="text-blink-blue font-semibold mb-2">1. Create Notes</div>
+                        <div class="text-fn-amber font-semibold mb-2">1. Create Notes</div>
                         <div class="text-gray-300 text-sm">Start writing with ⌘N or global shortcut Hyperkey+N</div>
                     </div>
                     <div>
-                        <div class="text-blink-purple font-semibold mb-2">2. Drag to Detach</div>
+                        <div class="text-fn-teal font-semibold mb-2">2. Drag to Detach</div>
                         <div class="text-gray-300 text-sm">Drag any note title to create floating windows</div>
                     </div>
                     <div>
@@ -570,11 +571,11 @@
                     <h3 class="text-2xl font-bold mb-6">Clean Architecture</h3>
                     <div class="space-y-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 bg-blink-blue rounded-full"></div>
+                            <div class="w-2 h-2 bg-fn-amber rounded-full"></div>
                             <span>Component-based React architecture</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 bg-blink-purple rounded-full"></div>
+                            <div class="w-2 h-2 bg-fn-teal rounded-full"></div>
                             <span>Full TypeScript coverage</span>
                         </div>
                         <div class="flex items-center gap-3">
@@ -591,11 +592,11 @@
                 <div class="glass-dark rounded-xl p-6">
                     <div class="text-sm text-gray-400 mb-3">src/components/</div>
                     <div class="font-mono text-sm space-y-1">
-                        <div class="text-blink-blue">├── NavigationSidebar.tsx</div>
-                        <div class="text-blink-blue">├── NotesPanel.tsx</div>
-                        <div class="text-blink-blue">├── EditorArea.tsx</div>
-                        <div class="text-blink-blue">├── SettingsNavigation.tsx</div>
-                        <div class="text-blink-blue">└── AppFooter.tsx</div>
+                        <div class="text-fn-amber">├── NavigationSidebar.tsx</div>
+                        <div class="text-fn-amber">├── NotesPanel.tsx</div>
+                        <div class="text-fn-amber">├── EditorArea.tsx</div>
+                        <div class="text-fn-amber">├── SettingsNavigation.tsx</div>
+                        <div class="text-fn-amber">└── AppFooter.tsx</div>
                         <div class="text-gray-400 mt-3">Clean separation of concerns</div>
                     </div>
                 </div>
@@ -627,7 +628,7 @@
                 
                 <div class="space-y-3">
                     <a href="https://github.com/renhao-wan/float-note/releases/download/v0.1.0/FloatNote_0.1.0_aarch64.dmg"
-                       class="block bg-blink-blue hover:bg-blue-600 px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105">
+                       class="block bg-fn-amber hover:bg-amber-600 px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105">
                         Download DMG (Recommended)
                     </a>
                     <a href="https://github.com/renhao-wan/float-note/releases/download/v0.1.0/FloatNote.app.tar.gz"
@@ -643,7 +644,7 @@
             </div>
             
             <div class="mt-12 text-center">
-                <a href="https://github.com/renhao-wan/float-note" class="text-blink-blue hover:text-blue-400 font-medium">
+                <a href="https://github.com/renhao-wan/float-note" class="text-fn-amber hover:text-amber-400 font-medium">
                     View on GitHub →
                 </a>
             </div>
