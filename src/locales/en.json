@@ -195,7 +195,9 @@
   },
   "sidebar": {
     "notes": "Notes",
-    "settings": "Settings"
+    "settings": "Settings",
+    "hideNotes": "Hide notes",
+    "hideSettings": "Hide settings"
   },
   "footer": {
     "theme": "Theme",

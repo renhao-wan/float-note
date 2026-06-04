@@ -195,7 +195,9 @@
   },
   "sidebar": {
     "notes": "笔记",
-    "settings": "设置"
+    "settings": "设置",
+    "hideNotes": "隐藏笔记",
+    "hideSettings": "隐藏设置"
   },
   "footer": {
     "theme": "主题",
