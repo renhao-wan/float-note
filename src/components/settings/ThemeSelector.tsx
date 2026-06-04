@@ -89,7 +89,7 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
     const bg = t.colors.background;
     return !bg.startsWith('#0') && !bg.startsWith('#1') && !bg.startsWith('#2');
   });
-  const sortedThemes = [...darkThemes, ...lightThemes];
+  const sortedThemes = [...darkThemes, ...lightThemes].reverse();
 
   return (
     <div className="space-y-3">
