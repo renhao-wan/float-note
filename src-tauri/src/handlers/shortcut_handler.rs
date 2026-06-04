@@ -1,4 +1,4 @@
-use crate::error::{BlinkError, BlinkResult};
+use crate::error::{FloatNoteError, FloatNoteResult};
 use crate::types::window::{DetachedWindowsState, ToggleState};
 use crate::{log_debug, log_error, log_info};
 use crate::state::NotesState;
@@ -6,7 +6,7 @@ use tauri::{AppHandle, Manager, Emitter};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
 /// Register all global shortcuts for the application
-pub fn register_global_shortcuts(app: &AppHandle) -> BlinkResult<()> {
+pub fn register_global_shortcuts(app: &AppHandle) -> FloatNoteResult<()> {
     log_info!("STARTUP", "🚀 Initializing global shortcuts...");
 
     // Register Hyperkey+N for new note (non-fatal)
@@ -37,7 +37,7 @@ pub fn register_global_shortcuts(app: &AppHandle) -> BlinkResult<()> {
 
 fn register_new_note_shortcut(
     app: &AppHandle,
-) -> BlinkResult<()> {
+) -> FloatNoteResult<()> {
     let manager = app.global_shortcut();
     let hyperkey_n = Shortcut::new(
         Some(Modifiers::SUPER | Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT),
@@ -49,7 +49,7 @@ fn register_new_note_shortcut(
 
     manager
         .register(hyperkey_n)
-        .map_err(|e| BlinkError::GlobalShortcut(format!("Failed to register Hyperkey+N: {}", e)))?;
+        .map_err(|e| FloatNoteError::GlobalShortcut(format!("Failed to register Hyperkey+N: {}", e)))?;
 
     log_info!(
         "STARTUP",
@@ -61,7 +61,7 @@ fn register_new_note_shortcut(
 
 fn register_hover_mode_shortcut(
     app: &AppHandle,
-) -> BlinkResult<()> {
+) -> FloatNoteResult<()> {
     let manager = app.global_shortcut();
     let hyperkey_h = Shortcut::new(
         Some(Modifiers::SUPER | Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT),
@@ -73,7 +73,7 @@ fn register_hover_mode_shortcut(
 
     manager
         .register(hyperkey_h)
-        .map_err(|e| BlinkError::GlobalShortcut(format!("Failed to register Hyperkey+H: {}", e)))?;
+        .map_err(|e| FloatNoteError::GlobalShortcut(format!("Failed to register Hyperkey+H: {}", e)))?;
 
     log_info!(
         "STARTUP",
@@ -85,7 +85,7 @@ fn register_hover_mode_shortcut(
 
 fn register_window_chord_shortcut(
     app: &AppHandle,
-) -> BlinkResult<()> {
+) -> FloatNoteResult<()> {
     let manager = app.global_shortcut();
     let hyperkey_b = Shortcut::new(
         Some(Modifiers::SUPER | Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT),
@@ -97,7 +97,7 @@ fn register_window_chord_shortcut(
 
     manager
         .register(hyperkey_b)
-        .map_err(|e| BlinkError::GlobalShortcut(format!("Failed to register Hyperkey+B: {}", e)))?;
+        .map_err(|e| FloatNoteError::GlobalShortcut(format!("Failed to register Hyperkey+B: {}", e)))?;
 
     log_info!(
         "STARTUP",
@@ -109,7 +109,7 @@ fn register_window_chord_shortcut(
 
 fn register_note_deployment_shortcuts(
     app: &AppHandle,
-) -> BlinkResult<()> {
+) -> FloatNoteResult<()> {
     let manager = app.global_shortcut();
     log_info!(
         "STARTUP",
@@ -406,7 +406,7 @@ fn handle_deploy_shortcuts(app: &AppHandle, shortcut: &Shortcut) {
 }
 
 /// Re-register global shortcuts (used for runtime updates)
-pub async fn reregister_global_shortcuts(app: AppHandle) -> BlinkResult<Vec<String>> {
+pub async fn reregister_global_shortcuts(app: AppHandle) -> FloatNoteResult<Vec<String>> {
     log_info!("SHORTCUT", "Re-registering global shortcuts...");
 
     let shortcut_manager = app.global_shortcut();

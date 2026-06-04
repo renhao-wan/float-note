@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-pub enum BlinkError {
+pub enum FloatNoteError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
     
@@ -39,12 +39,12 @@ pub enum BlinkError {
     Tauri(#[from] tauri::Error),
 }
 
-// Implement conversion from BlinkError to String for Tauri commands
-impl From<BlinkError> for String {
-    fn from(err: BlinkError) -> Self {
+// Implement conversion from FloatNoteError to String for Tauri commands
+impl From<FloatNoteError> for String {
+    fn from(err: FloatNoteError) -> Self {
         err.to_string()
     }
 }
 
-pub type Result<T> = std::result::Result<T, BlinkError>;
-pub type BlinkResult<T> = Result<T>;
+pub type Result<T> = std::result::Result<T, FloatNoteError>;
+pub type FloatNoteResult<T> = Result<T>;

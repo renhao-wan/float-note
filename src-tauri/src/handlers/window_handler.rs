@@ -1,4 +1,4 @@
-use crate::error::{BlinkError, BlinkResult};
+use crate::error::{FloatNoteError, FloatNoteResult};
 use crate::types::window::DetachedWindow;
 use crate::{log_error, log_info};
 use std::collections::HashMap;
@@ -23,19 +23,19 @@ pub async fn load_spatial_data(note_id: &str) -> Option<DetachedWindow> {
 
 /// Save spatial positioning data for a specific note
 #[allow(dead_code)]
-pub async fn save_spatial_data(note_id: &str, window: &DetachedWindow) -> BlinkResult<()> {
+pub async fn save_spatial_data(note_id: &str, window: &DetachedWindow) -> FloatNoteResult<()> {
     use crate::modules::storage::get_default_notes_directory;
     
     let notes_dir = get_default_notes_directory()
-        .map_err(|e| BlinkError::Storage(format!("Failed to get notes directory: {}", e)))?;
+        .map_err(|e| FloatNoteError::Storage(format!("Failed to get notes directory: {}", e)))?;
     let spatial_file = notes_dir.join("spatial_positions.json");
     
     // Load existing spatial data
     let mut spatial_data: HashMap<String, DetachedWindow> = if spatial_file.exists() {
         let spatial_json = std::fs::read_to_string(&spatial_file)
-            .map_err(|e| BlinkError::Io(e))?;
+            .map_err(|e| FloatNoteError::Io(e))?;
         serde_json::from_str(&spatial_json)
-            .map_err(|e| BlinkError::Serialization(e))?
+            .map_err(|e| FloatNoteError::Serialization(e))?
     } else {
         HashMap::new()
     };
@@ -45,17 +45,17 @@ pub async fn save_spatial_data(note_id: &str, window: &DetachedWindow) -> BlinkR
     
     // Save back to disk
     let spatial_json = serde_json::to_string_pretty(&spatial_data)
-        .map_err(|e| BlinkError::Serialization(e))?;
+        .map_err(|e| FloatNoteError::Serialization(e))?;
     
     std::fs::write(spatial_file, spatial_json)
-        .map_err(|e| BlinkError::Io(e))?;
+        .map_err(|e| FloatNoteError::Io(e))?;
     
     Ok(())
 }
 
 /// Save window position (currently unused - handled by frontend with debouncing)
 #[allow(dead_code)]
-pub async fn save_window_position(note_id: String, x: f64, y: f64) -> BlinkResult<()> {
+pub async fn save_window_position(note_id: String, x: f64, y: f64) -> FloatNoteResult<()> {
     if let Some(mut window_data) = load_spatial_data(&note_id).await {
         window_data.position = (x, y);
         save_spatial_data(&note_id, &window_data).await?;
@@ -78,7 +78,7 @@ pub async fn save_window_position(note_id: String, x: f64, y: f64) -> BlinkResul
 
 /// Save window size (currently unused - handled by frontend with debouncing)
 #[allow(dead_code)]
-pub async fn save_window_size(note_id: String, width: f64, height: f64) -> BlinkResult<()> {
+pub async fn save_window_size(note_id: String, width: f64, height: f64) -> FloatNoteResult<()> {
     if let Some(mut window_data) = load_spatial_data(&note_id).await {
         window_data.size = (width, height);
         save_spatial_data(&note_id, &window_data).await?;

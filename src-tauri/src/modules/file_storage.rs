@@ -15,25 +15,25 @@ use crate::{log_debug, log_info, log_error};
 #[allow(dead_code)]
 pub struct FileStorageManager {
     notes_dir: PathBuf,
-    blink_dir: PathBuf,
+    floatnote_dir: PathBuf,
 }
 
 impl FileStorageManager {
     pub fn new(config: &AppConfig) -> Result<Self, String> {
         let notes_dir = get_configured_notes_directory(config)?;
-        let blink_dir = notes_dir.join(".blink");
+        let floatnote_dir = notes_dir.join(".floatnote");
         
         // Create directories if they don't exist
         fs::create_dir_all(&notes_dir)
             .map_err(|e| format!("Failed to create notes directory: {}", e))?;
-        fs::create_dir_all(&blink_dir)
-            .map_err(|e| format!("Failed to create .blink directory: {}", e))?;
+        fs::create_dir_all(&floatnote_dir)
+            .map_err(|e| format!("Failed to create .floatnote directory: {}", e))?;
         
         log_info!("FILE_STORAGE", "Initialized file storage at: {:?}", notes_dir);
         
         Ok(Self {
             notes_dir,
-            blink_dir,
+            floatnote_dir,
         })
     }
     
@@ -279,7 +279,7 @@ impl FileStorageManager {
     
     /// Load workspace state
     pub async fn load_workspace_state(&self) -> Result<WorkspaceState, String> {
-        let workspace_file = self.blink_dir.join("workspace.json");
+        let workspace_file = self.floatnote_dir.join("workspace.json");
         
         if !workspace_file.exists() {
             let mut default_state = WorkspaceState::default();
@@ -298,7 +298,7 @@ impl FileStorageManager {
     
     /// Save workspace state
     pub async fn save_workspace_state(&self, state: &WorkspaceState) -> Result<(), String> {
-        let workspace_file = self.blink_dir.join("workspace.json");
+        let workspace_file = self.floatnote_dir.join("workspace.json");
         
         let content = serde_json::to_string_pretty(state)
             .map_err(|e| format!("Failed to serialize workspace state: {}", e))?;

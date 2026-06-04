@@ -1,4 +1,4 @@
-use crate::error::{BlinkError, BlinkResult};
+use crate::error::{FloatNoteError, FloatNoteResult};
 use crate::modules::storage::{
     load_config_from_disk as load_config_from_disk_storage,
     load_detached_windows_from_disk as load_detached_windows_from_disk_storage,
@@ -10,7 +10,7 @@ use crate::log_info;
 use tauri::{AppHandle, Manager, Emitter};
 
 /// Load all application data on startup
-pub async fn load_application_data(app_handle: AppHandle) -> BlinkResult<()> {
+pub async fn load_application_data(app_handle: AppHandle) -> FloatNoteResult<()> {
     log_info!("STARTUP", "Loading data asynchronously...");
 
     // Load config first (needed for notes directory)
@@ -39,7 +39,7 @@ pub async fn load_application_data(app_handle: AppHandle) -> BlinkResult<()> {
     Ok(())
 }
 
-async fn load_config(app_handle: AppHandle) -> BlinkResult<AppConfig> {
+async fn load_config(app_handle: AppHandle) -> FloatNoteResult<AppConfig> {
     let config_result = load_config_from_disk_storage().await;
 
     let config = if let Ok(config) = config_result {
@@ -59,39 +59,39 @@ async fn load_config(app_handle: AppHandle) -> BlinkResult<AppConfig> {
 async fn load_notes(
     _app_handle: AppHandle,
     config: &AppConfig,
-) -> BlinkResult<std::collections::HashMap<String, crate::types::note::Note>> {
+) -> FloatNoteResult<std::collections::HashMap<String, crate::types::note::Note>> {
     // Create FileNotesStorage
     use crate::modules::file_notes_storage::FileNotesStorage;
     let file_storage = FileNotesStorage::new(config)
-        .map_err(|e| BlinkError::Storage(format!("Failed to create file storage: {}", e)))?;
+        .map_err(|e| FloatNoteError::Storage(format!("Failed to create file storage: {}", e)))?;
 
     // Run migration if needed
     let notes_dir = crate::modules::storage::get_notes_directory()
-        .map_err(|e| BlinkError::Storage(e))?;
+        .map_err(|e| FloatNoteError::Storage(e))?;
     let json_path = notes_dir.join("notes.json");
     file_storage
         .migrate_if_needed(json_path)
         .await
-        .map_err(|e| BlinkError::Storage(e))?;
+        .map_err(|e| FloatNoteError::Storage(e))?;
 
     // Load notes from files
     file_storage
         .load_notes()
         .await
-        .map_err(|e| BlinkError::Storage(e))
+        .map_err(|e| FloatNoteError::Storage(e))
 }
 
 async fn load_detached_windows(
-) -> BlinkResult<std::collections::HashMap<String, crate::types::window::DetachedWindow>> {
+) -> FloatNoteResult<std::collections::HashMap<String, crate::types::window::DetachedWindow>> {
     load_detached_windows_from_disk_storage()
         .await
-        .map_err(|e| BlinkError::Storage(e))
+        .map_err(|e| FloatNoteError::Storage(e))
 }
 
 async fn update_notes_state(
     app_handle: &AppHandle,
     notes: std::collections::HashMap<String, crate::types::note::Note>,
-) -> BlinkResult<()> {
+) -> FloatNoteResult<()> {
     if let Some(notes_state) = app_handle.try_state::<NotesState>() {
         let mut notes_lock = notes_state.lock().await;
         let notes_count = notes.len();
@@ -116,7 +116,7 @@ async fn update_notes_state(
 async fn update_windows_state(
     app_handle: &AppHandle,
     windows: std::collections::HashMap<String, crate::types::window::DetachedWindow>,
-) -> BlinkResult<()> {
+) -> FloatNoteResult<()> {
     if let Some(windows_state) = app_handle.try_state::<DetachedWindowsState>() {
         let mut windows_lock = windows_state.lock().await;
         let windows_count = windows.len();

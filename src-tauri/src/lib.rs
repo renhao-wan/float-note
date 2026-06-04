@@ -15,7 +15,7 @@ mod utils;
 mod tests;
 
 // Re-export commonly used types and functions
-pub use error::{BlinkError, BlinkResult};
+pub use error::{FloatNoteError, FloatNoteResult};
 
 // Re-export state types explicitly to avoid ambiguity
 pub use state::{

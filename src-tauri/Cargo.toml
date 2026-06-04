@@ -1,14 +1,14 @@
 [package]
-name = "blink"
+name = "floatnote"
 version = "0.2.0"
-description = "A modern note-taking application built with Tauri"
-authors = ["you"]
+description = "FloatNote - AI-native spatial note-taking application"
+authors = ["FloatNote"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "blink_lib"
+name = "floatnote_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

@@ -370,7 +370,7 @@ impl NotesDatabase {
 
 /// Get the database path
 pub fn get_database_path(data_dir: &Path) -> PathBuf {
-    data_dir.join(".blink").join("notes.db")
+    data_dir.join(".floatnote").join("notes.db")
 }
 
 /// Initialize the database, migrating from JSON if needed
@@ -385,7 +385,7 @@ pub fn initialize_database(data_dir: &Path) -> Result<NotesDatabase> {
     let db = NotesDatabase::new(&db_path)?;
     
     // Migrate from index.json if it exists
-    let json_path = data_dir.join(".blink").join("index.json");
+    let json_path = data_dir.join(".floatnote").join("index.json");
     if json_path.exists() {
         log::info!("Found index.json, migrating to database...");
         db.migrate_from_json(&json_path)?;

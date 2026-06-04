@@ -219,38 +219,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "blink"
-version = "0.2.0"
-dependencies = [
- "anyhow",
- "chrono",
- "cocoa",
- "dirs 5.0.1",
- "env_logger",
- "futures",
- "log",
- "notify",
- "objc",
- "regex",
- "rusqlite",
- "serde",
- "serde_json",
- "serde_yaml",
- "sha2",
- "tauri",
- "tauri-build",
- "tauri-plugin-clipboard-manager",
- "tauri-plugin-dialog",
- "tauri-plugin-global-shortcut",
- "tauri-plugin-shell",
- "tempfile",
- "thiserror 1.0.69",
- "tokio",
- "urlencoding",
- "uuid",
-]
-
-[[package]]
 name = "block"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1094,6 +1062,38 @@ checksum = "4a3d7db9596fecd151c5f638c0ee5d5bd487b6e0ea232e5dc96d5250f6f94b1d"
 dependencies = [
  "crc32fast",
  "miniz_oxide",
+]
+
+[[package]]
+name = "floatnote"
+version = "0.2.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "cocoa",
+ "dirs 5.0.1",
+ "env_logger",
+ "futures",
+ "log",
+ "notify",
+ "objc",
+ "regex",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "sha2",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-clipboard-manager",
+ "tauri-plugin-dialog",
+ "tauri-plugin-global-shortcut",
+ "tauri-plugin-shell",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tokio",
+ "urlencoding",
+ "uuid",
 ]
 
 [[package]]

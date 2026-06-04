@@ -1,4 +1,4 @@
-use crate::error::BlinkResult;
+use crate::error::FloatNoteResult;
 use crate::handlers::{build_app_menu, handle_menu_event, register_global_shortcuts, handle_global_shortcut};
 use crate::handlers::window_handler::apply_initial_window_settings;
 use crate::startup::data_loader::load_application_data;
@@ -8,7 +8,7 @@ use tauri::{App, Manager};
 use tauri_plugin_global_shortcut::ShortcutState;
 
 /// Setup the application on startup
-pub fn setup_app(app: &mut App) -> BlinkResult<()> {
+pub fn setup_app(app: &mut App) -> FloatNoteResult<()> {
     let app_handle = app.handle().clone();
 
     // Get states for menu building

@@ -126,13 +126,13 @@ pub fn get_default_notes_directory() -> Result<PathBuf, String> {
         // Development: use app data directory with dev suffix
         dirs::data_dir()
             .ok_or_else(|| "Failed to get data directory".to_string())?
-            .join("com.blink.dev")
+            .join("com.float-note.dev")
             .join("data")
     } else {
         // Production: use app data directory
         dirs::data_dir()
             .ok_or_else(|| "Failed to get data directory".to_string())?
-            .join("com.blink.dev")
+            .join("com.float-note.dev")
             .join("data")
     };
     
