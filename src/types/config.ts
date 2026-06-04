@@ -74,6 +74,7 @@ export const defaultConfig: AppConfig = {
     fontSize: 15,
     contentFontSize: 16,
     theme: 'dark',
+    themeId: 'arctic-frost', // 默认选中第一个主题
     editorFontFamily: 'JetBrains Mono, monospace',
     previewFontFamily: 'Source Serif 4, Georgia, serif',
     lineHeight: 1.6,
@@ -103,14 +104,21 @@ export const defaultConfig: AppConfig = {
 
 // Migration helper for old configs
 export const migrateConfig = (config: any): AppConfig => {
+  const migratedAppearance = {
+    ...defaultConfig.appearance,
+    ...(config.appearance || {}),
+  };
+
+  // 如果配置中没有 themeId，使用默认值
+  if (!migratedAppearance.themeId) {
+    migratedAppearance.themeId = 'arctic-frost';
+  }
+
   return {
     ...defaultConfig,
     ...config,
     language: config.language || 'zh', // 未设置则默认中文
-    appearance: {
-      ...defaultConfig.appearance,
-      ...(config.appearance || {}),
-    },
+    appearance: migratedAppearance,
     storage: {
       ...defaultConfig.storage,
       ...(config.storage || {}),
