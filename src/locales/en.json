@@ -1,0 +1,224 @@
+{
+  "common": {
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "settings": "Settings",
+    "help": "Help",
+    "about": "About"
+  },
+  "settings": {
+    "general": {
+      "title": "General",
+      "description": "The essentials • who we are, what we do",
+      "about": {
+        "title": "About",
+        "application": "Application",
+        "version": "Version",
+        "author": "Author"
+      },
+      "interface": {
+        "title": "Interface",
+        "language": "Language",
+        "languageDescription": "Switch language to change interface display",
+        "notePreviews": "Note Previews",
+        "notePreviewsDescription": "Peek at note content without opening",
+        "windowOpacity": "Window Opacity",
+        "windowOpacityDescription": "Background transparency"
+      },
+      "fileOperations": {
+        "title": "File Operations",
+        "notesDirectory": "Notes Directory",
+        "notesDirectoryDescription": "Where your notes are stored",
+        "reloadNotes": "Reload Notes",
+        "importNotes": "Import Notes",
+        "importNotesDescription": "Load notes from markdown files",
+        "importFile": "Import File",
+        "importFolder": "Import Folder",
+        "exportNotes": "Export Notes",
+        "exportNotesDescription": "Save all notes as markdown files",
+        "exportAll": "Export All",
+        "markdownFormat": "Markdown Format",
+        "markdownFormatDescription": "Notes are stored as .md files with YAML frontmatter containing metadata (title, tags, dates).",
+        "directoryMode": "Directory Mode",
+        "directoryModeDescription": "Set a custom directory to load/save notes directly as files, perfect for syncing with git, Dropbox, or other tools."
+      }
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Make Blink uniquely yours • fonts, colors & textures",
+      "themes": {
+        "title": "Themes"
+      },
+      "typography": {
+        "title": "Typography",
+        "editorFontSize": "Editor Font Size",
+        "contentFontSize": "Content Font Size",
+        "editorFont": "Editor Font",
+        "contentFont": "Content Font",
+        "lineHeight": "Line Height",
+        "typographyPreview": "Typography Preview",
+        "editorView": "Editor View",
+        "previewMode": "Preview Mode",
+        "rendered": "rendered",
+        "markdown": "markdown"
+      },
+      "visual": {
+        "title": "Visual",
+        "theme": "Theme",
+        "accentColor": "Accent Color",
+        "noteBackground": "Note Background"
+      },
+      "window": {
+        "title": "Window",
+        "windowOpacity": "Window Opacity",
+        "alwaysOnTop": "Always on Top",
+        "alwaysOnTopDescription": "keep window above others"
+      }
+    },
+    "shortcuts": {
+      "title": "Shortcuts",
+      "description": "Global and in-app keyboard shortcuts",
+      "globalShortcuts": {
+        "title": "Global Shortcuts",
+        "description": "Global shortcuts allow you to perform actions from anywhere on your system, even when the app is in the background.",
+        "createNewNote": "Create New Note",
+        "toggleHoverMode": "Toggle Hover Mode"
+      },
+      "inAppShortcuts": {
+        "title": "In-App Shortcuts",
+        "commandPalette": "Command Palette",
+        "newNote": "New Note",
+        "togglePreview": "Toggle Preview",
+        "openSettings": "Open Settings",
+        "focusMode": "Focus Mode"
+      },
+      "permissions": {
+        "title": "Required macOS Permissions",
+        "accessibilityAccess": "Accessibility Access",
+        "accessibilityAccessDescription": "Required for global shortcuts (⌘⌃⌥⇧N, ⌘⌃⌥⇧H) to work system-wide.",
+        "inputMonitoring": "Input Monitoring",
+        "inputMonitoringDescription": "Enables detection of keyboard events for global shortcuts.",
+        "setupSteps": "Setup Steps",
+        "step1": "Click \"open accessibility settings\" below",
+        "step2": "Find \"Blink\" in the app list and enable it",
+        "step3": "Quit and restart Blink completely",
+        "step4": "Test shortcuts with the buttons above",
+        "warning": "Why these permissions?",
+        "warningDescription": "Global shortcuts allow you to create notes instantly from anywhere on your system - whether you're browsing, coding, or in a meeting. The \"Hyperkey\" (⌘⌃⌥⇧) combination is specifically chosen to avoid conflicts with existing shortcuts.",
+        "openAccessibilitySettings": "open accessibility settings →"
+      },
+      "actions": {
+        "reRegisterShortcuts": "re-register shortcuts",
+        "registering": "registering...",
+        "testEvent": "test event",
+        "testHover": "test hover",
+        "forceVisible": "force visible",
+        "debugWebview": "debug webview"
+      }
+    },
+    "editor": {
+      "title": "Editor",
+      "description": "Customize your writing experience",
+      "lineHeight": "Line Height",
+      "paperStyle": {
+        "title": "Paper Style",
+        "description": "Choose a background style to enhance your writing experience",
+        "plain": "Plain",
+        "plainDescription": "Clean background",
+        "dots": "Dots",
+        "dotsDescription": "Subtle dot grid",
+        "lines": "Lines",
+        "linesDescription": "Notebook lines",
+        "ruled": "Ruled",
+        "ruledDescription": "College ruled"
+      },
+      "editorFeatures": {
+        "title": "Editor Features",
+        "focusMode": "Focus Mode",
+        "focusModeDescription": "distraction-free writing",
+        "syntaxHighlighting": "Syntax Highlighting",
+        "syntaxHighlightingDescription": "code syntax colors",
+        "typewriterMode": "Typewriter Mode",
+        "typewriterModeDescription": "center current line",
+        "vimMode": "Vim Mode",
+        "vimModeDescription": "enable vim keybindings",
+        "wordWrap": "Word Wrap",
+        "wordWrapDescription": "wrap long lines in editor"
+      }
+    },
+    "advanced": {
+      "title": "Advanced",
+      "description": "Advanced application settings",
+      "developerMode": "Developer Mode",
+      "developerModeDescription": "Enable developer tools and features",
+      "autoUpdate": "Auto Update",
+      "autoUpdateDescription": "Automatically download and install updates"
+    }
+  },
+  "notes": {
+    "create": "New Note",
+    "delete": "Delete Note",
+    "edit": "Edit Note",
+    "save": "Save Note",
+    "search": "Search Notes",
+    "noNotes": "No notes yet",
+    "noNotesDescription": "Click \"New Note\" to get started",
+    "wordCount": "words",
+    "lastSaved": "last saved",
+    "untitled": "Untitled Note",
+    "empty": "Empty note"
+  },
+  "titlebar": {
+    "title": "Blink",
+    "wordCount": "words",
+    "lastSaved": "last saved"
+  },
+  "sidebar": {
+    "notes": "Notes",
+    "settings": "Settings"
+  },
+  "footer": {
+    "theme": "Theme",
+    "language": "Language"
+  },
+  "commandPalette": {
+    "searchPlaceholder": "Search notes...",
+    "noResults": "No results found",
+    "createNote": "New Note",
+    "openSettings": "Open Settings",
+    "togglePreview": "Toggle Preview",
+    "toggleSidebar": "Toggle Sidebar"
+  },
+  "contextMenu": {
+    "open": "Open",
+    "detach": "Detach Window",
+    "delete": "Delete",
+    "rename": "Rename",
+    "duplicate": "Duplicate"
+  },
+  "dialog": {
+    "confirmDelete": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete this note? This action cannot be undone.",
+    "confirmDeleteTitle": "Delete Note",
+    "unsavedChanges": "Unsaved Changes",
+    "unsavedChangesMessage": "You have unsaved changes. Are you sure you want to leave?",
+    "saveChanges": "Save Changes",
+    "discardChanges": "Discard Changes"
+  },
+  "defaultTemplate": {
+    "title": "New Note",
+    "content": "# New Note\n\nStart writing..."
+  }
+}

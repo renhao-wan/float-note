@@ -1,0 +1,224 @@
+{
+  "common": {
+    "save": "保存更改",
+    "cancel": "取消",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "confirm": "确认",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "close": "关闭",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "search": "搜索",
+    "settings": "设置",
+    "help": "帮助",
+    "about": "关于"
+  },
+  "settings": {
+    "general": {
+      "title": "通用",
+      "description": "基础设置 • 谁在用、做什么",
+      "about": {
+        "title": "关于",
+        "application": "应用",
+        "version": "版本",
+        "author": "作者"
+      },
+      "interface": {
+        "title": "界面",
+        "language": "语言",
+        "languageDescription": "切换语言以改变界面显示",
+        "notePreviews": "笔记预览",
+        "notePreviewsDescription": "无需打开即可预览笔记内容",
+        "windowOpacity": "窗口透明度",
+        "windowOpacityDescription": "背景透明度"
+      },
+      "fileOperations": {
+        "title": "文件操作",
+        "notesDirectory": "笔记目录",
+        "notesDirectoryDescription": "笔记存储位置",
+        "reloadNotes": "重新加载笔记",
+        "importNotes": "导入笔记",
+        "importNotesDescription": "从 Markdown 文件加载笔记",
+        "importFile": "导入文件",
+        "importFolder": "导入文件夹",
+        "exportNotes": "导出笔记",
+        "exportNotesDescription": "将所有笔记保存为 Markdown 文件",
+        "exportAll": "导出全部",
+        "markdownFormat": "Markdown 格式",
+        "markdownFormatDescription": "笔记以 .md 文件存储，包含 YAML frontmatter 元数据（标题、标签、日期）。",
+        "directoryMode": "目录模式",
+        "directoryModeDescription": "设置自定义目录以直接将笔记加载/保存为文件，适合与 git、Dropbox 或其他工具同步。"
+      }
+    },
+    "appearance": {
+      "title": "外观",
+      "description": "让 Blink 独一无二 • 字体、颜色和纹理",
+      "themes": {
+        "title": "主题"
+      },
+      "typography": {
+        "title": "排版",
+        "editorFontSize": "编辑器字体大小",
+        "contentFontSize": "内容字体大小",
+        "editorFont": "编辑器字体",
+        "contentFont": "内容字体",
+        "lineHeight": "行高",
+        "typographyPreview": "排版预览",
+        "editorView": "编辑器视图",
+        "previewMode": "预览模式",
+        "rendered": "渲染",
+        "markdown": "Markdown"
+      },
+      "visual": {
+        "title": "视觉",
+        "theme": "主题",
+        "accentColor": "强调色",
+        "noteBackground": "笔记背景"
+      },
+      "window": {
+        "title": "窗口",
+        "windowOpacity": "窗口透明度",
+        "alwaysOnTop": "始终置顶",
+        "alwaysOnTopDescription": "保持窗口在其他窗口之上"
+      }
+    },
+    "shortcuts": {
+      "title": "快捷键",
+      "description": "全局和应用内键盘快捷键",
+      "globalShortcuts": {
+        "title": "全局快捷键",
+        "description": "全局快捷键允许您在系统任何位置执行操作，即使应用在后台。",
+        "createNewNote": "新建笔记",
+        "toggleHoverMode": "切换悬停模式"
+      },
+      "inAppShortcuts": {
+        "title": "应用内快捷键",
+        "commandPalette": "命令面板",
+        "newNote": "新建笔记",
+        "togglePreview": "切换预览",
+        "openSettings": "打开设置",
+        "focusMode": "专注模式"
+      },
+      "permissions": {
+        "title": "所需 macOS 权限",
+        "accessibilityAccess": "辅助功能访问",
+        "accessibilityAccessDescription": "全局快捷键（⌘⌃⌥⇧N, ⌘⌃⌥⇧H）需要系统级支持。",
+        "inputMonitoring": "输入监控",
+        "inputMonitoringDescription": "启用键盘事件检测以支持全局快捷键。",
+        "setupSteps": "设置步骤",
+        "step1": "点击下方「打开辅助功能设置」",
+        "step2": "在应用列表中找到「Blink」并启用",
+        "step3": "完全退出并重启 Blink",
+        "step4": "使用上方按钮测试快捷键",
+        "warning": "为什么需要这些权限？",
+        "warningDescription": "全局快捷键允许您从系统任何位置即时创建笔记 - 无论您是在浏览、编码还是在会议中。「Hyperkey」（⌘⌃⌥⇧）组合专门设计用于避免与现有快捷键冲突。",
+        "openAccessibilitySettings": "打开辅助功能设置 →"
+      },
+      "actions": {
+        "reRegisterShortcuts": "重新注册快捷键",
+        "registering": "注册中...",
+        "testEvent": "测试事件",
+        "testHover": "测试悬停",
+        "forceVisible": "强制显示",
+        "debugWebview": "调试 Webview"
+      }
+    },
+    "editor": {
+      "title": "编辑器",
+      "description": "自定义您的写作体验",
+      "lineHeight": "行高",
+      "paperStyle": {
+        "title": "纸张样式",
+        "description": "选择背景样式以增强写作体验",
+        "plain": "Plain",
+        "plainDescription": "干净背景",
+        "dots": "点状",
+        "dotsDescription": "Subtle 点状网格",
+        "lines": "线条",
+        "linesDescription": "笔记本线条",
+        "ruled": "横线",
+        "ruledDescription": "大学横线"
+      },
+      "editorFeatures": {
+        "title": "编辑器功能",
+        "focusMode": "专注模式",
+        "focusModeDescription": "无干扰写作",
+        "syntaxHighlighting": "语法高亮",
+        "syntaxHighlightingDescription": "代码语法颜色",
+        "typewriterMode": "打字机模式",
+        "typewriterModeDescription": "居中当前行",
+        "vimMode": "Vim 模式",
+        "vimModeDescription": "启用 Vim 键绑定",
+        "wordWrap": "自动换行",
+        "wordWrapDescription": "在编辑器中换行"
+      }
+    },
+    "advanced": {
+      "title": "高级",
+      "description": "高级应用设置",
+      "developerMode": "开发者模式",
+      "developerModeDescription": "启用开发者工具和功能",
+      "autoUpdate": "自动更新",
+      "autoUpdateDescription": "自动下载和安装更新"
+    }
+  },
+  "notes": {
+    "create": "新建笔记",
+    "delete": "删除笔记",
+    "edit": "编辑笔记",
+    "save": "保存笔记",
+    "search": "搜索笔记",
+    "noNotes": "暂无笔记",
+    "noNotesDescription": "点击「新建笔记」开始",
+    "wordCount": "字数",
+    "lastSaved": "最后保存",
+    "untitled": "无标题笔记",
+    "empty": "空笔记"
+  },
+  "titlebar": {
+    "title": "Blink",
+    "wordCount": "字数",
+    "lastSaved": "最后保存"
+  },
+  "sidebar": {
+    "notes": "笔记",
+    "settings": "设置"
+  },
+  "footer": {
+    "theme": "主题",
+    "language": "语言"
+  },
+  "commandPalette": {
+    "searchPlaceholder": "搜索笔记...",
+    "noResults": "未找到结果",
+    "createNote": "新建笔记",
+    "openSettings": "打开设置",
+    "togglePreview": "切换预览",
+    "toggleSidebar": "切换侧边栏"
+  },
+  "contextMenu": {
+    "open": "打开",
+    "detach": "分离窗口",
+    "delete": "删除",
+    "rename": "重命名",
+    "duplicate": "复制"
+  },
+  "dialog": {
+    "confirmDelete": "确认删除",
+    "confirmDeleteMessage": "确定要删除此笔记吗？此操作无法撤销。",
+    "confirmDeleteTitle": "删除笔记",
+    "unsavedChanges": "未保存的更改",
+    "unsavedChangesMessage": "您有未保存的更改。确定要离开吗？",
+    "saveChanges": "保存更改",
+    "discardChanges": "放弃更改"
+  },
+  "defaultTemplate": {
+    "title": "新笔记",
+    "content": "# 新笔记\n\n开始写作..."
+  }
+}
