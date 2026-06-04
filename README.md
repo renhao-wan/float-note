@@ -103,3 +103,12 @@ FloatNote 将笔记重新定义为 AI 原生的知识管理。笔记不再是静
 ## 许可证
 
 MIT
+
+---
+
+## 作者
+
+**Renhao Wan**
+- GitHub: [@renhao-wan](https://github.com/renhao-wan)
+- Email: 2653990378@qq.com
+- 项目地址: [https://github.com/renhao-wan/float-note](https://github.com/renhao-wan/float-note)

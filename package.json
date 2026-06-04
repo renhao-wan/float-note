@@ -2,6 +2,19 @@
   "name": "float-note",
   "private": true,
   "version": "0.1.0",
+  "author": {
+    "name": "Renhao Wan",
+    "email": "2653990378@qq.com",
+    "url": "https://github.com/renhao-wan/float-note"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/renhao-wan/float-note"
+  },
+  "bugs": {
+    "url": "https://github.com/renhao-wan/float-note/issues"
+  },
+  "homepage": "https://github.com/renhao-wan/float-note#readme",
   "type": "module",
   "scripts": {
     "dev": "vite",
