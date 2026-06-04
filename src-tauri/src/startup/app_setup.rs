@@ -27,8 +27,11 @@ pub fn setup_app(app: &mut App) -> BlinkResult<()> {
         }
     });
 
-    // Register global shortcuts
-    register_global_shortcuts(&app_handle)?;
+    // Register global shortcuts (non-fatal - app continues if shortcuts fail)
+    if let Err(e) = register_global_shortcuts(&app_handle) {
+        log_error!("STARTUP", "Failed to register some global shortcuts: {}", e);
+        // Continue running - shortcuts are not critical for app functionality
+    }
 
     // Apply config settings synchronously
     let config_state_ref = app.state::<crate::ConfigState>();

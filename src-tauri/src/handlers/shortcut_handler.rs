@@ -9,17 +9,25 @@ use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut,
 pub fn register_global_shortcuts(app: &AppHandle) -> BlinkResult<()> {
     log_info!("STARTUP", "🚀 Initializing global shortcuts...");
 
-    // Register Hyperkey+N for new note
-    register_new_note_shortcut(app)?;
+    // Register Hyperkey+N for new note (non-fatal)
+    if let Err(e) = register_new_note_shortcut(app) {
+        log_error!("STARTUP", "Failed to register Hyperkey+N: {}", e);
+    }
 
-    // Register Hyperkey+H for hover mode
-    register_hover_mode_shortcut(app)?;
+    // Register Hyperkey+H for hover mode (non-fatal)
+    if let Err(e) = register_hover_mode_shortcut(app) {
+        log_error!("STARTUP", "Failed to register Hyperkey+H: {}", e);
+    }
 
-    // Register Hyperkey+B for window chord mode
-    register_window_chord_shortcut(app)?;
+    // Register Hyperkey+B for window chord mode (non-fatal)
+    if let Err(e) = register_window_chord_shortcut(app) {
+        log_error!("STARTUP", "Failed to register Hyperkey+B: {}", e);
+    }
 
-    // Register Ctrl+Opt+Shift+1-9 for note deployment
-    register_note_deployment_shortcuts(app)?;
+    // Register Ctrl+Opt+Shift+1-9 for note deployment (non-fatal)
+    if let Err(e) = register_note_deployment_shortcuts(app) {
+        log_error!("STARTUP", "Failed to register note deployment shortcuts: {}", e);
+    }
 
     // Register test shortcut Cmd+Shift+N (optional)
     register_test_shortcut(app);
