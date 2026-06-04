@@ -62,7 +62,10 @@
       "description": "让 FloatNote 独一无二 • 字体、颜色和纹理",
       "navDescription": "主题、字体和视觉偏好",
       "themes": {
-        "title": "主题"
+        "title": "主题",
+        "clickToPreview": "点击预览主题",
+        "applyTheme": "应用主题",
+        "createCustom": "创建自定义主题"
       },
       "typography": {
         "title": "排版",

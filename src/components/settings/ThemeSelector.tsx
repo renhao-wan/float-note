@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { applyTheme, getAllThemes, getThemeById } from '../../types/theme';
 import { useConfigStore } from '../../stores/config-store';
 import { Palette } from '../../lib/lucide';
@@ -8,6 +9,7 @@ interface ThemeSelectorProps {
 }
 
 export function ThemeSelector({ onSave }: ThemeSelectorProps) {
+  const { t } = useTranslation();
   const { config, updateConfig } = useConfigStore();
   // Current saved theme in config
   const savedThemeId = config.appearance?.themeId || 'midnight-ink';
@@ -21,7 +23,6 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
     const themeToApply = previewThemeId || savedThemeId;
     const theme = getThemeById(themeToApply);
     if (theme) {
-      console.log('[THEME] Applying theme:', themeToApply, previewThemeId ? '(preview)' : '(saved)');
       applyTheme(theme);
     }
   }, [previewThemeId, savedThemeId]);
@@ -39,7 +40,6 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
   }, []);
 
   const handleThemeClick = (themeId: string) => {
-    console.log('[THEME] User clicked theme:', themeId);
     if (previewThemeId === themeId) {
       // Clicking same theme again cancels preview
       setPreviewThemeId(null);
@@ -48,11 +48,10 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
       setPreviewThemeId(themeId);
     }
   };
-  
+
   const handleSaveTheme = async () => {
     if (!previewThemeId) return;
-    
-    console.log('[THEME] Saving theme:', previewThemeId);
+
     try {
       await updateConfig({
         appearance: {
@@ -60,19 +59,17 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
           themeId: previewThemeId,
         }
       });
-      console.log('[THEME] Theme saved to config successfully');
       setPreviewThemeId(null); // Clear preview since it's now saved
       onSave?.(); // Notify parent component
     } catch (error) {
-      console.error('[THEME] Failed to save theme to config:', error);
+      console.error('[THEME] Failed to save theme:', error);
     }
   };
 
   const handleThemeHover = (themeId: string | null) => {
     setHoverThemeId(themeId);
-    // Visual preview only - no theme application
   };
-  
+
   // Get the display state for a theme
   const getThemeState = (themeId: string) => {
     if (savedThemeId === themeId && !previewThemeId) return 'selected';
@@ -81,26 +78,36 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
     return 'default';
   };
 
+  // Get themes sorted: dark themes first, then light themes
   const allThemes = getAllThemes();
-
+  const darkThemes = allThemes.filter(t => {
+    const bg = t.colors.background;
+    // Simple heuristic: if background starts with #0 or #1, it's dark
+    return bg.startsWith('#0') || bg.startsWith('#1') || bg.startsWith('#2');
+  });
+  const lightThemes = allThemes.filter(t => {
+    const bg = t.colors.background;
+    return !bg.startsWith('#0') && !bg.startsWith('#1') && !bg.startsWith('#2');
+  });
+  const sortedThemes = [...darkThemes, ...lightThemes];
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs text-muted-foreground/70">
-          Click to preview theme
+          {t('settings.appearance.themes.clickToPreview')}
         </p>
         {previewThemeId && (
           <button
             onClick={handleSaveTheme}
             className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
           >
-            Apply Theme
+            {t('settings.appearance.themes.applyTheme')}
           </button>
         )}
       </div>
       <div className="grid grid-cols-4 gap-1.5">
-        {allThemes.map((theme) => (
+        {sortedThemes.map((theme) => (
           <button
             key={theme.id}
             onClick={() => handleThemeClick(theme.id)}
@@ -108,7 +115,7 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
             onMouseLeave={() => handleThemeHover(null)}
             className={`group relative p-1.5 rounded transition-all text-left ${
               getThemeState(theme.id) === 'selected'
-                ? 'border-primary border-solid bg-primary/10' 
+                ? 'border-primary border-solid bg-primary/10'
                 : getThemeState(theme.id) === 'preview'
                 ? 'border-primary border-dashed bg-primary/5 border-2'
                 : getThemeState(theme.id) === 'hover'
@@ -118,40 +125,40 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
           >
             {/* Theme Preview */}
             <div className="flex flex-col items-center gap-1">
-              <div 
+              <div
                 className="w-10 h-10 rounded border border-border/50 relative overflow-hidden"
-                style={{ 
+                style={{
                   backgroundColor: theme.colors.background,
                   borderColor: theme.colors.border,
                 }}
               >
                 {/* Mini preview of theme */}
-                <div 
+                <div
                   className="absolute top-0.5 left-0.5 w-2 h-0.5 rounded-full"
                   style={{ backgroundColor: theme.colors.primary }}
                 />
-                <div 
+                <div
                   className="absolute top-1.5 left-0.5 right-0.5 h-0.5 rounded-full opacity-50"
                   style={{ backgroundColor: theme.colors.foreground }}
                 />
-                <div 
+                <div
                   className="absolute top-2.5 left-0.5 right-1 h-0.5 rounded-full opacity-30"
                   style={{ backgroundColor: theme.colors.foreground }}
                 />
-                <div 
+                <div
                   className="absolute bottom-0.5 left-0.5 w-2 h-2 rounded"
                   style={{ backgroundColor: theme.colors.card }}
                 />
                 {theme.backgroundTexture && theme.backgroundTexture.type !== 'none' && (
                   <div className="absolute top-0.5 right-0.5">
-                    <div 
+                    <div
                       className={`w-1 h-1 rounded-full opacity-50`}
                       style={{ backgroundColor: theme.colors.accent }}
                     />
                   </div>
                 )}
               </div>
-              
+
               <h4 className="text-[10px] font-medium text-foreground/80 truncate px-1">
                 {theme.name}
               </h4>
@@ -171,7 +178,7 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
           </div>
           <div>
             <h4 className="text-xs font-medium text-muted-foreground/70 group-hover:text-muted-foreground/90">
-              Create Custom Theme
+              {t('settings.appearance.themes.createCustom')}
             </h4>
           </div>
         </div>

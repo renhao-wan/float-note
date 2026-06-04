@@ -62,7 +62,10 @@
       "description": "Make FloatNote uniquely yours • fonts, colors & textures",
       "navDescription": "Theme, fonts, and visual preferences",
       "themes": {
-        "title": "Themes"
+        "title": "Themes",
+        "clickToPreview": "Click to preview theme",
+        "applyTheme": "Apply Theme",
+        "createCustom": "Create Custom Theme"
       },
       "typography": {
         "title": "Typography",
