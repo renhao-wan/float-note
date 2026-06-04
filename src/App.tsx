@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   DetachedNoteWindow, 
   DragGhost 
@@ -47,11 +48,19 @@ import { getCenterPosition, getGridPosition } from './utils/window-positioning';
 
 
 function App() {
+  const { t, i18n } = useTranslation();
   const { config, updateConfig } = useConfigStore();
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isPreviewMode, setIsPreviewMode] = useState(false); // Start in edit mode
   const [currentView, setCurrentView] = useState<'notes' | 'settings'>('notes');
   const [selectedSettingsSection, setSelectedSettingsSection] = useState<'general' | 'appearance' | 'shortcuts' | 'editor' | 'advanced'>('appearance');
+
+  // 同步语言设置
+  useEffect(() => {
+    if (config.language && i18n.language !== config.language) {
+      i18n.changeLanguage(config.language);
+    }
+  }, [config.language, i18n]);
 
   // Window detection from hook
   const { isDetachedWindow, detachedNoteId, isDragGhost, dragGhostTitle } = useWindowManager();
@@ -275,8 +284,8 @@ function App() {
       }
     >
       <div className="h-full grid grid-rows-[auto_1fr_auto]">
-        <CustomTitleBar 
-          title="Blink"
+        <CustomTitleBar
+          title={t('titlebar.title')}
           isMainWindow={true}
           isShaded={isShaded}
           stats={{
