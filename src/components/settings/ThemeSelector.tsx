@@ -160,7 +160,7 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
               </div>
 
               <h4 className="text-[10px] font-medium text-foreground/80 truncate px-1">
-                {theme.name}
+                {t(`settings.appearance.themes.${theme.id}`, theme.name)}
               </h4>
               {getThemeState(theme.id) === 'selected' && (
                 <div className="w-1.5 h-1.5 bg-primary rounded-full mx-auto"></div>

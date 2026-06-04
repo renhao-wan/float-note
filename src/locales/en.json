@@ -63,9 +63,24 @@
       "navDescription": "Theme, fonts, and visual preferences",
       "themes": {
         "title": "Themes",
-        "clickToPreview": "Click to preview theme",
-        "applyTheme": "Apply Theme",
-        "createCustom": "Create Custom Theme"
+        "clickToPreview": "Preview",
+        "applyTheme": "Apply",
+        "createCustom": "Custom Theme",
+        "midnight-ink": "Obsidian",
+        "dark-forest": "Forest",
+        "cosmic-dusk": "Dusk",
+        "morning-mist": "Mist",
+        "warm-parchment": "Parchment",
+        "pure-mono": "Mono",
+        "inverse-void": "Inverse",
+        "terminal-green": "Terminal",
+        "cyberpunk-neon": "Cyber",
+        "executive-suite": "Suite",
+        "pastel-dream": "Pastel",
+        "zen-garden": "Zen",
+        "high-contrast-dark": "Contrast",
+        "autumn-harvest": "Autumn",
+        "arctic-frost": "Arctic"
       },
       "typography": {
         "title": "Typography",

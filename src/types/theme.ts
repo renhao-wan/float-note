@@ -55,7 +55,7 @@ export const themes: Record<string, ThemePreset> = {
     id: 'midnight-ink',
     preset: true,
     name: 'Obsidian Observatory',
-    description: 'Warm amber candlelight on dark volcanic glass',
+    description: '琥珀暖光 · 深色',
     fonts: {
       editor: 'JetBrains Mono, monospace',
       preview: 'Source Serif 4, Georgia, serif',
@@ -87,7 +87,7 @@ export const themes: Record<string, ThemePreset> = {
     id: 'dark-forest',
     preset: true,
     name: 'Dark Forest',
-    description: 'Deep greens inspired by dense forests',
+    description: '森林绿意 · 深色',
     fonts: {
       editor: 'JetBrains Mono, monospace',
       preview: 'Source Serif 4, Georgia, serif',

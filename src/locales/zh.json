@@ -63,9 +63,24 @@
       "navDescription": "主题、字体和视觉偏好",
       "themes": {
         "title": "主题",
-        "clickToPreview": "点击预览主题",
-        "applyTheme": "应用主题",
-        "createCustom": "创建自定义主题"
+        "clickToPreview": "点击预览",
+        "applyTheme": "应用",
+        "createCustom": "自定义主题",
+        "midnight-ink": "黑曜石",
+        "dark-forest": "暗夜森林",
+        "cosmic-dusk": "宇宙黄昏",
+        "morning-mist": "晨雾",
+        "warm-parchment": "羊皮纸",
+        "pure-mono": "纯黑白",
+        "inverse-void": "反色",
+        "terminal-green": "终端绿",
+        "cyberpunk-neon": "赛博朋克",
+        "executive-suite": "商务",
+        "pastel-dream": "粉彩",
+        "zen-garden": "禅意",
+        "high-contrast-dark": "高对比",
+        "autumn-harvest": "秋日",
+        "arctic-frost": "极地"
       },
       "typography": {
         "title": "排版",
