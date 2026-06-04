@@ -100,7 +100,7 @@ impl WindowService {
             &window_label,
             tauri::WebviewUrl::App(webview_url.parse().unwrap()),
         )
-        .title("Blink Note")
+        .title("FloatNote Note")
         .inner_size(window_state.size.0, window_state.size.1)
         .position(
             window_state.custom_position.unwrap_or((100.0, 100.0)).0,

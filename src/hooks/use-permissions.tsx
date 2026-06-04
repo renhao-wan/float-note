@@ -16,7 +16,7 @@ export function usePermissions(): UsePermissionsReturn {
 
   // Request permissions with a delay to let the app settle
   const requestPermissions = useCallback(() => {
-    console.log('[BLINK] Requesting permissions...');
+    console.log('[FLOATNOTE] Requesting permissions...');
     
     // Show permission prompt after a short delay to let the app settle
     setTimeout(() => {
@@ -33,9 +33,9 @@ export function usePermissions(): UsePermissionsReturn {
   const openSystemSettings = useCallback(async () => {
     try {
       await invoke('open_system_settings');
-      console.log('[BLINK] Opened system settings');
+      console.log('[FLOATNOTE] Opened system settings');
     } catch (error) {
-      console.error('[BLINK] Failed to open system settings:', error);
+      console.error('[FLOATNOTE] Failed to open system settings:', error);
     }
   }, []);
 

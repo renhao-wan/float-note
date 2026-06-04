@@ -1,8 +1,8 @@
-# Blink Grid System Documentation
+# FloatNote Grid System Documentation
 
 ## Overview
 
-This document defines the comprehensive grid system for consistent spacing and positioning throughout the Blink application. The goal is to ensure visual harmony across all views and components.
+This document defines the comprehensive grid system for consistent spacing and positioning throughout the FloatNote application. The goal is to ensure visual harmony across all views and components.
 
 ## Base Unit System
 

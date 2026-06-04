@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Blink Development Cleanup Script
-# This script safely kills only Blink-related processes using multiple identification methods
+# FloatNote Development Cleanup Script
+# This script safely kills only FloatNote-related processes using multiple identification methods
 
-echo "🧹 Cleaning up Blink development processes..."
+echo "🧹 Cleaning up FloatNote development processes..."
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
@@ -85,17 +85,17 @@ if [ -d "$PIDS_DIR" ]; then
 fi
 
 # Kill processes by environment variable
-echo_color $BLUE "🔍 Looking for Blink processes by environment..."
-kill_by_pattern "BLINK_PROCESS_NAME=" "Blink named processes"
+echo_color $BLUE "🔍 Looking for FloatNote processes by environment..."
+kill_by_pattern "FLOATNOTE_PROCESS_NAME=" "FloatNote named processes"
 
-# Kill Blink-specific processes by binary name
-kill_by_pattern "target/debug/blink" "Blink debug binary"
-kill_by_pattern "tauri.*blink" "Tauri Blink processes"
+# Kill FloatNote-specific processes by binary name
+kill_by_pattern "target/debug/float-note" "FloatNote debug binary"
+kill_by_pattern "tauri.*float-note" "Tauri FloatNote processes"
 
 # Kill Vite dev server only for this project
 cd "$PROJECT_DIR" 2>/dev/null
-if [ -f "package.json" ] && grep -q '"name": "blink"' package.json; then
-    echo_color $BLUE "🔍 Looking for Vite dev server for Blink project..."
+if [ -f "package.json" ] && grep -q '"name": "float-note"' package.json; then
+    echo_color $BLUE "🔍 Looking for Vite dev server for FloatNote project..."
     vite_pid=$(lsof -ti:5173 2>/dev/null | head -1)
     if [ -n "$vite_pid" ]; then
         # Verify it's actually a node/vite process and in our project directory

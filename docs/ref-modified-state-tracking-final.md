@@ -60,7 +60,7 @@ pub struct ModifiedStateTracker {
 - Accurate save status indicators
 
 ### Future Possibilities
-- External change detection (when files are edited outside Blink)
+- External change detection (when files are edited outside FloatNote)
 - Conflict resolution UI
 - Sync status indicators
 - Undo/redo based on content states

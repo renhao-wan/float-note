@@ -28,33 +28,33 @@ export function useGlobalEventListeners({
 
   useEffect(() => {
     const setupListeners = async () => {
-      console.log('[BLINK] [FRONTEND] Setting up Tauri event listeners...');
+      console.log('[FLOATNOTE] [FRONTEND] Setting up Tauri event listeners...');
       const unlisteners: (() => void)[] = [];
       
       try {
         // Listen for new note event
         const unlistenNewNote = await listen('menu-new-note', async (event) => {
-          console.log('[BLINK] [FRONTEND] 🔥 Received menu-new-note event!', event);
+          console.log('[FLOATNOTE] [FRONTEND] 🔥 Received menu-new-note event!', event);
           onCreateNewNoteRef.current();
         });
         unlisteners.push(unlistenNewNote);
         
         // Listen for chord window mode event
-        console.log('[BLINK] [FRONTEND] Setting up chord-window-mode listener...');
+        console.log('[FLOATNOTE] [FRONTEND] Setting up chord-window-mode listener...');
         const unlistenChordWindow = await listen('chord-window-mode', async (event) => {
-          console.log('[BLINK] [FRONTEND] 🔥🔥🔥 RECEIVED CHORD-WINDOW-MODE EVENT! 🔥🔥🔥', event);
+          console.log('[FLOATNOTE] [FRONTEND] 🔥🔥🔥 RECEIVED CHORD-WINDOW-MODE EVENT! 🔥🔥🔥', event);
           console.log('[CHORD] Starting window mode from global shortcut');
           onStartWindowModeRef.current();
         });
         unlisteners.push(unlistenChordWindow);
-        console.log('[BLINK] [FRONTEND] ✅ chord-window-mode listener set up successfully');
+        console.log('[FLOATNOTE] [FRONTEND] ✅ chord-window-mode listener set up successfully');
         
         // Listen for direct note deployment events
-        console.log('[BLINK] [FRONTEND] Setting up deploy-note-window listener...');
+        console.log('[FLOATNOTE] [FRONTEND] Setting up deploy-note-window listener...');
         const unlistenDeployWindow = await listen('deploy-note-window', async (event) => {
           const noteIndex = event.payload as number;
-          console.log('[BLINK] [FRONTEND] 🚀🚀🚀 DEPLOY NOTE WINDOW EVENT RECEIVED! 🚀🚀🚀');
-          console.log('[BLINK] [FRONTEND] Event details:', { event, noteIndex, payload: event.payload });
+          console.log('[FLOATNOTE] [FRONTEND] 🚀🚀🚀 DEPLOY NOTE WINDOW EVENT RECEIVED! 🚀🚀🚀');
+          console.log('[FLOATNOTE] [FRONTEND] Event details:', { event, noteIndex, payload: event.payload });
           
           // Retry mechanism for when notes haven't loaded yet
           const attemptDeploy = async (retries = 3) => {
@@ -123,32 +123,32 @@ export function useGlobalEventListeners({
           await attemptDeploy();
         });
         unlisteners.push(unlistenDeployWindow);
-        console.log('[BLINK] [FRONTEND] ✅ deploy-note-window listener set up successfully');
+        console.log('[FLOATNOTE] [FRONTEND] ✅ deploy-note-window listener set up successfully');
         
         // Listen for window closed events
         const unlistenWindowClosed = await listen('window-closed', async (event) => {
-          console.log('[BLINK] Window closed event received for note:', event.payload);
+          console.log('[FLOATNOTE] Window closed event received for note:', event.payload);
           // Window positions store will be updated automatically when window closes
         });
         unlisteners.push(unlistenWindowClosed);
         
         // Listen for window created events
         const unlistenWindowCreated = await listen('window-created', async (event) => {
-          console.log('[BLINK] Window created event received for note:', event.payload);
+          console.log('[FLOATNOTE] Window created event received for note:', event.payload);
           // For now, just log - the frontend store should be updated directly when creating windows
         });
         unlisteners.push(unlistenWindowCreated);
         
         // Listen for window destroyed events
         const unlistenWindowDestroyed = await listen('window-destroyed', async (event) => {
-          console.log('[BLINK] Window destroyed event received for note:', event.payload);
+          console.log('[FLOATNOTE] Window destroyed event received for note:', event.payload);
           
           // Clean up backend state
           try {
             await invoke('cleanup_destroyed_window', { noteId: event.payload as string });
-            console.log('[BLINK] Backend state cleaned up for destroyed window');
+            console.log('[FLOATNOTE] Backend state cleaned up for destroyed window');
           } catch (error) {
-            console.error('[BLINK] Failed to cleanup backend state:', error);
+            console.error('[FLOATNOTE] Failed to cleanup backend state:', error);
           }
           
           // Window positions store will be updated automatically when window is destroyed
@@ -157,24 +157,24 @@ export function useGlobalEventListeners({
         
         // Listen for hybrid window destroyed events
         const unlistenHybridDestroyed = await listen('hybrid-window-destroyed', async (event) => {
-          console.log('[BLINK] Hybrid window destroyed event received:', event.payload);
+          console.log('[FLOATNOTE] Hybrid window destroyed event received:', event.payload);
           // Window positions store will be updated automatically when hybrid window is destroyed
         });
         unlisteners.push(unlistenHybridDestroyed);
         
-        console.log('[BLINK] [FRONTEND] ✅ All listeners setup complete');
+        console.log('[FLOATNOTE] [FRONTEND] ✅ All listeners setup complete');
         
         return () => {
           unlisteners.forEach(fn => {
             try {
               fn();
             } catch (error) {
-              console.warn('[BLINK] Failed to unlisten event:', error);
+              console.warn('[FLOATNOTE] Failed to unlisten event:', error);
             }
           });
         };
       } catch (error) {
-        console.error('[BLINK] [FRONTEND] ❌ Failed to setup listeners:', error);
+        console.error('[FLOATNOTE] [FRONTEND] ❌ Failed to setup listeners:', error);
         return () => {};
       }
     };

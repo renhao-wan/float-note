@@ -25,12 +25,12 @@ const sfProText = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Blink — Spatial Note-Taking App",
+  title: "FloatNote — Spatial Note-Taking App",
   description: "The next generation of note-taking. Create beautiful floating windows that stay exactly where you need them.",
   keywords: "note-taking, floating windows, productivity, spatial notes, desktop app",
-  authors: [{ name: "Blink" }],
+  authors: [{ name: "FloatNote" }],
   openGraph: {
-    title: "Blink — Spatial Note-Taking App",
+    title: "FloatNote — Spatial Note-Taking App",
     description: "The next generation of note-taking. Create beautiful floating windows that stay exactly where you need them.",
     type: "website",
   },

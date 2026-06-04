@@ -202,17 +202,17 @@ export function CodeMirrorEditor({
                   
                   if (vimState.insertMode) {
                     editorDom.classList.add('cm-vim-insert-mode');
-                    console.log('[BLINK] Vim mode: INSERT');
+                    console.log('[FLOATNOTE] Vim mode: INSERT');
                   } else if (vimState.visualMode) {
                     editorDom.classList.add('cm-vim-visual-mode');
                     if (vimState.visualLine) {
                       editorDom.classList.add('cm-vim-visual-line');
                     }
-                    console.log('[BLINK] Vim mode: VISUAL', vimState.visualLine ? '(LINE)' : '');
+                    console.log('[FLOATNOTE] Vim mode: VISUAL', vimState.visualLine ? '(LINE)' : '');
                     
                     // Debug: Check selection state
                     const selection = update.view.state.selection;
-                    console.log('[BLINK] Selection:', {
+                    console.log('[FLOATNOTE] Selection:', {
                       main: selection.main,
                       from: selection.main.from,
                       to: selection.main.to,
@@ -224,7 +224,7 @@ export function CodeMirrorEditor({
                     if (cm && cm.state.vim) {
                       const vimSel = cm.state.vim.sel;
                       if (vimSel && vimSel.anchor && vimSel.head) {
-                        console.log('[BLINK] Vim selection:', vimSel);
+                        console.log('[FLOATNOTE] Vim selection:', vimSel);
                         
                         // Calculate the actual selection positions
                         const from = Math.min(vimSel.anchor.ch, vimSel.head.ch);
@@ -238,7 +238,7 @@ export function CodeMirrorEditor({
                         
                         // Create a selection if it doesn't match
                         if (selection.main.from !== fromPos || selection.main.to !== toPos) {
-                          console.log('[BLINK] Creating selection:', { fromPos, toPos });
+                          console.log('[FLOATNOTE] Creating selection:', { fromPos, toPos });
                           update.view.dispatch({
                             selection: { anchor: fromPos, head: toPos }
                           });
@@ -247,7 +247,7 @@ export function CodeMirrorEditor({
                     }
                   } else {
                     editorDom.classList.add('cm-vim-normal-mode');
-                    console.log('[BLINK] Vim mode: NORMAL');
+                    console.log('[FLOATNOTE] Vim mode: NORMAL');
                   }
                 }
               }
@@ -293,13 +293,13 @@ export function CodeMirrorEditor({
     // Define vim :w command for saving
     if (vimMode && onSave) {
       Vim.defineEx('write', 'w', function() {
-        console.log('[BLINK] Vim :w command triggered');
+        console.log('[FLOATNOTE] Vim :w command triggered');
         onSave();
       });
       
       // Also define :wq for save and quit (just save for now)
       Vim.defineEx('wq', 'wq', function() {
-        console.log('[BLINK] Vim :wq command triggered');
+        console.log('[FLOATNOTE] Vim :wq command triggered');
         onSave();
         // Note: We don't actually quit since we're in a note editor
       });
@@ -318,10 +318,10 @@ export function CodeMirrorEditor({
   // Set up paste listener separately so it persists
   useEffect(() => {
     const unlistenPromise = listen('menu-paste', async () => {
-      console.log('[BLINK] Menu paste event received in editor');
+      console.log('[FLOATNOTE] Menu paste event received in editor');
       try {
         const text = await readText();
-        console.log('[BLINK] Clipboard text:', text?.substring(0, 50) + '...');
+        console.log('[FLOATNOTE] Clipboard text:', text?.substring(0, 50) + '...');
         
         if (text && viewRef.current) {
           const view = viewRef.current;
@@ -346,12 +346,12 @@ export function CodeMirrorEditor({
               }
             });
           }
-          console.log('[BLINK] Text pasted successfully');
+          console.log('[FLOATNOTE] Text pasted successfully');
         } else {
-          console.error('[BLINK] No text or view available');
+          console.error('[FLOATNOTE] No text or view available');
         }
       } catch (err) {
-        console.error('[BLINK] Failed to paste:', err);
+        console.error('[FLOATNOTE] Failed to paste:', err);
       }
     });
 

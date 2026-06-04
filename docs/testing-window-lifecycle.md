@@ -1,6 +1,6 @@
 # Testing Window Lifecycle Tracking
 
-This document explains how to test the window lifecycle event tracking implementation in Blink.
+This document explains how to test the window lifecycle event tracking implementation in FloatNote.
 
 ## What's Been Implemented
 
@@ -55,8 +55,8 @@ await window.__TAURI__.invoke('get_window_state_truth')
 ## Expected Behavior
 
 - When a window is closed, you should see in the console:
-  - `[BLINK] Window destroyed event received for note: <note-id>`
-  - `[BLINK] Windows after destroy cleanup: [...]`
+  - `[FLOATNOTE] Window destroyed event received for note: <note-id>`
+  - `[FLOATNOTE] Windows after destroy cleanup: [...]`
 
 - The Window State Truth output should show:
   - Before closing: Window exists in both Tauri and backend state

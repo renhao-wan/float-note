@@ -1,8 +1,8 @@
-# Blink 国际化（i18n）实现计划
+# FloatNote 国际化（i18n）实现计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 为 Blink 应用添加国际化支持，支持中文和英文界面，默认中文
+**Goal:** 为 FloatNote 应用添加国际化支持，支持中文和英文界面，默认中文
 
 **Architecture:** 使用 react-i18next 框架，配合 JSON 翻译文件，通过 AppConfig 持久化语言偏好
 

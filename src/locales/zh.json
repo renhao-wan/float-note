@@ -59,7 +59,7 @@
     },
     "appearance": {
       "title": "外观",
-      "description": "让 Blink 独一无二 • 字体、颜色和纹理",
+      "description": "让 FloatNote 独一无二 • 字体、颜色和纹理",
       "navDescription": "主题、字体和视觉偏好",
       "themes": {
         "title": "主题"
@@ -116,8 +116,8 @@
         "inputMonitoringDescription": "启用键盘事件检测以支持全局快捷键。",
         "setupSteps": "设置步骤",
         "step1": "点击下方「打开辅助功能设置」",
-        "step2": "在应用列表中找到「Blink」并启用",
-        "step3": "完全退出并重启 Blink",
+        "step2": "在应用列表中找到「FloatNote」并启用",
+        "step3": "完全退出并重启 FloatNote",
         "step4": "使用上方按钮测试快捷键",
         "warning": "为什么需要这些权限？",
         "warningDescription": "全局快捷键允许您从系统任何位置即时创建笔记 - 无论您是在浏览、编码还是在会议中。「Hyperkey」（⌘⌃⌥⇧）组合专门设计用于避免与现有快捷键冲突。",
@@ -189,7 +189,7 @@
     "empty": "空笔记"
   },
   "titlebar": {
-    "title": "Blink",
+    "title": "FloatNote",
     "wordCount": "字数",
     "lastSaved": "最后保存"
   },
@@ -234,14 +234,14 @@
   "permissions": {
     "enableGlobalShortcuts": "启用全局快捷键",
     "accessibilityRequired": "需要辅助功能权限",
-    "description": "Blink 需要辅助功能访问权限来启用全局快捷键，如 ⌘⌃⌥⇧N，以便在系统任何位置创建笔记。",
+    "description": "FloatNote 需要辅助功能访问权限来启用全局快捷键，如 ⌘⌃⌥⇧N，以便在系统任何位置创建笔记。",
     "setupSteps": "设置步骤",
     "step1": "点击下方「打开设置」",
-    "step2": "在辅助功能应用列表中找到「Blink」",
+    "step2": "在辅助功能应用列表中找到「FloatNote」",
     "step3": "切换开关以启用访问",
-    "step4": "重启 Blink 以激活快捷键",
+    "step4": "重启 FloatNote 以激活快捷键",
     "privacyNote": "隐私说明：",
-    "privacyDescription": "Blink 仅监控全局快捷键的特定键盘组合。不会访问或存储其他数据。",
+    "privacyDescription": "FloatNote 仅监控全局快捷键的特定键盘组合。不会访问或存储其他数据。",
     "openSettings": "打开设置",
     "later": "稍后"
   },

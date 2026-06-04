@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Blink Development Helper Script
+# FloatNote Development Helper Script
 # Safely manages development lifecycle
 
 set -e
@@ -60,7 +60,7 @@ cmd_clean() {
 }
 
 cmd_start() {
-    echo_color $BLUE "🚀 Starting Blink development server..."
+    echo_color $BLUE "🚀 Starting FloatNote development server..."
     
     # Clean up first
     cmd_clean
@@ -77,7 +77,7 @@ cmd_start() {
 }
 
 cmd_restart() {
-    echo_color $BLUE "🔄 Restarting Blink development server..."
+    echo_color $BLUE "🔄 Restarting FloatNote development server..."
     cmd_clean
     sleep 2
     cmd_start
@@ -93,15 +93,15 @@ cmd_status() {
         echo_color $RED "FREE"
     fi
     
-    echo -n "Blink binary: "
-    if process_running "target/debug/blink"; then
+    echo -n "FloatNote binary: "
+    if process_running "target/debug/float-note"; then
         echo_color $GREEN "RUNNING"
     else
         echo_color $RED "NOT RUNNING"
     fi
     
     echo -n "Tauri processes: "
-    if process_running "tauri.*blink"; then
+    if process_running "tauri.*float-note"; then
         echo_color $GREEN "RUNNING"
     else
         echo_color $RED "NOT RUNNING"
@@ -109,10 +109,10 @@ cmd_status() {
 }
 
 cmd_logs() {
-    echo_color $BLUE "📜 Showing recent Blink logs..."
+    echo_color $BLUE "📜 Showing recent FloatNote logs..."
     # Look for common log locations
-    if [ -f "/tmp/blink.log" ]; then
-        tail -f "/tmp/blink.log"
+    if [ -f "/tmp/float-note.log" ]; then
+        tail -f "/tmp/float-note.log"
     else
         echo_color $YELLOW "No log file found. Logs should appear in terminal during development."
     fi
@@ -136,7 +136,7 @@ case "${1:-start}" in
         cmd_logs
         ;;
     "help"|"-h"|"--help")
-        echo_color $BLUE "Blink Development Helper"
+        echo_color $BLUE "FloatNote Development Helper"
         echo ""
         echo "Usage: $0 [command]"
         echo ""

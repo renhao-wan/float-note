@@ -1,6 +1,6 @@
-# Blink Landing Page
+# FloatNote Landing Page
 
-A beautiful, modern landing page for Blink - the AI-native spatial note-taking application.
+A beautiful, modern landing page for FloatNote - the AI-native spatial note-taking application.
 
 ## Features
 
@@ -13,7 +13,7 @@ A beautiful, modern landing page for Blink - the AI-native spatial note-taking a
 ## Sections
 
 - **Hero**: Eye-catching intro with animated visuals
-- **Features**: Comprehensive showcase of Blink's capabilities
+- **Features**: Comprehensive showcase of FloatNote's capabilities
 - **Demo**: Preview section (ready for video integration)
 - **Technical Highlights**: Developer-focused content
 - **Download**: Direct links to GitHub releases

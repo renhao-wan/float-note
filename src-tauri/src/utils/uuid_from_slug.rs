@@ -1,13 +1,13 @@
 use uuid::{Uuid, uuid};
 
-// Define a namespace UUID for Blink notes
+// Define a namespace UUID for FloatNote notes
 // This is a random UUID v4 that we use as our namespace
-const BLINK_NAMESPACE: Uuid = uuid!("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+const FLOATNOTE_NAMESPACE: Uuid = uuid!("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
 
 /// Generate a deterministic UUID v5 from a slug
 /// The same slug will always produce the same UUID
 pub fn uuid_from_slug(slug: &str) -> String {
-    Uuid::new_v5(&BLINK_NAMESPACE, slug.as_bytes()).to_string()
+    Uuid::new_v5(&FLOATNOTE_NAMESPACE, slug.as_bytes()).to_string()
 }
 
 /// Extract the slug from a UUID if it was generated from one

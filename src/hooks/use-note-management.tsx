@@ -50,7 +50,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   // Real-time sync for selected note
   useNoteSync(selectedNoteId, (updatedNote) => {
-    console.log('[BLINK] [SYNC] Received note update:', {
+    console.log('[FLOATNOTE] [SYNC] Received note update:', {
       selectedNoteId,
       updatedNoteId: updatedNote?.id,
       updatedNoteTitle: updatedNote?.title,
@@ -58,10 +58,10 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     });
     
     if (updatedNote && selectedNoteId === updatedNote.id) {
-      console.log('[BLINK] [SYNC] Updating current content for note:', selectedNoteId);
+      console.log('[FLOATNOTE] [SYNC] Updating current content for note:', selectedNoteId);
       setCurrentContent(updatedNote.content);
     } else {
-      console.log('[BLINK] [SYNC] Ignoring update - note ID mismatch or no update');
+      console.log('[FLOATNOTE] [SYNC] Ignoring update - note ID mismatch or no update');
     }
   });
 
@@ -74,7 +74,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       // Try to load notes from Tauri - if this fails, we'll fall back to demo data
       const loadedNotes = await invoke<Note[]>('get_notes');
       const loadTime = performance.now() - startTime;
-      console.log(`[BLINK] Notes loaded in ${loadTime.toFixed(2)}ms (${loadedNotes.length} notes)`);
+      console.log(`[FLOATNOTE] Notes loaded in ${loadTime.toFixed(2)}ms (${loadedNotes.length} notes)`);
       setNotes(loadedNotes);
       
       // If we have notes but no selected note, select the first one by position
@@ -99,13 +99,13 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         setCurrentContent(noteWithLowestPosition.content);
       }
     } catch (error) {
-      console.warn('[BLINK] Failed to load notes from Tauri, falling back to demo data:', error);
+      console.warn('[FLOATNOTE] Failed to load notes from Tauri, falling back to demo data:', error);
       // Demo data for browser context or when Tauri fails
       const demoNotes: Note[] = [
         { 
           id: 'demo-1', 
-          title: 'Welcome to Blink', 
-          content: '# Welcome to Blink\n\nThis is a demo note running in browser mode.',
+          title: 'Welcome to FloatNote',
+          content: '# Welcome to FloatNote\n\nThis is a demo note running in browser mode.',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           tags: []
@@ -131,7 +131,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   // Create new note
   const createNewNote = useCallback(async () => {
-    console.log('[BLINK] Creating new note...');
+    console.log('[FLOATNOTE] Creating new note...');
     try {
       const newNote = await invoke<Note>('create_note', {
         request: {
@@ -141,7 +141,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         }
       });
       
-      console.log('[BLINK] Created note:', newNote.id);
+      console.log('[FLOATNOTE] Created note:', newNote.id);
       // Add the new note to the list - backend already handles positioning
       setNotes(prev => {
         const updated = [...prev, newNote];
@@ -159,13 +159,13 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       setSelectedNoteId(newNote.id);
       setCurrentContent('');
     } catch (error) {
-      console.error('[BLINK] Failed to create note:', error);
+      console.error('[FLOATNOTE] Failed to create note:', error);
     }
   }, []);
 
   // Select a note
   const selectNote = useCallback((noteId: string) => {
-    console.log('[BLINK] [SELECT] Selecting note:', {
+    console.log('[FLOATNOTE] [SELECT] Selecting note:', {
       noteId,
       previousSelectedId: selectedNoteId,
       notesCount: notes.length
@@ -174,7 +174,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     // DEBUG: Log the note at position 0 before selection
     const noteAtPosition0 = notes.find(n => n.position === 0);
     const noteAtIndex0 = notes[0];
-    console.log('[BLINK] [DEBUG] Before selection:', {
+    console.log('[FLOATNOTE] [DEBUG] Before selection:', {
       noteAtPosition0: noteAtPosition0 ? { id: noteAtPosition0.id, title: noteAtPosition0.title } : 'none',
       noteAtIndex0: noteAtIndex0 ? { id: noteAtIndex0.id, title: noteAtIndex0.title, position: noteAtIndex0.position } : 'none'
     });
@@ -187,7 +187,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     
     const note = notes.find(n => n.id === noteId);
     if (note) {
-      console.log('[BLINK] [SELECT] Found note:', {
+      console.log('[FLOATNOTE] [SELECT] Found note:', {
         noteId: note.id,
         title: note.title,
         contentLength: note.content.length,
@@ -199,12 +199,12 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       // DEBUG: Log the note at position 0 after selection
       const noteAtPosition0After = notes.find(n => n.position === 0);
       const noteAtIndex0After = notes[0];
-      console.log('[BLINK] [DEBUG] After selection:', {
+      console.log('[FLOATNOTE] [DEBUG] After selection:', {
         noteAtPosition0: noteAtPosition0After ? { id: noteAtPosition0After.id, title: noteAtPosition0After.title } : 'none',
         noteAtIndex0: noteAtIndex0After ? { id: noteAtIndex0After.id, title: noteAtIndex0After.title, position: noteAtIndex0After.position } : 'none'
       });
     } else {
-      console.error('[BLINK] [SELECT] Note not found:', noteId);
+      console.error('[FLOATNOTE] [SELECT] Note not found:', noteId);
     }
   }, [notes, selectedNoteId]);
 
@@ -235,7 +235,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
     // Set new timeout for saving to backend (debounced)
     saveTimeoutRef.current = setTimeout(async () => {
-      console.log('[BLINK] Saving note content to backend (debounced):', selectedNoteId);
+      console.log('[FLOATNOTE] Saving note content to backend (debounced):', selectedNoteId);
       
       // Notify save is starting
       options?.onSaveStart?.();
@@ -251,7 +251,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
           }
         });
 
-        console.log('[BLINK] Note saved successfully:', updatedNote.id);
+        console.log('[FLOATNOTE] Note saved successfully:', updatedNote.id);
         
         // Notify save completed
         options?.onSaveComplete?.();
@@ -260,7 +260,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         noteSyncService.noteUpdated(updatedNote);
         
       } catch (error) {
-        console.error('[BLINK] Failed to save note:', error);
+        console.error('[FLOATNOTE] Failed to save note:', error);
         options?.onSaveError?.(error);
         // Note: We don't revert local changes here since the user may have continued typing
       }
@@ -277,7 +277,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       saveTimeoutRef.current = null;
     }
     
-    console.log('[BLINK] Saving note immediately:', selectedNoteId);
+    console.log('[FLOATNOTE] Saving note immediately:', selectedNoteId);
     
     // Notify save is starting
     options?.onSaveStart?.();
@@ -295,7 +295,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         }
       });
 
-      console.log('[BLINK] Note saved immediately:', updatedNote.id);
+      console.log('[FLOATNOTE] Note saved immediately:', updatedNote.id);
       
       // Update local state to reflect saved state
       setNotes(prev => {
@@ -315,14 +315,14 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       noteSyncService.noteUpdated(updatedNote);
       
     } catch (error) {
-      console.error('[BLINK] Failed to save note immediately:', error);
+      console.error('[FLOATNOTE] Failed to save note immediately:', error);
       options?.onSaveError?.(error);
     }
   }, [selectedNoteId, currentContent, options]);
 
   // Delete a note
   const deleteNote = useCallback(async (noteId: string) => {
-    console.log('[BLINK] Deleting note:', noteId);
+    console.log('[FLOATNOTE] Deleting note:', noteId);
     try {
       await invoke('delete_note', { id: noteId });
       
@@ -342,9 +342,9 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         }
       }
       
-      console.log('[BLINK] Note deleted successfully');
+      console.log('[FLOATNOTE] Note deleted successfully');
     } catch (error) {
-      console.error('[BLINK] Failed to delete note:', error);
+      console.error('[FLOATNOTE] Failed to delete note:', error);
     }
   }, [selectedNoteId, notes]);
 
@@ -355,7 +355,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     // Listen for data-loaded event from backend
     const setupListener = async () => {
       const unlisten = await listen('data-loaded', () => {
-        console.log('[BLINK] Backend data loaded, reloading notes...');
+        console.log('[FLOATNOTE] Backend data loaded, reloading notes...');
         loadNotes();
       });
       return unlisten;

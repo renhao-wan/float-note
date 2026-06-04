@@ -37,7 +37,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
         console.log('[DETACHED-WINDOWS-STORE] ✅ Windows set in store, loading complete');
       } else {
         // Browser mode - no detached windows
-        console.log('[BLINK] [WINDOWS] 🌐 No detached windows in browser mode');
+        console.log('[FLOATNOTE] [WINDOWS] 🌐 No detached windows in browser mode');
         set({ windows: [], loading: false });
       }
     } catch (error) {

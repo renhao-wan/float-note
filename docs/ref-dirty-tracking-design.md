@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document outlines the implementation of a dirty tracking system for Blink to ensure we only save notes that have actually changed. This builds upon the recent optimization where we switched from bulk saves to individual note saves.
+This document outlines the implementation of a dirty tracking system for FloatNote to ensure we only save notes that have actually changed. This builds upon the recent optimization where we switched from bulk saves to individual note saves.
 
 ## Design Principles
 

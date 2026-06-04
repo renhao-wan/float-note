@@ -15,7 +15,7 @@
 
 ## Problem Statement
 
-The Blink application currently has significant code duplication between the main window editor (`EditorArea.tsx`) and detached window editor (`DetachedNoteWindow.tsx`). This duplication creates several issues:
+The FloatNote application currently has significant code duplication between the main window editor (`EditorArea.tsx`) and detached window editor (`DetachedNoteWindow.tsx`). This duplication creates several issues:
 
 - **~150 lines of duplicated code** between the two components
 - **Maintenance burden** - features must be implemented twice

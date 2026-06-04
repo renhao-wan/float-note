@@ -64,7 +64,7 @@ export function GeneralSettings({
           <div className="flex justify-between items-center gap-3">
             <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.application')}</span>
             <div className="flex-1"></div>
-            <span className="text-foreground font-mono">Blink</span>
+            <span className="text-foreground font-mono">FloatNote</span>
           </div>
           <div className="flex justify-between items-center gap-3">
             <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.version')}</span>

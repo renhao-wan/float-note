@@ -16,7 +16,7 @@ export const configApi = {
       
       return config;
     } catch (error) {
-      console.error('[BLINK] Error getting config:', error);
+      console.error('[FLOATNOTE] Error getting config:', error);
       throw error;
     }
   },
@@ -35,7 +35,7 @@ export const configApi = {
       
       return result;
     } catch (error) {
-      console.error('[BLINK] Error updating config:', error);
+      console.error('[FLOATNOTE] Error updating config:', error);
       throw error;
     }
   },
@@ -44,7 +44,7 @@ export const configApi = {
     try {
       return await invoke('toggle_window_visibility');
     } catch (error) {
-      console.error('[BLINK] Error toggling window visibility:', error);
+      console.error('[FLOATNOTE] Error toggling window visibility:', error);
       throw error;
     }
   },

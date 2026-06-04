@@ -53,7 +53,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     const setupListeners = async () => {
       const unlistenNoteUpdated = await listen<Note>('note-updated', (event) => {
         if (event.payload.id === noteId) {
-          console.log('[BLINK] Detached window received note-updated event:', event.payload);
+          console.log('[FLOATNOTE] Detached window received note-updated event:', event.payload);
           setNote(event.payload);
           setContent(event.payload.content);
           modifiedState.markSaved(event.payload.content);
@@ -62,7 +62,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
       
       const unlistenNoteDeleted = await listen<string>('note-deleted', (event) => {
         if (event.payload === noteId) {
-          console.log('[BLINK] Detached window received note-deleted event, closing window');
+          console.log('[FLOATNOTE] Detached window received note-deleted event, closing window');
           appWindow.close();
         }
       });

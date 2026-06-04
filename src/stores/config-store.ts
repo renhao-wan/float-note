@@ -29,10 +29,10 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
     try {
       const rawConfig = await configApi.getConfig();
       const loadTime = performance.now() - startTime;
-      console.log(`[BLINK] Config loaded in ${loadTime.toFixed(2)}ms`);
+      console.log(`[FLOATNOTE] Config loaded in ${loadTime.toFixed(2)}ms`);
       
       if (!rawConfig) {
-        console.warn('[BLINK] Received null config from backend, using defaults');
+        console.warn('[FLOATNOTE] Received null config from backend, using defaults');
         set({ config: defaultConfig, isLoading: false });
         return;
       }
@@ -40,14 +40,14 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
       const config = migrateConfig(rawConfig);
       
       if (!config || !config.appearance) {
-        console.warn('[BLINK] Invalid config structure, using defaults');
+        console.warn('[FLOATNOTE] Invalid config structure, using defaults');
         set({ config: defaultConfig, isLoading: false });
         return;
       }
       
       set({ config, isLoading: false });
     } catch (error) {
-      console.warn('[BLINK] Failed to load config, using defaults:', error);
+      console.warn('[FLOATNOTE] Failed to load config, using defaults:', error);
       set({ 
         config: defaultConfig,
         isLoading: false,
@@ -88,7 +88,7 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
     const { config } = get();
     
     if (!config) {
-      console.error('[BLINK] Current config is null! Using defaults');
+      console.error('[FLOATNOTE] Current config is null! Using defaults');
       const newConfig = { ...defaultConfig, ...configUpdate };
       set({ config: newConfig });
       return;
@@ -116,13 +116,13 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
       const newConfig = await configApi.updateConfig(updatedConfig);
       
       if (!newConfig) {
-        console.error('[BLINK] Backend returned null config');
+        console.error('[FLOATNOTE] Backend returned null config');
         set({ error: 'Backend returned null config' });
         return;
       }
       
       if (!newConfig.appearance) {
-        console.error('[BLINK] Backend returned invalid config structure');
+        console.error('[FLOATNOTE] Backend returned invalid config structure');
         set({ 
           config: { ...defaultConfig, ...newConfig },
           error: 'Invalid config structure received'
@@ -140,7 +140,7 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
         console.error('[CONFIG] Failed to emit config-updated event:', error);
       }
     } catch (error) {
-      console.error('[BLINK] Error updating config:', error);
+      console.error('[FLOATNOTE] Error updating config:', error);
       set({ 
         error: error instanceof Error ? error.message : 'Failed to update config'
       });

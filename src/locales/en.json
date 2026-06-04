@@ -59,7 +59,7 @@
     },
     "appearance": {
       "title": "Appearance",
-      "description": "Make Blink uniquely yours • fonts, colors & textures",
+      "description": "Make FloatNote uniquely yours • fonts, colors & textures",
       "navDescription": "Theme, fonts, and visual preferences",
       "themes": {
         "title": "Themes"
@@ -116,8 +116,8 @@
         "inputMonitoringDescription": "Enables detection of keyboard events for global shortcuts.",
         "setupSteps": "Setup Steps",
         "step1": "Click \"open accessibility settings\" below",
-        "step2": "Find \"Blink\" in the app list and enable it",
-        "step3": "Quit and restart Blink completely",
+        "step2": "Find \"FloatNote\" in the app list and enable it",
+        "step3": "Quit and restart FloatNote completely",
         "step4": "Test shortcuts with the buttons above",
         "warning": "Why these permissions?",
         "warningDescription": "Global shortcuts allow you to create notes instantly from anywhere on your system - whether you're browsing, coding, or in a meeting. The \"Hyperkey\" (⌘⌃⌥⇧) combination is specifically chosen to avoid conflicts with existing shortcuts.",
@@ -189,7 +189,7 @@
     "empty": "Empty note"
   },
   "titlebar": {
-    "title": "Blink",
+    "title": "FloatNote",
     "wordCount": "words",
     "lastSaved": "last saved"
   },
@@ -234,14 +234,14 @@
   "permissions": {
     "enableGlobalShortcuts": "Enable Global Shortcuts",
     "accessibilityRequired": "Accessibility permissions required",
-    "description": "Blink needs Accessibility Access to enable global shortcuts like ⌘⌃⌥⇧N for creating notes from anywhere on your system.",
+    "description": "FloatNote needs Accessibility Access to enable global shortcuts like ⌘⌃⌥⇧N for creating notes from anywhere on your system.",
     "setupSteps": "Setup Steps",
     "step1": "Click \"Open Settings\" below",
-    "step2": "Find \"Blink\" in the accessibility apps list",
+    "step2": "Find \"FloatNote\" in the accessibility apps list",
     "step3": "Toggle the switch to enable access",
-    "step4": "Restart Blink to activate shortcuts",
+    "step4": "Restart FloatNote to activate shortcuts",
     "privacyNote": "Privacy note:",
-    "privacyDescription": "Blink only monitors the specific keyboard combinations for global shortcuts. No other data is accessed or stored.",
+    "privacyDescription": "FloatNote only monitors the specific keyboard combinations for global shortcuts. No other data is accessed or stored.",
     "openSettings": "Open Settings",
     "later": "Later"
   },

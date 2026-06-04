@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Developer-specific port assignment for Blink
+ * Developer-specific port assignment for FloatNote
  * Each developer gets their own port to avoid conflicts
  */
 
@@ -17,9 +17,9 @@ const DEV_PORTS = {
 
 // Process name mapping for clarity
 const DEV_PROCESS_NAMES = {
-  'arach': 'blink.vite.arach',
-  'claude': 'blink.vite.claude',
-  'default': 'blink.vite.dev'
+  'arach': 'float-note.vite.arach',
+  'claude': 'float-note.vite.claude',
+  'default': 'float-note.vite.dev'
 };
 
 function getDevConfig() {
@@ -33,8 +33,8 @@ function getDevConfig() {
   if (fs.existsSync(envFile)) {
     const envContent = fs.readFileSync(envFile, 'utf8');
     
-    // Parse BLINK_DEVELOPER
-    const devMatch = envContent.match(/BLINK_DEVELOPER\s*=\s*([^\s#]+)/);
+    // Parse FLOATNOTE_DEVELOPER
+    const devMatch = envContent.match(/FLOATNOTE_DEVELOPER\s*=\s*([^\s#]+)/);
     if (devMatch) {
       developer = devMatch[1].trim();
     }
@@ -47,8 +47,8 @@ function getDevConfig() {
   }
   
   // Environment variable override
-  if (process.env.BLINK_DEVELOPER) {
-    developer = process.env.BLINK_DEVELOPER;
+  if (process.env.FLOATNOTE_DEVELOPER) {
+    developer = process.env.FLOATNOTE_DEVELOPER;
   }
   
   if (process.env.VITE_PORT) {

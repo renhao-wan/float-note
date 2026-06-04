@@ -18,7 +18,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "longDescription": "A modern, fast note-taking application built with Tauri, React, and TypeScript",
+    "longDescription": "FloatNote - A modern, fast note-taking application built with Tauri, React, and TypeScript",
     "macOS": {
       "entitlements": "entitlements.plist",
       "exceptionDomain": "",
@@ -27,7 +27,7 @@
       "signingIdentity": null
     },
     "resources": [],
-    "shortDescription": "Modern note-taking application",
+    "shortDescription": "FloatNote - Modern note-taking application",
     "targets": "all",
     "windows": {
       "certificateThumbprint": null,
@@ -35,9 +35,9 @@
       "timestampUrl": ""
     }
   },
-  "productName": "Blink",
-  "version": "0.1.0",
-  "identifier": "com.blink.dev",
+  "productName": "FloatNote",
+  "version": "0.2.0",
+  "identifier": "com.float-note.dev",
   "app": {
     "macOSPrivateApi": true,
     "security": {
@@ -159,7 +159,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Blink",
+        "title": "FloatNote",
         "width": 1000,
         "height": 700,
         "minWidth": 200,

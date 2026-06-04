@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Blink Named Process Starter
+# FloatNote Named Process Starter
 # Starts development processes with meaningful names for easy identification
 
 set -e
@@ -12,7 +12,7 @@ cd "$PROJECT_DIR"
 
 # Get developer-specific configuration with robust fallbacks
 DEV_PORT=5173
-DEV_PROCESS_PREFIX="blink"
+DEV_PROCESS_PREFIX="float-note"
 DEVELOPER="dev"
 
 # Try to load developer-specific config, fall back gracefully if it fails
@@ -39,7 +39,7 @@ fi
 
 # Additional fallbacks from environment variables
 DEV_PORT=${VITE_PORT:-$DEV_PORT}
-DEVELOPER=${BLINK_DEVELOPER:-$DEVELOPER}
+DEVELOPER=${FLOATNOTE_DEVELOPER:-$DEVELOPER}
 
 echo "🔧 Using configuration for developer: $DEVELOPER"
 echo "📡 Vite port: $DEV_PORT"
@@ -79,8 +79,8 @@ start_named_process() {
     cat > "$wrapper_script" << EOF
 #!/bin/bash
 # Set process title to be easily identifiable
-export BLINK_PROCESS_NAME="$name"
-export BLINK_DEV_SESSION="\$(date +%s)"
+export FLOATNOTE_PROCESS_NAME="$name"
+export FLOATNOTE_DEV_SESSION="\$(date +%s)"
 
 # Use exec to replace the shell with the actual process
 exec $command
@@ -167,7 +167,7 @@ show_logs() {
 
 # Command handlers
 cmd_start() {
-    echo_color $PURPLE "🎬 Starting Blink development environment..."
+    echo_color $PURPLE "🎬 Starting FloatNote development environment..."
     
     # Clean up any existing processes first
     cmd_stop
@@ -209,25 +209,25 @@ cmd_start() {
     # Start Tauri with developer-specific name
     start_named_process "${DEV_PROCESS_PREFIX}.tauri.${DEVELOPER}" "cargo run --no-default-features" "$PROJECT_DIR/src-tauri"
     
-    echo_color $PURPLE "🎉 Blink development environment is ready!"
+    echo_color $PURPLE "🎉 FloatNote development environment is ready!"
     echo_color $BLUE "📊 Use 'pnpm run dev:status' to check status"
     echo_color $BLUE "📜 Use 'pnpm run dev:logs <process>' to view logs"
 }
 
 cmd_stop() {
-    echo_color $PURPLE "🛑 Stopping Blink development environment..."
+    echo_color $PURPLE "🛑 Stopping FloatNote development environment..."
     
     stop_named_process "${DEV_PROCESS_PREFIX}.tauri.${DEVELOPER}"
     stop_named_process "${DEV_PROCESS_PREFIX}.vite.${DEVELOPER}"
     
     # Also clean up any orphaned processes
-    pkill -f "BLINK_PROCESS_NAME=" 2>/dev/null || true
+    pkill -f "FLOATNOTE_PROCESS_NAME=" 2>/dev/null || true
     
     echo_color $GREEN "🎉 All processes stopped"
 }
 
 cmd_status() {
-    echo_color $PURPLE "📊 Blink Development Status:"
+    echo_color $PURPLE "📊 FloatNote Development Status:"
     echo ""
     
     check_named_process "${DEV_PROCESS_PREFIX}.vite.${DEVELOPER}"
@@ -305,14 +305,14 @@ cmd_logs() {
 }
 
 cmd_restart() {
-    echo_color $PURPLE "🔄 Restarting Blink development environment..."
+    echo_color $PURPLE "🔄 Restarting FloatNote development environment..."
     cmd_stop
     sleep 2
     cmd_start
 }
 
 cmd_restart_logs() {
-    echo_color $PURPLE "🔄 Restarting Blink development environment..."
+    echo_color $PURPLE "🔄 Restarting FloatNote development environment..."
     cmd_stop
     sleep 2
     cmd_start
@@ -375,7 +375,7 @@ case "${1:-start}" in
         cmd_logs "$2" "$3"
         ;;
     "help"|"-h"|"--help")
-        echo_color $PURPLE "Blink Named Process Manager"
+        echo_color $PURPLE "FloatNote Named Process Manager"
         echo ""
         echo "Usage: $0 [command] [options]"
         echo ""

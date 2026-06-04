@@ -1,4 +1,4 @@
-# Blink: AI-Native Spatial Notes
+# FloatNote: AI-Native Spatial Notes
 
 From static documents to intelligent, spatially aware notes.
 
@@ -6,7 +6,7 @@ From static documents to intelligent, spatially aware notes.
 
 ## Vision
 
-Blink reimagines note-taking as AI-native knowledge management. Notes aren’t static text but autonomous agents that can think, update, and contribute on their own.
+FloatNote reimagines note-taking as AI-native knowledge management. Notes aren’t static text but autonomous agents that can think, update, and contribute on their own.
 
 ### Core Principles
 - **Spatial context**: where a note lives matters  

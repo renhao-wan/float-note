@@ -39,10 +39,10 @@ pub fn build_app_menu(
 }
 
 fn build_app_submenu(app: &AppHandle) -> BlinkResult<Submenu<tauri::Wry>> {
-    let app_menu = Submenu::new(app, "Blink", true)
+    let app_menu = Submenu::new(app, "FloatNote", true)
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
     
-    let about_item = MenuItem::new(app, "About Blink", true, None::<&str>)
+    let about_item = MenuItem::new(app, "About FloatNote", true, None::<&str>)
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
     let separator = PredefinedMenuItem::separator(app)
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
@@ -50,7 +50,7 @@ fn build_app_submenu(app: &AppHandle) -> BlinkResult<Submenu<tauri::Wry>> {
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
     let separator2 = PredefinedMenuItem::separator(app)
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
-    let hide_item = MenuItem::new(app, "Hide Blink", true, Some("Cmd+H"))
+    let hide_item = MenuItem::new(app, "Hide FloatNote", true, Some("Cmd+H"))
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
     let hide_others_item = MenuItem::new(app, "Hide Others", true, Some("Cmd+Alt+H"))
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
@@ -58,7 +58,7 @@ fn build_app_submenu(app: &AppHandle) -> BlinkResult<Submenu<tauri::Wry>> {
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
     let separator3 = PredefinedMenuItem::separator(app)
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
-    let quit_item = MenuItem::with_id(app, "quit", "Quit Blink", true, Some("Cmd+Q"))
+    let quit_item = MenuItem::with_id(app, "quit", "Quit FloatNote", true, Some("Cmd+Q"))
         .map_err(|e| BlinkError::Menu(e.to_string()))?;
 
     app_menu.append(&about_item).map_err(|e| BlinkError::Menu(e.to_string()))?;

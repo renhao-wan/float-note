@@ -183,7 +183,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
           <div className="flex justify-between items-center gap-3">
             <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.application')}</span>
             <div className="flex-1"></div>
-            <span className="text-foreground font-mono">Blink</span>
+            <span className="text-foreground font-mono">FloatNote</span>
           </div>
           <div className="flex justify-between items-center gap-3">
             <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.version')}</span>
@@ -1054,10 +1054,10 @@ function calculateMetrics(data) {
               
               <button
                 onClick={async () => {
-                  console.log('[BLINK] [SETTINGS] Testing event emission...');
+                  console.log('[FLOATNOTE] [SETTINGS] Testing event emission...');
                   try {
                     const result = await invoke<string>('test_emit_new_note');
-                    console.log('[BLINK] [SETTINGS] Test result:', result);
+                    console.log('[FLOATNOTE] [SETTINGS] Test result:', result);
                     setShortcutMessage('Test event emitted successfully');
                     setShortcutStatus('success');
                     setTimeout(() => {
@@ -1065,7 +1065,7 @@ function calculateMetrics(data) {
                       setShortcutMessage('');
                     }, 3000);
                   } catch (error: any) {
-                    console.error('[BLINK] [SETTINGS] Test failed:', error);
+                    console.error('[FLOATNOTE] [SETTINGS] Test failed:', error);
                     setShortcutMessage('Test failed: ' + error.toString());
                     setShortcutStatus('error');
                   }
@@ -1077,10 +1077,10 @@ function calculateMetrics(data) {
               
               <button
                 onClick={async () => {
-                  console.log('[BLINK] [SETTINGS] Testing hover toggle...');
+                  console.log('[FLOATNOTE] [SETTINGS] Testing hover toggle...');
                   try {
                     const hoverState = await invoke<boolean>('toggle_all_windows_hover');
-                    console.log('[BLINK] [SETTINGS] Hover state:', hoverState);
+                    console.log('[FLOATNOTE] [SETTINGS] Hover state:', hoverState);
                     setShortcutMessage(`Hover mode ${hoverState ? 'enabled' : 'disabled'} for all windows`);
                     setShortcutStatus('success');
                     setTimeout(() => {
@@ -1088,7 +1088,7 @@ function calculateMetrics(data) {
                       setShortcutMessage('');
                     }, 3000);
                   } catch (error: any) {
-                    console.error('[BLINK] [SETTINGS] Hover toggle failed:', error);
+                    console.error('[FLOATNOTE] [SETTINGS] Hover toggle failed:', error);
                     setShortcutMessage('Hover toggle failed: ' + error.toString());
                     setShortcutStatus('error');
                   }
@@ -1100,10 +1100,10 @@ function calculateMetrics(data) {
               
               <button
                 onClick={async () => {
-                  console.log('[BLINK] [SETTINGS] Forcing main window visible...');
+                  console.log('[FLOATNOTE] [SETTINGS] Forcing main window visible...');
                   try {
                     await invoke('force_main_window_visible');
-                    console.log('[BLINK] [SETTINGS] Main window forced visible');
+                    console.log('[FLOATNOTE] [SETTINGS] Main window forced visible');
                     setShortcutMessage('Main window forced visible and centered');
                     setShortcutStatus('success');
                     setTimeout(() => {
@@ -1111,7 +1111,7 @@ function calculateMetrics(data) {
                       setShortcutMessage('');
                     }, 3000);
                   } catch (error: any) {
-                    console.error('[BLINK] [SETTINGS] Force visible failed:', error);
+                    console.error('[FLOATNOTE] [SETTINGS] Force visible failed:', error);
                     setShortcutMessage('Force visible failed: ' + error.toString());
                     setShortcutStatus('error');
                   }
@@ -1123,10 +1123,10 @@ function calculateMetrics(data) {
               
               <button
                 onClick={async () => {
-                  console.log('[BLINK] [SETTINGS] Checking webview state...');
+                  console.log('[FLOATNOTE] [SETTINGS] Checking webview state...');
                   try {
                     const state = await invoke('debug_webview_state');
-                    console.log('[BLINK] [SETTINGS] Webview state:', state);
+                    console.log('[FLOATNOTE] [SETTINGS] Webview state:', state);
                     setShortcutMessage('Webview state logged to console');
                     setShortcutStatus('success');
                     setTimeout(() => {
@@ -1134,7 +1134,7 @@ function calculateMetrics(data) {
                       setShortcutMessage('');
                     }, 3000);
                   } catch (error: any) {
-                    console.error('[BLINK] [SETTINGS] Webview state check failed:', error);
+                    console.error('[FLOATNOTE] [SETTINGS] Webview state check failed:', error);
                     setShortcutMessage('State check failed: ' + error.toString());
                     setShortcutStatus('error');
                   }

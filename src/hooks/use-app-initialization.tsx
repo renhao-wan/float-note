@@ -14,8 +14,8 @@ export function useAppInitialization({ isDetachedWindow }: AppInitializationProp
 
   // Load config and windows on startup
   useEffect(() => {
-    console.log('[BLINK] [FRONTEND] App initialization starting...');
-    console.log('[BLINK] [FRONTEND] Tauri detection:', {
+    console.log('[FLOATNOTE] [FRONTEND] App initialization starting...');
+    console.log('[FLOATNOTE] [FRONTEND] Tauri detection:', {
       windowExists: typeof window !== 'undefined',
       tauriExists: typeof window !== 'undefined' && !!window.__TAURI__,
       tauriValue: typeof window !== 'undefined' ? window.__TAURI__ : 'window undefined',
@@ -25,15 +25,15 @@ export function useAppInitialization({ isDetachedWindow }: AppInitializationProp
     
     const initializeApp = async () => {
       // Just request the data - backend will load it asynchronously
-      console.log('[BLINK] [FRONTEND] Requesting initial data...');
+      console.log('[FLOATNOTE] [FRONTEND] Requesting initial data...');
       Promise.all([
-        loadConfig().catch(err => console.warn('[BLINK] Config load failed:', err)),
-        loadWindows().catch(err => console.warn('[BLINK] Windows load failed:', err))
+        loadConfig().catch(err => console.warn('[FLOATNOTE] Config load failed:', err)),
+        loadWindows().catch(err => console.warn('[FLOATNOTE] Windows load failed:', err))
       ]);
       
       // Listen for data-loaded event from backend
       const unlisten = await listen('data-loaded', () => {
-        console.log('[BLINK] [FRONTEND] ✅ Backend data loaded, refreshing...');
+        console.log('[FLOATNOTE] [FRONTEND] ✅ Backend data loaded, refreshing...');
         loadConfig();
         loadWindows();
       });
@@ -74,7 +74,7 @@ export function useAppInitialization({ isDetachedWindow }: AppInitializationProp
     if (theme) {
       applyTheme(theme);
     } else {
-      console.error('[BLINK] Theme not found:', themeId);
+      console.error('[FLOATNOTE] Theme not found:', themeId);
     }
   }, [config]);
 }
