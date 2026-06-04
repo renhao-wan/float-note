@@ -12,7 +12,7 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
   const { t } = useTranslation();
   const { config, updateConfig } = useConfigStore();
   // Current saved theme in config
-  const savedThemeId = config.appearance?.themeId || 'midnight-ink';
+  const savedThemeId = config.appearance?.themeId || 'arctic-frost';
   // Theme that user has clicked to preview (not yet saved)
   const [previewThemeId, setPreviewThemeId] = useState<string | null>(null);
   // Theme being hovered (visual preview only)
