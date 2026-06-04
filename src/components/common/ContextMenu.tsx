@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface ContextMenuProps {
   x: number;
   y: number;
@@ -12,6 +14,7 @@ export function ContextMenu({
   noteId,
   onAction,
 }: ContextMenuProps) {
+  const { t } = useTranslation();
   return (
     <div 
       data-context-menu
@@ -31,7 +34,7 @@ export function ContextMenu({
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
         </svg>
-        Open in Window
+        {t('contextMenu.detach')}
       </button>
       
       <div className="h-px bg-border/20 my-1 mx-2" />
@@ -46,7 +49,7 @@ export function ContextMenu({
           <path d="M10,11v6"/>
           <path d="M14,11v6"/>
         </svg>
-        Delete Note
+        {t('contextMenu.delete')}
       </button>
     </div>
   );

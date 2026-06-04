@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Command {
   id: string;
@@ -31,6 +32,7 @@ export function CommandPalette({
   onClose,
   onKeyDown,
 }: CommandPaletteProps) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input when command palette opens
@@ -98,7 +100,7 @@ export function CommandPalette({
             <input
               ref={inputRef}
               type="text"
-              placeholder="Search notes and commands..."
+              placeholder={t('commandPalette.searchPlaceholder')}
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               onKeyDown={onKeyDown}
@@ -111,7 +113,7 @@ export function CommandPalette({
         <div className="max-h-[400px] overflow-y-auto">
           {commands.length === 0 ? (
             <div className="p-4 text-center text-muted-foreground/60 text-sm">
-              No commands found
+              {t('commandPalette.noResults')}
             </div>
           ) : (
             <div className="py-2">
