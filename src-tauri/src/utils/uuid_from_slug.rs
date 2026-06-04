@@ -12,6 +12,7 @@ pub fn uuid_from_slug(slug: &str) -> String {
 
 /// Extract the slug from a UUID if it was generated from one
 /// This is mainly for debugging/logging purposes
+#[allow(dead_code)]
 pub fn slug_from_uuid_filename(filename: &str) -> String {
     // If the filename is a UUID pattern, we can't reverse it to get the slug
     // So we just use the filename as-is for now

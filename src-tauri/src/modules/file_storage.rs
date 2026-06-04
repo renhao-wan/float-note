@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::io::Write;
 use sha2::{Sha256, Digest};
 
 use crate::types::{
@@ -13,6 +12,7 @@ use crate::modules::storage::get_configured_notes_directory;
 use crate::{log_debug, log_info, log_error};
 
 /// File-based storage manager for notes and workspace state
+#[allow(dead_code)]
 pub struct FileStorageManager {
     notes_dir: PathBuf,
     blink_dir: PathBuf,

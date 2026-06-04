@@ -5,19 +5,21 @@ use tauri::{AppHandle, Manager};
 
 use crate::modules::file_storage::FileStorageManager;
 use crate::types::{
-    workspace::{WindowState, WorkspaceState},
+    workspace::WindowState,
     config::AppConfig,
     window::DetachedWindow,
 };
 use crate::{log_info, log_error, log_debug};
 
 /// Service for managing window state with persistent storage
+#[allow(dead_code)]
 pub struct WindowService {
     storage: Arc<Mutex<FileStorageManager>>,
     app_handle: AppHandle,
     active_windows: Arc<Mutex<HashMap<String, DetachedWindow>>>,
 }
 
+#[allow(dead_code)]
 impl WindowService {
     pub fn new(config: &AppConfig, app_handle: AppHandle) -> Result<Self, String> {
         let storage = FileStorageManager::new(config)?;

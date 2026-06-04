@@ -8,14 +8,16 @@ use crate::types::{
     config::AppConfig,
 };
 use crate::utils::slug::generate_unique_slug;
-use crate::{log_info, log_error};
+use crate::log_info;
 
 /// Service for managing notes with file-based storage
+#[allow(dead_code)]
 pub struct NoteService {
     storage: Arc<Mutex<FileStorageManager>>,
     notes_cache: Arc<Mutex<HashMap<String, Note>>>,
 }
 
+#[allow(dead_code)]
 impl NoteService {
     pub fn new(config: &AppConfig) -> Result<Self, String> {
         let storage = FileStorageManager::new(config)?;
@@ -185,6 +187,7 @@ impl NoteService {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct NoteStats {
     pub total_notes: usize,
     pub total_words: usize,

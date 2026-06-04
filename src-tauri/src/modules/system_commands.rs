@@ -11,14 +11,13 @@ pub async fn open_system_settings() -> Result<(), String> {
             .arg("x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")
             .spawn()
             .map_err(|e| format!("Failed to open System Settings: {}", e))?;
+        Ok(())
     }
-    
+
     #[cfg(not(target_os = "macos"))]
     {
-        return Err("System Settings only available on macOS".to_string());
+        Err("System Settings only available on macOS".to_string())
     }
-    
-    Ok(())
 }
 
 /// Open a directory in the system file manager

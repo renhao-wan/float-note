@@ -8,7 +8,7 @@ use crate::types::{
     config::AppConfig,
 };
 use crate::modules::file_storage::FileStorageManager;
-use crate::{log_info, log_error};
+use crate::log_info;
 
 /// File-based notes storage that maintains compatibility with existing interfaces
 pub struct FileNotesStorage {
@@ -16,6 +16,7 @@ pub struct FileNotesStorage {
     cache: Arc<Mutex<HashMap<String, Note>>>,
 }
 
+#[allow(dead_code)]
 impl FileNotesStorage {
     pub fn new(config: &AppConfig) -> Result<Self, String> {
         let storage = FileStorageManager::new(config)?;

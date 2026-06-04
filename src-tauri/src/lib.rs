@@ -50,9 +50,6 @@ pub use types::{
 use handlers::{
     reregister_global_shortcuts as reregister_global_shortcuts_handler,
     update_app_menu as update_app_menu_handler,
-    load_spatial_data,
-    save_window_position,
-    save_window_size,
 };
 
 // Wrapper commands for backward compatibility
@@ -82,7 +79,6 @@ async fn reregister_global_shortcuts(app: tauri::AppHandle) -> Result<String, St
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     use modules::logging::init_file_logging;
-    use modules::modified_state_tracker::ModifiedStateTracker;
     use startup::{setup_app, build_shortcut_handler, build_menu_handler};
     
     // Initialize file logging

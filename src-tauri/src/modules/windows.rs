@@ -4,7 +4,7 @@ use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder, Emitter
 use crate::types::{
     window::{DetachedWindow, DetachedWindowsState, NotesState, ConfigState, ToggleState, CreateDetachedWindowRequest},
 };
-use crate::modules::storage::{get_configured_notes_directory, save_config_to_disk, save_detached_windows_to_disk, load_detached_windows_from_disk, get_default_notes_directory};
+use crate::modules::storage::{save_config_to_disk, save_detached_windows_to_disk, get_default_notes_directory};
 use crate::{log_info, log_error, log_debug};
 
 #[cfg(target_os = "macos")]
@@ -32,24 +32,23 @@ pub async fn toggle_window_visibility(app: AppHandle) -> Result<bool, String> {
 }
 
 #[tauri::command]
-pub async fn set_window_opacity(app: AppHandle, opacity: f64) -> Result<(), String> {
-    let window = app.get_webview_window("main").ok_or("Window not found")?;
-    
+pub async fn set_window_opacity(app: AppHandle, _opacity: f64) -> Result<(), String> {
+    let _window = app.get_webview_window("main").ok_or("Window not found")?;
+
     #[cfg(target_os = "macos")]
     {
         use tauri::Manager;
-        let ns_window = window.ns_window().map_err(|e| e.to_string())? as id;
+        let ns_window = _window.ns_window().map_err(|e| e.to_string())? as id;
         unsafe {
             let _: () = msg_send![ns_window, setAlphaValue: opacity];
         }
+        Ok(())
     }
-    
+
     #[cfg(not(target_os = "macos"))]
     {
-        return Err("Opacity control not implemented for this platform".to_string());
+        Err("Opacity control not implemented for this platform".to_string())
     }
-    
-    Ok(())
 }
 
 #[tauri::command]

@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::time::SystemTime;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[allow(dead_code)]
 pub struct WorkspaceState {
     pub name: String,
     pub created_at: String,
@@ -13,6 +13,7 @@ pub struct WorkspaceState {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[allow(dead_code)]
 pub struct WindowState {
     pub note_id: String,
     pub grid_position: Option<u8>,           // 1-9 for shortcuts

@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use chrono::{DateTime, Utc};
 use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
@@ -21,6 +21,7 @@ pub struct NotesDatabase {
     conn: Mutex<Connection>,
 }
 
+#[allow(dead_code)]
 impl NotesDatabase {
     /// Migrate schema to support NULL positions
     fn migrate_schema(conn: &Connection) -> Result<()> {

@@ -1,15 +1,17 @@
 use std::collections::HashMap;
-use tauri::{AppHandle, State};
+use tauri::State;
 use tokio::sync::Mutex;
 
 use crate::services::note_service::NoteService;
 use crate::types::note::{Note, CreateNoteRequest, UpdateNoteRequest};
-use crate::{log_info, log_error};
+use crate::log_info;
 
 /// Tauri commands for note management using the new file-based system
 
+#[allow(dead_code)]
 type NoteServiceState = Mutex<NoteService>;
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn get_notes_v2(
     note_service: State<'_, NoteServiceState>,
@@ -20,6 +22,7 @@ pub async fn get_notes_v2(
     service.get_all_notes().await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn get_note_v2(
     note_id: String,
@@ -31,6 +34,7 @@ pub async fn get_note_v2(
     service.get_note(&note_id).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn create_note_v2(
     request: CreateNoteRequest,
@@ -42,6 +46,7 @@ pub async fn create_note_v2(
     service.create_note(request).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn update_note_v2(
     note_id: String,
@@ -54,6 +59,7 @@ pub async fn update_note_v2(
     service.update_note(&note_id, request).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn delete_note_v2(
     note_id: String,
@@ -65,6 +71,7 @@ pub async fn delete_note_v2(
     service.delete_note(&note_id).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn reload_notes_v2(
     note_service: State<'_, NoteServiceState>,
@@ -75,6 +82,7 @@ pub async fn reload_notes_v2(
     service.reload_notes().await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn get_notes_stats_v2(
     note_service: State<'_, NoteServiceState>,

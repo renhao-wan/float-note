@@ -3,12 +3,14 @@ use tokio::sync::Mutex;
 
 use crate::services::window_service::WindowService;
 use crate::types::window::DetachedWindow;
-use crate::{log_info, log_error};
+use crate::log_info;
 
 /// Tauri commands for window management using the new persistent system
 
+#[allow(dead_code)]
 type WindowServiceState = Mutex<WindowService>;
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn create_detached_window_v2(
     note_id: String,
@@ -25,6 +27,7 @@ pub async fn create_detached_window_v2(
     service.create_detached_window(&note_id, x, y, width, height, grid_position).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn close_detached_window_v2(
     note_id: String,
@@ -36,6 +39,7 @@ pub async fn close_detached_window_v2(
     service.close_detached_window(&note_id).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn focus_detached_window_v2(
     note_id: String,
@@ -47,6 +51,7 @@ pub async fn focus_detached_window_v2(
     service.focus_detached_window(&note_id).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn get_detached_windows_v2(
     window_service: State<'_, WindowServiceState>,
@@ -57,6 +62,7 @@ pub async fn get_detached_windows_v2(
     service.get_detached_windows().await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn update_window_position_v2(
     note_id: String,
@@ -70,6 +76,7 @@ pub async fn update_window_position_v2(
     service.update_window_position(&note_id, x, y).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn assign_grid_position_v2(
     note_id: String,
@@ -82,6 +89,7 @@ pub async fn assign_grid_position_v2(
     service.assign_grid_position(&note_id, grid_position).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn get_grid_assignment_v2(
     grid_position: u8,
@@ -93,6 +101,7 @@ pub async fn get_grid_assignment_v2(
     service.get_grid_assignment(grid_position).await
 }
 
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn deploy_note_to_grid_v2(
     grid_position: u8,
@@ -134,6 +143,7 @@ pub async fn deploy_note_to_grid_v2(
 }
 
 /// Calculate screen coordinates for grid position (1-9)
+#[allow(dead_code)]
 fn calculate_grid_coordinates(grid_position: u8) -> (f64, f64) {
     // This should match the frontend grid calculation
     let cols = 3;

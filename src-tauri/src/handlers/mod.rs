@@ -4,4 +4,3 @@ pub mod window_handler;
 
 pub use menu_handler::*;
 pub use shortcut_handler::*;
-pub use window_handler::*;

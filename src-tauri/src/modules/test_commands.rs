@@ -1,5 +1,5 @@
 use crate::{log_error, log_info};
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder, Emitter};
+use tauri::{AppHandle, Emitter, WebviewUrl, WebviewWindowBuilder};
 
 /// Test emitting a new note event
 #[tauri::command]

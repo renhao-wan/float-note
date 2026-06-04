@@ -1,14 +1,12 @@
 use crate::error::{BlinkError, BlinkResult};
-use crate::modules::file_notes_storage::FileNotesStorage;
-use crate::ModifiedStateTrackerState;
 use crate::modules::storage::{
     load_config_from_disk as load_config_from_disk_storage,
     load_detached_windows_from_disk as load_detached_windows_from_disk_storage,
 };
 use crate::types::config::AppConfig;
-use crate::ConfigState;
+use crate::{ConfigState, ModifiedStateTrackerState};
 use crate::types::window::{DetachedWindowsState, NotesState};
-use crate::{log_error, log_info};
+use crate::log_info;
 use tauri::{AppHandle, Manager, Emitter};
 
 /// Load all application data on startup
@@ -59,10 +57,11 @@ async fn load_config(app_handle: AppHandle) -> BlinkResult<AppConfig> {
 }
 
 async fn load_notes(
-    app_handle: AppHandle,
+    _app_handle: AppHandle,
     config: &AppConfig,
 ) -> BlinkResult<std::collections::HashMap<String, crate::types::note::Note>> {
     // Create FileNotesStorage
+    use crate::modules::file_notes_storage::FileNotesStorage;
     let file_storage = FileNotesStorage::new(config)
         .map_err(|e| BlinkError::Storage(format!("Failed to create file storage: {}", e)))?;
 

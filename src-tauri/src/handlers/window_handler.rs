@@ -2,7 +2,6 @@ use crate::error::{BlinkError, BlinkResult};
 use crate::types::window::DetachedWindow;
 use crate::{log_error, log_info};
 use std::collections::HashMap;
-use std::path::Path;
 use tauri::{AppHandle, Manager};
 
 /// Load spatial positioning data for a specific note

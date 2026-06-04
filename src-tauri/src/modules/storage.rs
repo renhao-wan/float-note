@@ -11,6 +11,7 @@ use crate::types::{
 use crate::{log_debug, log_info};
 
 /// Save notes to disk as JSON
+#[allow(dead_code)]
 pub async fn save_notes_to_disk(notes: &HashMap<String, Note>) -> Result<(), String> {
     let notes_dir = get_notes_directory()?;
     fs::create_dir_all(&notes_dir).map_err(|e| format!("Failed to create notes directory: {}", e))?;
@@ -26,6 +27,7 @@ pub async fn save_notes_to_disk(notes: &HashMap<String, Note>) -> Result<(), Str
 }
 
 /// Load notes from disk
+#[allow(dead_code)]
 pub async fn load_notes_from_disk() -> Result<HashMap<String, Note>, String> {
     let notes_dir = get_notes_directory()?;
     let notes_file = notes_dir.join("notes.json");
