@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Palette, Eye, Focus, Keyboard, Pin, Folder, FolderOpen } from '../../lib/lucide';
 import { useState, useEffect } from 'react';
 import { notesApi } from '../../services/tauri-api';
@@ -26,6 +27,7 @@ interface AppFooterProps {
 }
 
 export function AppFooter({ theme, themeId, config }: AppFooterProps) {
+  const { t } = useTranslation();
   const [currentDirectory, setCurrentDirectory] = useState<string>('~/Notes');
   const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -97,21 +99,21 @@ export function AppFooter({ theme, themeId, config }: AppFooterProps) {
         {/* Focus mode */}
         {config.appearance?.focusMode && (
           <span className="flex items-center gap-1 text-primary">
-            <Focus className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} /> Focus
+            <Focus className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} /> {t('settings.editor.editorFeatures.focusMode')}
           </span>
         )}
         
         {/* Typewriter mode */}
         {config.appearance?.typewriterMode && (
           <span className="flex items-center gap-1 text-primary">
-            <Keyboard className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} /> Typewriter
+            <Keyboard className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} /> {t('settings.editor.editorFeatures.typewriterMode')}
           </span>
         )}
         
         {/* Always on top */}
         {config.alwaysOnTop && (
           <span className="flex items-center gap-1 text-primary">
-            <Pin className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} /> Pinned
+            <Pin className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} /> {t('settings.appearance.window.alwaysOnTop')}
           </span>
         )}
       </div>

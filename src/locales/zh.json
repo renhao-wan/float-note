@@ -22,6 +22,7 @@
     "general": {
       "title": "通用",
       "description": "基础设置 • 谁在用、做什么",
+      "navDescription": "应用信息和界面设置",
       "about": {
         "title": "关于",
         "application": "应用",
@@ -58,6 +59,7 @@
     "appearance": {
       "title": "外观",
       "description": "让 Blink 独一无二 • 字体、颜色和纹理",
+      "navDescription": "主题、字体和视觉偏好",
       "themes": {
         "title": "主题"
       },
@@ -90,6 +92,7 @@
     "shortcuts": {
       "title": "快捷键",
       "description": "全局和应用内键盘快捷键",
+      "navDescription": "键盘快捷键和热键",
       "globalShortcuts": {
         "title": "全局快捷键",
         "description": "全局快捷键允许您在系统任何位置执行操作，即使应用在后台。",
@@ -131,6 +134,7 @@
     "editor": {
       "title": "编辑器",
       "description": "自定义您的写作体验",
+      "navDescription": "写作和编辑偏好",
       "lineHeight": "行高",
       "paperStyle": {
         "title": "纸张样式",
@@ -161,6 +165,7 @@
     "advanced": {
       "title": "高级",
       "description": "高级应用设置",
+      "navDescription": "开发者和系统设置",
       "developerMode": "开发者模式",
       "developerModeDescription": "启用开发者工具和功能",
       "autoUpdate": "自动更新",

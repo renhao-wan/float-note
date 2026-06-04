@@ -22,6 +22,7 @@
     "general": {
       "title": "General",
       "description": "The essentials • who we are, what we do",
+      "navDescription": "App info and interface settings",
       "about": {
         "title": "About",
         "application": "Application",
@@ -58,6 +59,7 @@
     "appearance": {
       "title": "Appearance",
       "description": "Make Blink uniquely yours • fonts, colors & textures",
+      "navDescription": "Theme, fonts, and visual preferences",
       "themes": {
         "title": "Themes"
       },
@@ -90,6 +92,7 @@
     "shortcuts": {
       "title": "Shortcuts",
       "description": "Global and in-app keyboard shortcuts",
+      "navDescription": "Keyboard shortcuts and hotkeys",
       "globalShortcuts": {
         "title": "Global Shortcuts",
         "description": "Global shortcuts allow you to perform actions from anywhere on your system, even when the app is in the background.",
@@ -131,6 +134,7 @@
     "editor": {
       "title": "Editor",
       "description": "Customize your writing experience",
+      "navDescription": "Writing and editing preferences",
       "lineHeight": "Line Height",
       "paperStyle": {
         "title": "Paper Style",
@@ -161,6 +165,7 @@
     "advanced": {
       "title": "Advanced",
       "description": "Advanced application settings",
+      "navDescription": "Developer and system settings",
       "developerMode": "Developer Mode",
       "developerModeDescription": "Enable developer tools and features",
       "autoUpdate": "Auto Update",

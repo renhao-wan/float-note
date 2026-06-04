@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ResizablePanel } from '../windows/ResizablePanel';
 
 type SettingsSection = 'general' | 'appearance' | 'shortcuts' | 'editor' | 'advanced';
@@ -13,6 +14,8 @@ export function SettingsNavigation({
   selectedSection,
   onSectionChange
 }: SettingsNavigationProps) {
+  const { t } = useTranslation();
+
   return (
     <div className={`h-full overflow-hidden transition-all duration-300 ease-out ${
       sidebarVisible ? 'w-80' : 'w-0'
@@ -27,7 +30,7 @@ export function SettingsNavigation({
                   <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
-                <h2 className="text-sm font-semibold tracking-tight text-foreground">Settings</h2>
+                <h2 className="text-sm font-semibold tracking-tight text-foreground">{t('common.settings')}</h2>
               </div>
             </div>
             
@@ -53,9 +56,9 @@ export function SettingsNavigation({
                   </svg>
                   <h3 className={`text-sm font-medium ${
                     selectedSection === 'general' ? 'text-primary' : 'text-foreground'
-                  }`}>General</h3>
+                  }`}>{t('settings.general.title')}</h3>
                 </div>
-                <p className="text-xs text-muted-foreground/60">App info and interface settings</p>
+                <p className="text-xs text-muted-foreground/60">{t('settings.general.navDescription')}</p>
               </button>
               
               <button 
@@ -72,9 +75,9 @@ export function SettingsNavigation({
                   </svg>
                   <h3 className={`text-sm font-medium ${
                     selectedSection === 'appearance' ? 'text-primary' : 'text-foreground'
-                  }`}>Appearance</h3>
+                  }`}>{t('settings.appearance.title')}</h3>
                 </div>
-                <p className="text-xs text-muted-foreground/60">Theme, fonts, and visual preferences</p>
+                <p className="text-xs text-muted-foreground/60">{t('settings.appearance.navDescription')}</p>
               </button>
               
               <button 
@@ -93,9 +96,9 @@ export function SettingsNavigation({
                   </svg>
                   <h3 className={`text-sm font-medium ${
                     selectedSection === 'shortcuts' ? 'text-primary' : 'text-foreground'
-                  }`}>Shortcuts</h3>
+                  }`}>{t('settings.shortcuts.title')}</h3>
                 </div>
-                <p className="text-xs text-muted-foreground/60">Keyboard shortcuts and hotkeys</p>
+                <p className="text-xs text-muted-foreground/60">{t('settings.shortcuts.navDescription')}</p>
               </button>
               
               <button 
@@ -113,9 +116,9 @@ export function SettingsNavigation({
                   </svg>
                   <h3 className={`text-sm font-medium ${
                     selectedSection === 'editor' ? 'text-primary' : 'text-foreground'
-                  }`}>Editor</h3>
+                  }`}>{t('settings.editor.title')}</h3>
                 </div>
-                <p className="text-xs text-muted-foreground/60">Writing and editing preferences</p>
+                <p className="text-xs text-muted-foreground/60">{t('settings.editor.navDescription')}</p>
               </button>
               
               <button 
@@ -132,9 +135,9 @@ export function SettingsNavigation({
                   </svg>
                   <h3 className={`text-sm font-medium ${
                     selectedSection === 'advanced' ? 'text-primary' : 'text-foreground'
-                  }`}>Advanced</h3>
+                  }`}>{t('settings.advanced.title')}</h3>
                 </div>
-                <p className="text-xs text-muted-foreground/60">Developer and system settings</p>
+                <p className="text-xs text-muted-foreground/60">{t('settings.advanced.navDescription')}</p>
               </button>
             </div>
           </div>
