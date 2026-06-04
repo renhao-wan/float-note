@@ -244,5 +244,14 @@
     "privacyDescription": "Blink only monitors the specific keyboard combinations for global shortcuts. No other data is accessed or stored.",
     "openSettings": "Open Settings",
     "later": "Later"
+  },
+  "chordHint": {
+    "selectNote": "Select note",
+    "newNote": "New note",
+    "search": "Search",
+    "focusWindow": "Focus/open window",
+    "noteMode": "Note Mode",
+    "windowMode": "Window Mode",
+    "availableNotes": "Available notes"
   }
 }

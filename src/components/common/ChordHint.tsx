@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface ChordHintProps {
   mode: 'none' | 'note' | 'window';
   visible: boolean;
@@ -5,16 +7,17 @@ interface ChordHintProps {
 }
 
 export function ChordHint({ mode, visible, notes }: ChordHintProps) {
+  const { t } = useTranslation();
   if (!visible || mode === 'none') return null;
 
   const noteCommands = [
-    { key: '1-9', desc: 'Select note' },
-    { key: 'N', desc: 'New note' },
-    { key: 'S', desc: 'Search' },
+    { key: '1-9', desc: t('chordHint.selectNote') },
+    { key: 'N', desc: t('chordHint.newNote') },
+    { key: 'S', desc: t('chordHint.search') },
   ];
 
   const windowCommands = [
-    { key: '1-9', desc: 'Focus/open window' },
+    { key: '1-9', desc: t('chordHint.focusWindow') },
   ];
 
   const commands = mode === 'note' ? noteCommands : windowCommands;
@@ -24,7 +27,7 @@ export function ChordHint({ mode, visible, notes }: ChordHintProps) {
       <div className="flex items-center gap-2 mb-3">
         <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
         <span className="text-sm font-semibold text-foreground">
-          {mode === 'note' ? 'Note Mode' : 'Window Mode'}
+          {mode === 'note' ? t('chordHint.noteMode') : t('chordHint.windowMode')}
         </span>
       </div>
       
@@ -41,7 +44,7 @@ export function ChordHint({ mode, visible, notes }: ChordHintProps) {
       
       {mode === 'note' && (
         <div className="mt-3 pt-3 border-t border-border/20">
-          <div className="text-xs text-muted-foreground/70 mb-2">Available notes:</div>
+          <div className="text-xs text-muted-foreground/70 mb-2">{t('chordHint.availableNotes')}:</div>
           <div className="space-y-1 max-h-32 overflow-y-auto">
             {notes.slice(0, 9).map((note, i) => (
               <div key={note.id} className="flex items-center gap-2 text-xs">

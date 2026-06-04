@@ -244,5 +244,14 @@
     "privacyDescription": "Blink 仅监控全局快捷键的特定键盘组合。不会访问或存储其他数据。",
     "openSettings": "打开设置",
     "later": "稍后"
+  },
+  "chordHint": {
+    "selectNote": "选择笔记",
+    "newNote": "新建笔记",
+    "search": "搜索",
+    "focusWindow": "聚焦/打开窗口",
+    "noteMode": "笔记模式",
+    "windowMode": "窗口模式",
+    "availableNotes": "可用笔记"
   }
 }
