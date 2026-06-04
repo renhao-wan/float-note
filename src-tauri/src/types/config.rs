@@ -9,6 +9,8 @@ pub struct AppConfig {
     pub window: WindowConfig,
     #[serde(default = "default_appearance")]
     pub appearance: AppearanceConfig,
+    #[serde(default = "default_language")]
+    pub language: String,
     #[serde(default = "default_storage")]
     pub storage: StorageConfig,
 }
@@ -83,6 +85,10 @@ pub struct AppearanceConfig {
 }
 
 // Default constructors
+pub fn default_language() -> String {
+    "zh".to_string()
+}
+
 pub fn default_storage() -> StorageConfig {
     StorageConfig {
         notes_directory: None,
@@ -126,6 +132,7 @@ impl Default for AppConfig {
                 y: None,
             },
             appearance: default_appearance(),
+            language: default_language(),
             storage: default_storage(),
         }
     }
