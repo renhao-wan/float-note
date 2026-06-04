@@ -1,6 +1,7 @@
 export interface AppConfig {
   opacity: number;
   alwaysOnTop: boolean;
+  language: 'zh' | 'en'; // 新增：语言偏好
   shortcuts: {
     toggleVisibility: string;
   };
@@ -61,6 +62,7 @@ export interface AppConfig {
 export const defaultConfig: AppConfig = {
   opacity: 1,
   alwaysOnTop: false,
+  language: 'zh', // 默认中文
   shortcuts: {
     toggleVisibility: 'Cmd+Ctrl+Alt+Shift+N',
   },
@@ -104,6 +106,7 @@ export const migrateConfig = (config: any): AppConfig => {
   return {
     ...defaultConfig,
     ...config,
+    language: config.language || 'zh', // 未设置则默认中文
     appearance: {
       ...defaultConfig.appearance,
       ...(config.appearance || {}),
