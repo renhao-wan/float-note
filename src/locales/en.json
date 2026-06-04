@@ -228,5 +228,19 @@
   "defaultTemplate": {
     "title": "New Note",
     "content": "# New Note\n\nStart writing..."
+  },
+  "permissions": {
+    "enableGlobalShortcuts": "Enable Global Shortcuts",
+    "accessibilityRequired": "Accessibility permissions required",
+    "description": "Blink needs Accessibility Access to enable global shortcuts like ⌘⌃⌥⇧N for creating notes from anywhere on your system.",
+    "setupSteps": "Setup Steps",
+    "step1": "Click \"Open Settings\" below",
+    "step2": "Find \"Blink\" in the accessibility apps list",
+    "step3": "Toggle the switch to enable access",
+    "step4": "Restart Blink to activate shortcuts",
+    "privacyNote": "Privacy note:",
+    "privacyDescription": "Blink only monitors the specific keyboard combinations for global shortcuts. No other data is accessed or stored.",
+    "openSettings": "Open Settings",
+    "later": "Later"
   }
 }

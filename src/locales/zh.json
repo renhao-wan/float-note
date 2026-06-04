@@ -228,5 +228,19 @@
   "defaultTemplate": {
     "title": "新笔记",
     "content": "# 新笔记\n\n开始写作..."
+  },
+  "permissions": {
+    "enableGlobalShortcuts": "启用全局快捷键",
+    "accessibilityRequired": "需要辅助功能权限",
+    "description": "Blink 需要辅助功能访问权限来启用全局快捷键，如 ⌘⌃⌥⇧N，以便在系统任何位置创建笔记。",
+    "setupSteps": "设置步骤",
+    "step1": "点击下方「打开设置」",
+    "step2": "在辅助功能应用列表中找到「Blink」",
+    "step3": "切换开关以启用访问",
+    "step4": "重启 Blink 以激活快捷键",
+    "privacyNote": "隐私说明：",
+    "privacyDescription": "Blink 仅监控全局快捷键的特定键盘组合。不会访问或存储其他数据。",
+    "openSettings": "打开设置",
+    "later": "稍后"
   }
 }

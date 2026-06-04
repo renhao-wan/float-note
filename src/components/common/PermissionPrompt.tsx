@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface PermissionPromptProps {
   show: boolean;
   onOpenSettings: () => void;
@@ -9,6 +11,7 @@ export function PermissionPrompt({
   onOpenSettings,
   onDismiss,
 }: PermissionPromptProps) {
+  const { t } = useTranslation();
   if (!show) return null;
 
   return (
@@ -26,10 +29,10 @@ export function PermissionPrompt({
           </div>
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              Enable Global Shortcuts
+              {t('permissions.enableGlobalShortcuts')}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Accessibility permissions required
+              {t('permissions.accessibilityRequired')}
             </p>
           </div>
         </div>
@@ -37,9 +40,7 @@ export function PermissionPrompt({
         {/* Content */}
         <div className="space-y-4 mb-6">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Blink needs <strong className="text-foreground">Accessibility Access</strong> to enable 
-            global shortcuts like <kbd className="px-1.5 py-0.5 bg-background border border-border/30 rounded-xl text-xs">⌘⌃⌥⇧N</kbd> for 
-            creating notes from anywhere on your system.
+            {t('permissions.description')}
           </p>
 
           <div className="bg-muted/20 border border-border/20 rounded-2xl p-4">
@@ -47,19 +48,18 @@ export function PermissionPrompt({
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/70">
                 <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
               </svg>
-              Setup Steps
+              {t('permissions.setupSteps')}
             </h3>
             <ol className="text-sm text-muted-foreground space-y-1 ml-4 list-decimal">
-              <li>Click "Open Settings" below</li>
-              <li>Find "Blink" in the accessibility apps list</li>
-              <li>Toggle the switch to enable access</li>
-              <li>Restart Blink to activate shortcuts</li>
+              <li>{t('permissions.step1')}</li>
+              <li>{t('permissions.step2')}</li>
+              <li>{t('permissions.step3')}</li>
+              <li>{t('permissions.step4')}</li>
             </ol>
           </div>
 
           <div className="text-xs text-muted-foreground/70 leading-relaxed">
-            <strong className="text-foreground">Privacy note:</strong> Blink only monitors 
-            the specific keyboard combinations for global shortcuts. No other data is accessed or stored.
+            <strong className="text-foreground">{t('permissions.privacyNote')}</strong> {t('permissions.privacyDescription')}
           </div>
         </div>
 
@@ -69,13 +69,13 @@ export function PermissionPrompt({
             onClick={onOpenSettings}
             className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-2xl text-sm font-medium transition-colors"
           >
-            Open Settings
+            {t('permissions.openSettings')}
           </button>
           <button
             onClick={onDismiss}
             className="px-4 py-2 text-muted-foreground hover:text-foreground border border-border/30 hover:bg-background/60 rounded-2xl text-sm transition-colors"
           >
-            Later
+            {t('permissions.later')}
           </button>
         </div>
 
