@@ -20,7 +20,7 @@ export function NavigationSidebar({
         {/* Notes view icon */}
         <button
           onClick={onNotesClick}
-          className={`w-6 h-6 flex items-center justify-center m-0.5 rounded-md transition-all duration-200 hover:animate-flip-x ${
+          className={`w-6 h-6 flex items-center justify-center m-0.5 rounded-md transition-all duration-200 ${
             currentView === 'notes'
               ? 'bg-primary text-primary-foreground shadow-glow'
               : 'text-muted-foreground hover:text-primary hover:bg-primary/15'
@@ -40,7 +40,7 @@ export function NavigationSidebar({
         {/* Settings icon */}
         <button
           onClick={onSettingsClick}
-          className={`w-6 h-6 flex items-center justify-center m-0.5 mb-1 rounded-md transition-all duration-200 hover:animate-spin-fast ${
+          className={`w-6 h-6 flex items-center justify-center m-0.5 mb-1 rounded-md transition-all duration-200 ${
             currentView === 'settings'
               ? 'bg-primary text-primary-foreground shadow-glow'
               : 'text-muted-foreground hover:text-primary hover:bg-primary/15'
