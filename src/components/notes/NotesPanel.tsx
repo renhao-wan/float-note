@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ResizablePanel } from '../windows/ResizablePanel';
 import { markdownToPlainText, truncateText } from '../../lib/utils';
 import { Note } from '../../types';
@@ -30,6 +31,7 @@ export function NotesPanel({
   onStartDrag,
   isWindowOpen
 }: NotesPanelProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   
   // Track open windows efficiently - only update when necessary
@@ -97,12 +99,12 @@ export function NotesPanel({
                   <line x1="16" y1="17" x2="8" y2="17"/>
                   <line x1="10" y1="9" x2="8" y2="9"/>
                 </svg>
-                <h2 className="text-sm font-medium text-foreground">Notes</h2>
+                <h2 className="text-sm font-medium text-foreground">{t('sidebar.notes')}</h2>
               </div>
               <button
                 onClick={onCreateNewNote}
                 className="text-muted-foreground hover:text-foreground p-1 rounded-lg transition-colors"
-                title="New note (⌘N)"
+                title={`${t('notes.create')} (⌘N)`}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <line x1="12" y1="5" x2="12" y2="19"/>
@@ -119,7 +121,7 @@ export function NotesPanel({
               </svg>
               <input
                 type="text"
-                placeholder="Search notes..."
+                placeholder={t('commandPalette.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-8 py-1.5 bg-background border border-border/20 rounded-lg text-xs placeholder-muted-foreground/60 focus:outline-none focus:border-primary/40"
@@ -128,7 +130,7 @@ export function NotesPanel({
                 <button
                   onClick={() => setSearchQuery('')}
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors"
-                  title="Clear search"
+                  title={t('common.clear')}
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <line x1="18" y1="6" x2="6" y2="18"/>
@@ -143,20 +145,20 @@ export function NotesPanel({
           <div className="flex-1 overflow-y-auto overflow-x-hidden mt-3">
             {loading ? (
               <div className="p-4 text-center text-muted-foreground/60 text-sm">
-                Loading your thoughts...
+                {t('common.loading')}
               </div>
             ) : filteredNotes.length === 0 ? (
               <div className="p-4 text-center text-muted-foreground/60 text-sm">
                 <div className="space-y-1">
                   {searchQuery.trim() ? (
                     <>
-                      <div>No notes found</div>
-                      <div className="text-xs text-muted-foreground/40">Try a different search term</div>
+                      <div>{t('commandPalette.noResults')}</div>
+                      <div className="text-xs text-muted-foreground/40">{t('notes.searchHint')}</div>
                     </>
                   ) : (
                     <>
-                      <div>Your workspace awaits ✨</div>
-                      <div className="text-xs text-muted-foreground/40">Press ⌘N to create your first note</div>
+                      <div>{t('notes.noNotes')}</div>
+                      <div className="text-xs text-muted-foreground/40">{t('notes.noNotesDescription')}</div>
                     </>
                   )}
                 </div>
@@ -217,7 +219,7 @@ export function NotesPanel({
                               </span>
                             )}
                             {openWindowIds.has(note.id) && (
-                              <div className="w-1 h-1 rounded-full bg-primary/40 mt-1" title="Open in window" />
+                              <div className="w-1 h-1 rounded-full bg-primary/40 mt-1" title={t('notes.openInWindow')} />
                             )}
                           </div>
                         </div>
@@ -237,7 +239,7 @@ export function NotesPanel({
                             onDeleteNote(note.id);
                           }}
                           className="text-muted-foreground/40 hover:text-red-400 p-1 rounded transition-colors"
-                          title="Delete note"
+                          title={t('notes.delete')}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M3 6h18"/>
