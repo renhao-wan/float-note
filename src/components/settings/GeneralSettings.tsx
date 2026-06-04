@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { AppConfig } from '../../types';
 
 interface GeneralSettingsProps {
@@ -27,6 +28,16 @@ export function GeneralSettings({
   onImportDirectory,
   onExportAll,
 }: GeneralSettingsProps) {
+  const { t, i18n } = useTranslation();
+
+  const handleLanguageChange = async (lang: 'zh' | 'en') => {
+    i18n.changeLanguage(lang);
+    setLocalConfig({
+      ...localConfig,
+      language: lang
+    });
+  };
+
   return (
     <div data-section="general" className="space-y-4">
       {/* Section Header - Standardized 76px height to match notes sidebar */}
@@ -36,9 +47,9 @@ export function GeneralSettings({
             <circle cx="12" cy="12" r="3"/>
             <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
           </svg>
-          General
+          {t('settings.general.title')}
         </h2>
-        <p className="text-xs text-muted-foreground/60">The essentials • who we are, what we do</p>
+        <p className="text-xs text-muted-foreground/60">{t('settings.general.description')}</p>
       </div>
 
       <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
@@ -47,21 +58,21 @@ export function GeneralSettings({
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 8v4l3 3"/>
           </svg>
-          About
+          {t('settings.general.about.title')}
         </h3>
         <div className="space-y-3 text-xs">
           <div className="flex justify-between items-center gap-3">
-            <span className="text-muted-foreground/80 font-mono w-24">Application</span>
+            <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.application')}</span>
             <div className="flex-1"></div>
             <span className="text-foreground font-mono">Blink</span>
           </div>
           <div className="flex justify-between items-center gap-3">
-            <span className="text-muted-foreground/80 font-mono w-24">Version</span>
+            <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.version')}</span>
             <div className="flex-1"></div>
             <span className="text-foreground font-mono">1.0.0</span>
           </div>
           <div className="flex justify-between items-center gap-3">
-            <span className="text-muted-foreground/80 font-mono w-24">Author</span>
+            <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.author')}</span>
             <div className="flex-1"></div>
             <span className="text-foreground font-mono">AI-Native Spatial Notes ✨</span>
           </div>
@@ -74,15 +85,40 @@ export function GeneralSettings({
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
             <polyline points="9,22 9,12 15,12 15,22"/>
           </svg>
-          Interface
+          {t('settings.general.interface.title')}
         </h3>
         <div className="space-y-3 text-xs">
-          
+
+          {/* Language Switch */}
+          <div className="flex justify-between items-center gap-3">
+            <div className="flex flex-col">
+              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.language')}</span>
+              <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.languageDescription')}</span>
+            </div>
+            <div className="flex items-center">
+              <select
+                value={localConfig.language || 'zh'}
+                onChange={(e) => handleLanguageChange(e.target.value as 'zh' | 'en')}
+                className="w-32 px-2 py-1 bg-background/20 border border-border/20 rounded-xl text-foreground text-xs focus:outline-none focus:border-primary/40 hover:bg-background/30 transition-colors appearance-none cursor-pointer font-mono"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em',
+                  paddingRight: '2.5rem'
+                }}
+              >
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
+
           {/* Show Note Previews Toggle */}
           <div className="flex justify-between items-center gap-3">
             <div className="flex flex-col">
-              <span className="text-foreground/90 font-mono text-xs">Note Previews</span>
-              <span className="text-muted-foreground/60 text-xs">Peek at note content without opening</span>
+              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.notePreviews')}</span>
+              <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.notePreviewsDescription')}</span>
             </div>
             <div className="flex items-center">
               <input
@@ -100,12 +136,12 @@ export function GeneralSettings({
               />
             </div>
           </div>
-          
+
           {/* Window Opacity Slider */}
           <div className="flex items-center gap-3">
             <div className="flex flex-col w-28">
-              <span className="text-foreground/90 font-mono text-xs">Window Opacity</span>
-              <span className="text-muted-foreground/60 text-xs">Background transparency</span>
+              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.windowOpacity')}</span>
+              <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.windowOpacityDescription')}</span>
             </div>
             <div className="flex-1 flex items-center gap-3">
               <span className="text-xs text-muted-foreground/70">🫥</span>
@@ -140,7 +176,7 @@ export function GeneralSettings({
               {Math.round((localConfig.appearance?.windowOpacity ?? 1) * 100)}%
             </span>
           </div>
-          
+
         </div>
       </div>
 
@@ -154,22 +190,22 @@ export function GeneralSettings({
             <line x1="16" y1="17" x2="8" y2="17"/>
             <line x1="10" y1="9" x2="8" y2="9"/>
           </svg>
-          File Operations
+          {t('settings.general.fileOperations.title')}
         </h3>
         <div className="space-y-3 text-xs">
-          
+
           {/* Notes Directory */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
-                <span className="text-foreground/90 font-mono text-xs">Notes Directory</span>
-                <span className="text-muted-foreground/60 text-xs">Where your notes are stored</span>
+                <span className="text-foreground/90 font-mono text-xs">{t('settings.general.fileOperations.notesDirectory')}</span>
+                <span className="text-muted-foreground/60 text-xs">{t('settings.general.fileOperations.notesDirectoryDescription')}</span>
               </div>
               <button
                 onClick={() => onReloadNotes()}
                 className="px-3 py-1.5 text-xs bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 rounded-2xl transition-colors"
               >
-                Reload Notes
+                {t('settings.general.fileOperations.reloadNotes')}
               </button>
             </div>
             <div className="flex gap-2 items-center">
@@ -199,57 +235,57 @@ export function GeneralSettings({
               </div>
             )}
           </div>
-          
+
           {/* Import Notes */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
-                <span className="text-foreground/90 font-mono text-xs">Import Notes</span>
-                <span className="text-muted-foreground/60 text-xs">Load notes from markdown files</span>
+                <span className="text-foreground/90 font-mono text-xs">{t('settings.general.fileOperations.importNotes')}</span>
+                <span className="text-muted-foreground/60 text-xs">{t('settings.general.fileOperations.importNotesDescription')}</span>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => onImportFile()}
                   className="px-3 py-1.5 text-xs bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 rounded-2xl transition-colors"
                 >
-                  Import File
+                  {t('settings.general.fileOperations.importFile')}
                 </button>
                 <button
                   onClick={() => onImportDirectory()}
                   className="px-3 py-1.5 text-xs bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 rounded-2xl transition-colors"
                 >
-                  Import Folder
+                  {t('settings.general.fileOperations.importFolder')}
                 </button>
               </div>
             </div>
           </div>
-          
+
           {/* Export Notes */}
           <div className="flex justify-between items-center">
             <div className="flex flex-col">
-              <span className="text-foreground/90 font-mono text-xs">Export Notes</span>
-              <span className="text-muted-foreground/60 text-xs">Save all notes as markdown files</span>
+              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.fileOperations.exportNotes')}</span>
+              <span className="text-muted-foreground/60 text-xs">{t('settings.general.fileOperations.exportNotesDescription')}</span>
             </div>
             <button
               onClick={() => onExportAll()}
               className="px-3 py-1.5 text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20 rounded-2xl transition-colors"
             >
-              Export All
+              {t('settings.general.fileOperations.exportAll')}
             </button>
           </div>
-          
+
           {/* Help Text */}
           <div className="bg-muted/10 rounded-2xl p-3 border border-border/10">
             <div className="text-xs text-muted-foreground/80 leading-relaxed space-y-2">
               <div>
-                <strong className="text-foreground/90">Markdown Format:</strong> Notes are stored as <code className="text-xs bg-background/40 px-1 rounded-xl">.md</code> files with YAML frontmatter containing metadata (title, tags, dates).
+                <strong className="text-foreground/90">{t('settings.general.fileOperations.markdownFormat')}:</strong> {t('settings.general.fileOperations.markdownFormatDescription')}
               </div>
               <div>
-                <strong className="text-foreground/90">Directory Mode:</strong> Set a custom directory to load/save notes directly as files, perfect for syncing with git, Dropbox, or other tools.
+                <strong className="text-foreground/90">{t('settings.general.fileOperations.directoryMode')}:</strong> {t('settings.general.fileOperations.directoryModeDescription')}
               </div>
             </div>
           </div>
-          
+
         </div>
       </div>
 
