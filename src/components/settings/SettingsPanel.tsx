@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useConfigStore } from '../../stores/config-store';
 import { invoke } from '@tauri-apps/api/core';
 import { ThemeSelector } from './ThemeSelector';
@@ -9,6 +10,7 @@ interface SettingsPanelProps {
 }
 
 export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
+  const { t, i18n } = useTranslation();
   const { config, updateConfig, isLoading } = useConfigStore();
   const [localConfig, setLocalConfig] = useState(config);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -164,9 +166,9 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <circle cx="12" cy="12" r="3"/>
             <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
           </svg>
-          General
+          {t('settings.general.title')}
         </h2>
-        <p className="text-xs text-muted-foreground/60">The essentials • who we are, what we do</p>
+        <p className="text-xs text-muted-foreground/60">{t('settings.general.description')}</p>
       </div>
 
       <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
@@ -175,21 +177,21 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 8v4l3 3"/>
           </svg>
-          About
+          {t('settings.general.about.title')}
         </h3>
         <div className="space-y-3 text-xs">
           <div className="flex justify-between items-center gap-3">
-            <span className="text-muted-foreground/80 font-mono w-24">Application</span>
+            <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.application')}</span>
             <div className="flex-1"></div>
             <span className="text-foreground font-mono">Blink</span>
           </div>
           <div className="flex justify-between items-center gap-3">
-            <span className="text-muted-foreground/80 font-mono w-24">Version</span>
+            <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.version')}</span>
             <div className="flex-1"></div>
             <span className="text-foreground font-mono">1.0.0</span>
           </div>
           <div className="flex justify-between items-center gap-3">
-            <span className="text-muted-foreground/80 font-mono w-24">Author</span>
+            <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.author')}</span>
             <div className="flex-1"></div>
             <span className="text-foreground font-mono">AI-Native Spatial Notes ✨</span>
           </div>
@@ -202,15 +204,47 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
             <polyline points="9,22 9,12 15,12 15,22"/>
           </svg>
-          Interface
+          {t('settings.general.interface.title')}
         </h3>
         <div className="space-y-3 text-xs">
-          
+
+          {/* Language Selector */}
+          <div className="flex justify-between items-center gap-3">
+            <div className="flex flex-col">
+              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.language')}</span>
+              <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.languageDescription')}</span>
+            </div>
+            <div className="flex items-center">
+              <select
+                value={localConfig.language ?? 'zh'}
+                onChange={(e) => {
+                  const newLang = e.target.value as 'zh' | 'en';
+                  setLocalConfig({
+                    ...localConfig,
+                    language: newLang,
+                  });
+                  i18n.changeLanguage(newLang);
+                }}
+                className="w-32 px-2 py-1 bg-background/20 border border-border/20 rounded-xl text-foreground text-xs focus:outline-none focus:border-primary/40 hover:bg-background/30 transition-colors appearance-none cursor-pointer font-mono"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em',
+                  paddingRight: '2.5rem'
+                }}
+              >
+                <option value="zh">简体中文</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
+
           {/* Show Note Previews Toggle */}
           <div className="flex justify-between items-center gap-3">
             <div className="flex flex-col">
-              <span className="text-foreground/90 font-mono text-xs">Note Previews</span>
-              <span className="text-muted-foreground/60 text-xs">Peek at note content without opening</span>
+              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.notePreviews')}</span>
+              <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.notePreviewsDescription')}</span>
             </div>
             <div className="flex items-center">
               <input
@@ -232,8 +266,8 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
           {/* Window Opacity Slider */}
           <div className="flex items-center gap-3">
             <div className="flex flex-col w-28">
-              <span className="text-foreground/90 font-mono text-xs">Window Opacity</span>
-              <span className="text-muted-foreground/60 text-xs">Background transparency</span>
+              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.windowOpacity')}</span>
+              <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.windowOpacityDescription')}</span>
             </div>
             <div className="flex-1 flex items-center gap-3">
               <span className="text-xs text-muted-foreground/70">🫥</span>
@@ -282,22 +316,22 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <line x1="16" y1="17" x2="8" y2="17"/>
             <line x1="10" y1="9" x2="8" y2="9"/>
           </svg>
-          File Operations
+          {t('settings.general.fileOperations.title')}
         </h3>
         <div className="space-y-3 text-xs">
-          
+
           {/* Notes Directory */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
-                <span className="text-foreground/90 font-mono text-xs">Notes Directory</span>
-                <span className="text-muted-foreground/60 text-xs">Where your notes are stored</span>
+                <span className="text-foreground/90 font-mono text-xs">{t('settings.general.fileOperations.notesDirectory')}</span>
+                <span className="text-muted-foreground/60 text-xs">{t('settings.general.fileOperations.notesDirectoryDescription')}</span>
               </div>
               <button
                 onClick={() => handleReloadNotes()}
                 className="px-3 py-1.5 text-xs bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 rounded-2xl transition-colors"
               >
-                Reload Notes
+                {t('settings.general.fileOperations.reloadNotes')}
               </button>
             </div>
             <div className="flex gap-2 items-center">
@@ -332,21 +366,21 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
-                <span className="text-foreground/90 font-mono text-xs">Import Notes</span>
-                <span className="text-muted-foreground/60 text-xs">Load notes from markdown files</span>
+                <span className="text-foreground/90 font-mono text-xs">{t('settings.general.fileOperations.importNotes')}</span>
+                <span className="text-muted-foreground/60 text-xs">{t('settings.general.fileOperations.importNotesDescription')}</span>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => handleImportFile()}
                   className="px-3 py-1.5 text-xs bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 rounded-2xl transition-colors"
                 >
-                  Import File
+                  {t('settings.general.fileOperations.importFile')}
                 </button>
                 <button
                   onClick={() => handleImportDirectory()}
                   className="px-3 py-1.5 text-xs bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 rounded-2xl transition-colors"
                 >
-                  Import Folder
+                  {t('settings.general.fileOperations.importFolder')}
                 </button>
               </div>
             </div>
@@ -355,14 +389,14 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
           {/* Export Notes */}
           <div className="flex justify-between items-center">
             <div className="flex flex-col">
-              <span className="text-foreground/90 font-mono text-xs">Export Notes</span>
-              <span className="text-muted-foreground/60 text-xs">Save all notes as markdown files</span>
+              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.fileOperations.exportNotes')}</span>
+              <span className="text-muted-foreground/60 text-xs">{t('settings.general.fileOperations.exportNotesDescription')}</span>
             </div>
             <button
               onClick={() => handleExportAll()}
               className="px-3 py-1.5 text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20 rounded-2xl transition-colors"
             >
-              Export All
+              {t('settings.general.fileOperations.exportAll')}
             </button>
           </div>
           
@@ -370,10 +404,10 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
           <div className="bg-muted/10 rounded-2xl p-3 border border-border/10">
             <div className="text-xs text-muted-foreground/80 leading-relaxed space-y-2">
               <div>
-                <strong className="text-foreground/90">Markdown Format:</strong> Notes are stored as <code className="text-xs bg-background/40 px-1 rounded-xl">.md</code> files with YAML frontmatter containing metadata (title, tags, dates).
+                <strong className="text-foreground/90">{t('settings.general.fileOperations.markdownFormat')}:</strong> {t('settings.general.fileOperations.markdownFormatDescription')}
               </div>
               <div>
-                <strong className="text-foreground/90">Directory Mode:</strong> Set a custom directory to load/save notes directly as files, perfect for syncing with git, Dropbox, or other tools.
+                <strong className="text-foreground/90">{t('settings.general.fileOperations.directoryMode')}:</strong> {t('settings.general.fileOperations.directoryModeDescription')}
               </div>
             </div>
           </div>
@@ -396,9 +430,9 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <line x1="16" y1="17" x2="8" y2="17"/>
             <line x1="10" y1="9" x2="8" y2="9"/>
           </svg>
-          Appearance
+          {t('settings.appearance.title')}
         </h2>
-        <p className="text-xs text-muted-foreground/60">Make Blink uniquely yours • fonts, colors & textures</p>
+        <p className="text-xs text-muted-foreground/60">{t('settings.appearance.description')}</p>
       </div>
 
       <div className="space-y-3">
@@ -408,7 +442,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
               <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/>
             </svg>
-            Themes
+            {t('settings.appearance.themes.title')}
           </h3>
           <ThemeSelector onSave={() => {
             // Theme changes are handled directly by ThemeSelector
@@ -423,13 +457,13 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
               <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
             </svg>
-            Typography
+            {t('settings.appearance.typography.title')}
           </h3>
           <div className="space-y-2">
             
             {/* Editor Font Size - Single Line */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-24 font-mono">Editor Font Size</label>
+              <label className="text-xs text-foreground/80 w-24 font-mono">{t('settings.appearance.typography.editorFontSize')}</label>
               <div className="flex-1 flex items-center gap-3">
                 <span className="text-xs text-muted-foreground/70" style={{ fontSize: '11px' }}>A</span>
                 <div className="flex-1 relative h-5 slider-container">
@@ -465,7 +499,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
             {/* Content Font Size - Single Line */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-24 font-mono">Content Font Size</label>
+              <label className="text-xs text-foreground/80 w-24 font-mono">{t('settings.appearance.typography.contentFontSize')}</label>
               <div className="flex-1 flex items-center gap-3">
                 <span className="text-xs text-muted-foreground/70" style={{ fontSize: '11px' }}>A</span>
                 <div className="flex-1 relative h-5 slider-container">
@@ -501,7 +535,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
             {/* Editor Font - Single Line */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-24 font-mono">Editor Font</label>
+              <label className="text-xs text-foreground/80 w-24 font-mono">{t('settings.appearance.typography.editorFont')}</label>
               <div className="flex items-center gap-3 flex-1">
                 <div className="flex-1"></div>
                 <select
@@ -533,7 +567,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
             {/* Content Font - Single Line */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-24 font-mono">Content Font</label>
+              <label className="text-xs text-foreground/80 w-24 font-mono">{t('settings.appearance.typography.contentFont')}</label>
               <div className="flex items-center gap-3 flex-1">
                 <div className="flex-1"></div>
                 <select
@@ -565,7 +599,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
             {/* Line Height - Single Line */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-24 font-mono">Line Height</label>
+              <label className="text-xs text-foreground/80 w-24 font-mono">{t('settings.appearance.typography.lineHeight')}</label>
               <div className="flex-1 flex items-center gap-3">
                 <span className="text-xs text-muted-foreground/70">1.2</span>
                 <div className="flex-1 relative h-5 slider-container">
@@ -606,7 +640,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                   <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
                   <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
                 </svg>
-                Typography Preview
+                {t('settings.appearance.typography.typographyPreview')}
               </label>
               
               {/* Preview Toggle Buttons */}
@@ -619,17 +653,17 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                       : 'text-muted-foreground/70 hover:text-foreground hover:bg-background/40'
                   }`}
                 >
-                  Editor View
+                  {t('settings.appearance.typography.editorView')}
                 </button>
-                <button 
+                <button
                   onClick={() => setPreviewMode('preview')}
                   className={`px-3 py-1.5 text-xs font-mono rounded-xl transition-all ${
-                    previewMode === 'preview' 
-                      ? 'bg-primary/80 text-primary-foreground shadow-sm' 
+                    previewMode === 'preview'
+                      ? 'bg-primary/80 text-primary-foreground shadow-sm'
                       : 'text-muted-foreground/70 hover:text-foreground hover:bg-background/40'
                   }`}
                 >
-                  Preview Mode
+                  {t('settings.appearance.typography.previewMode')}
                 </button>
               </div>
 
@@ -746,7 +780,7 @@ function calculateMetrics(data) {
                       ? 'bg-primary/20 text-primary border border-primary/30' 
                       : 'bg-muted/40 text-muted-foreground border border-border/30'
                   }`}>
-                    {previewMode === 'preview' ? 'rendered' : 'markdown'}
+                    {previewMode === 'preview' ? t('settings.appearance.typography.rendered') : t('settings.appearance.typography.markdown')}
                   </div>
                 </div>
               </div>
@@ -764,13 +798,13 @@ function calculateMetrics(data) {
               <line x1="3.95" y1="6.06" x2="8.54" y2="14"/>
               <line x1="10.88" y1="21.94" x2="15.46" y2="14"/>
             </svg>
-            Visual
+            {t('settings.appearance.visual.title')}
           </h3>
           <div className="space-y-3">
             
             {/* Theme */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Theme</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.appearance.visual.theme')}</label>
               <div className="flex gap-1 flex-1">
                 <button 
                   className="flex-1 px-2 py-1 bg-background/40 border border-primary/40 rounded text-xs font-medium font-mono"
@@ -789,7 +823,7 @@ function calculateMetrics(data) {
 
             {/* Accent Color */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Accent Color</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.appearance.visual.accentColor')}</label>
               <div className="flex gap-1 flex-1">
                 {['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#ef4444'].map(color => (
                   <button
@@ -814,7 +848,7 @@ function calculateMetrics(data) {
             
             {/* Background Pattern */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Note Background</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.appearance.visual.noteBackground')}</label>
               <div className="flex items-center gap-3 flex-1">
                 <div className="flex-1"></div>
                 <select
@@ -854,13 +888,13 @@ function calculateMetrics(data) {
               <circle cx="9" cy="9" r="2"/>
               <path d="M21 15l-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
             </svg>
-            Window
+            {t('settings.appearance.window.title')}
           </h3>
           <div className="space-y-3">
             
             {/* Window Opacity */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Window Opacity</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.appearance.window.windowOpacity')}</label>
               <div className="flex-1 flex items-center gap-3">
                 <span className="text-xs text-muted-foreground/70">30%</span>
                 <div className="flex-1 relative h-5 slider-container">
@@ -905,9 +939,9 @@ function calculateMetrics(data) {
 
             {/* Always on Top */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Always on Top</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.appearance.window.alwaysOnTop')}</label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">keep window above others</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.appearance.window.alwaysOnTopDescription')}</span>
                 <button
                   onClick={async () => {
                     const newAlwaysOnTop = !localConfig.alwaysOnTop;
@@ -947,9 +981,9 @@ function calculateMetrics(data) {
             <rect x="2" y="7" width="20" height="10" rx="1"/>
             <path d="M7 21c0-2.5 2-2.5 2-5M15 21c0-2.5 2-2.5 2-5M9 7v-4M15 7v-4"/>
           </svg>
-          Shortcuts
+          {t('settings.shortcuts.title')}
         </h2>
-        <p className="text-xs text-muted-foreground/60">Global and in-app keyboard shortcuts</p>
+        <p className="text-xs text-muted-foreground/60">{t('settings.shortcuts.description')}</p>
       </div>
 
       <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
@@ -958,17 +992,16 @@ function calculateMetrics(data) {
             <rect x="2" y="7" width="20" height="10" rx="1"/>
             <path d="M7 21c0-2.5 2-2.5 2-5M15 21c0-2.5 2-2.5 2-5M9 7v-4M15 7v-4"/>
           </svg>
-          Global Shortcuts
+          {t('settings.shortcuts.globalShortcuts.title')}
         </h3>
         <div className="space-y-4">
           <div className="text-xs text-muted-foreground/70 mb-4">
-            Global shortcuts allow you to perform actions from anywhere on your system,
-            even when the app is in the background.
+            {t('settings.shortcuts.globalShortcuts.description')}
           </div>
           
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <span className="text-xs text-foreground/80 font-mono w-32">Create New Note</span>
+              <span className="text-xs text-foreground/80 font-mono w-32">{t('settings.shortcuts.globalShortcuts.createNewNote')}</span>
               <div className="flex-1 flex items-center gap-2">
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌃</kbd>
@@ -979,7 +1012,7 @@ function calculateMetrics(data) {
             </div>
             
             <div className="flex items-center gap-3">
-              <span className="text-xs text-foreground/80 font-mono w-32">Toggle Hover Mode</span>
+              <span className="text-xs text-foreground/80 font-mono w-32">{t('settings.shortcuts.globalShortcuts.toggleHoverMode')}</span>
               <div className="flex-1 flex items-center gap-2">
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌃</kbd>
@@ -1016,7 +1049,7 @@ function calculateMetrics(data) {
                 disabled={shortcutStatus === 'registering'}
                 className="px-3 py-1.5 text-xs bg-primary/80 text-primary-foreground hover:bg-primary/90 rounded transition-all disabled:opacity-50 font-mono"
               >
-                {shortcutStatus === 'registering' ? 'registering...' : 're-register shortcuts'}
+                {shortcutStatus === 'registering' ? t('settings.shortcuts.actions.registering') : t('settings.shortcuts.actions.reRegisterShortcuts')}
               </button>
               
               <button
@@ -1039,7 +1072,7 @@ function calculateMetrics(data) {
                 }}
                 className="px-3 py-1.5 text-xs bg-background/40 border border-border/40 hover:bg-background/60 rounded transition-all font-mono"
               >
-                test event
+                {t('settings.shortcuts.actions.testEvent')}
               </button>
               
               <button
@@ -1062,7 +1095,7 @@ function calculateMetrics(data) {
                 }}
                 className="px-3 py-1.5 text-xs bg-background/40 border border-border/40 hover:bg-background/60 rounded transition-all font-mono"
               >
-                test hover
+                {t('settings.shortcuts.actions.testHover')}
               </button>
               
               <button
@@ -1085,7 +1118,7 @@ function calculateMetrics(data) {
                 }}
                 className="px-3 py-1.5 text-xs bg-red-500/20 border border-red-500/40 hover:bg-red-500/30 rounded transition-all font-mono text-red-400"
               >
-                force visible
+                {t('settings.shortcuts.actions.forceVisible')}
               </button>
               
               <button
@@ -1108,7 +1141,7 @@ function calculateMetrics(data) {
                 }}
                 className="px-3 py-1.5 text-xs bg-purple-500/20 border border-purple-500/40 hover:bg-purple-500/30 rounded transition-all font-mono text-purple-400"
               >
-                debug webview
+                {t('settings.shortcuts.actions.debugWebview')}
               </button>
             </div>
             
@@ -1123,16 +1156,15 @@ function calculateMetrics(data) {
           
           <div className="mt-4 pt-4 border-t border-border/20">
             <div className="text-xs text-muted-foreground/60 space-y-3">
-              <p className="font-medium text-foreground/80">Required macOS Permissions:</p>
+              <p className="font-medium text-foreground/80">{t('settings.shortcuts.permissions.title')}:</p>
               
               <div className="bg-background/20 border border-border/20 rounded-2xl p-3 space-y-2">
                 <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-primary/60 rounded-full mt-1.5 flex-shrink-0"></div>
                   <div>
-                    <p className="font-medium text-foreground/90 mb-1">Accessibility Access</p>
+                    <p className="font-medium text-foreground/90 mb-1">{t('settings.shortcuts.permissions.accessibilityAccess')}</p>
                     <p className="text-muted-foreground/70 leading-relaxed">
-                      Required for global shortcuts (⌘⌃⌥⇧N, ⌘⌃⌥⇧H) to work system-wide. 
-                      Allows Blink to capture key combinations even when the app is not in focus.
+                      {t('settings.shortcuts.permissions.accessibilityAccessDescription')}
                     </p>
                   </div>
                 </div>
@@ -1140,10 +1172,9 @@ function calculateMetrics(data) {
                 <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-primary/60 rounded-full mt-1.5 flex-shrink-0"></div>
                   <div>
-                    <p className="font-medium text-foreground/90 mb-1">Input Monitoring</p>
+                    <p className="font-medium text-foreground/90 mb-1">{t('settings.shortcuts.permissions.inputMonitoring')}</p>
                     <p className="text-muted-foreground/70 leading-relaxed">
-                      Enables detection of keyboard events for global shortcuts. 
-                      This permission may be automatically granted with Accessibility.
+                      {t('settings.shortcuts.permissions.inputMonitoringDescription')}
                     </p>
                   </div>
                 </div>
@@ -1154,28 +1185,26 @@ function calculateMetrics(data) {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
                   </svg>
-                  Setup Steps
+                  {t('settings.shortcuts.permissions.setupSteps')}
                 </p>
                 <ol className="text-amber-300/80 leading-relaxed space-y-1 ml-4 list-decimal">
-                  <li>Click "open accessibility settings" below</li>
-                  <li>Find "Blink" in the app list and enable it</li>
-                  <li>Quit and restart Blink completely</li>
-                  <li>Test shortcuts with the buttons above</li>
+                  <li>{t('settings.shortcuts.permissions.step1')}</li>
+                  <li>{t('settings.shortcuts.permissions.step2')}</li>
+                  <li>{t('settings.shortcuts.permissions.step3')}</li>
+                  <li>{t('settings.shortcuts.permissions.step4')}</li>
                 </ol>
               </div>
               
               <div className="text-muted-foreground/50 text-[11px] leading-relaxed">
-                <p className="font-medium mb-1">Why these permissions?</p>
-                <p>Global shortcuts allow you to create notes instantly from anywhere on your system - 
-                whether you're browsing, coding, or in a meeting. The "Hyperkey" (⌘⌃⌥⇧) combination 
-                is specifically chosen to avoid conflicts with existing shortcuts.</p>
+                <p className="font-medium mb-1">{t('settings.shortcuts.permissions.warning')}</p>
+                <p>{t('settings.shortcuts.permissions.warningDescription')}</p>
               </div>
               
               <button
                 onClick={() => invoke('open_system_settings')}
                 className="mt-3 text-xs text-primary/80 hover:text-primary underline font-mono"
               >
-                open accessibility settings →
+                {t('settings.shortcuts.permissions.openAccessibilitySettings')}
               </button>
             </div>
           </div>
@@ -1188,25 +1217,25 @@ function calculateMetrics(data) {
             <rect x="2" y="7" width="20" height="10" rx="1"/>
             <path d="M5 12h14M7 12l2-2M7 12l2 2"/>
           </svg>
-          In-App Shortcuts
+          {t('settings.shortcuts.inAppShortcuts.title')}
         </h3>
         <div className="space-y-3 text-xs">
           <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">Command Palette</span>
+            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.commandPalette')}</span>
             <div className="flex items-center gap-1">
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">K</kbd>
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">New Note</span>
+            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.newNote')}</span>
             <div className="flex items-center gap-1">
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">N</kbd>
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">Toggle Preview</span>
+            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.togglePreview')}</span>
             <div className="flex items-center gap-1">
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⇧</kbd>
@@ -1214,14 +1243,14 @@ function calculateMetrics(data) {
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">Open Settings</span>
+            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.openSettings')}</span>
             <div className="flex items-center gap-1">
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">,</kbd>
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">Focus Mode</span>
+            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.focusMode')}</span>
             <div className="flex items-center gap-1">
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">.</kbd>
@@ -1241,9 +1270,9 @@ function calculateMetrics(data) {
             <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
             <path d="m15 5 4 4"/>
           </svg>
-          Editor
+          {t('settings.editor.title')}
         </h2>
-        <p className="text-xs text-muted-foreground/60">Customize your writing experience</p>
+        <p className="text-xs text-muted-foreground/60">{t('settings.editor.description')}</p>
       </div>
       
       <div className="space-y-4">
@@ -1251,7 +1280,7 @@ function calculateMetrics(data) {
         
         <div>
           <label className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground">Line Height</span>
+            <span className="text-sm font-medium text-foreground">{t('settings.editor.lineHeight')}</span>
             <input
               type="range"
               min="1"
@@ -1282,19 +1311,19 @@ function calculateMetrics(data) {
               <path d="M9 15h.01"/>
               <path d="M15 15h.01"/>
             </svg>
-            Paper Style
+            {t('settings.editor.paperStyle.title')}
           </h3>
           <div className="space-y-3">
             <div className="text-xs text-muted-foreground/70 mb-4">
-              Choose a background style to enhance your writing experience
+              {t('settings.editor.paperStyle.description')}
             </div>
             
             <div className="grid grid-cols-2 gap-3">
               {[
-                { key: 'none', label: 'Plain', description: 'Clean background' },
-                { key: 'dotted-grid', label: 'Dots', description: 'Subtle dot grid' },
-                { key: 'lines', label: 'Lines', description: 'Notebook lines' },
-                { key: 'ruled', label: 'Ruled', description: 'College ruled' }
+                { key: 'none', label: t('settings.editor.paperStyle.plain'), description: t('settings.editor.paperStyle.plainDescription') },
+                { key: 'dotted-grid', label: t('settings.editor.paperStyle.dots'), description: t('settings.editor.paperStyle.dotsDescription') },
+                { key: 'lines', label: t('settings.editor.paperStyle.lines'), description: t('settings.editor.paperStyle.linesDescription') },
+                { key: 'ruled', label: t('settings.editor.paperStyle.ruled'), description: t('settings.editor.paperStyle.ruledDescription') }
               ].map((style) => (
                 <button
                   key={style.key}
@@ -1330,15 +1359,15 @@ function calculateMetrics(data) {
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
               <path d="m9 11 3 3L22 4"/>
             </svg>
-            Editor Features
+            {t('settings.editor.editorFeatures.title')}
           </h3>
           <div className="space-y-3">
             
             {/* Focus Mode */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Focus Mode</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.focusMode')}</label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">distraction-free writing</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.focusModeDescription')}</span>
                 <button
                   onClick={() => setLocalConfig({
                     ...localConfig,
@@ -1360,9 +1389,9 @@ function calculateMetrics(data) {
             
             {/* Syntax Highlighting */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Syntax Highlighting</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.syntaxHighlighting')}</label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">code syntax colors</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.syntaxHighlightingDescription')}</span>
                 <button
                   onClick={() => setLocalConfig({
                     ...localConfig,
@@ -1384,9 +1413,9 @@ function calculateMetrics(data) {
             
             {/* Typewriter Mode */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Typewriter Mode</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.typewriterMode')}</label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">center current line</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.typewriterModeDescription')}</span>
                 <button
                   onClick={() => setLocalConfig({
                     ...localConfig,
@@ -1408,9 +1437,9 @@ function calculateMetrics(data) {
             
             {/* Vim Mode */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Vim Mode</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.vimMode')}</label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">enable vim keybindings</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.vimModeDescription')}</span>
                 <button
                   onClick={() => setLocalConfig({
                     ...localConfig,
@@ -1432,9 +1461,9 @@ function calculateMetrics(data) {
             
             {/* Word Wrap */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">Word Wrap</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.wordWrap')}</label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">wrap long lines in editor</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.wordWrapDescription')}</span>
                 <button
                   onClick={() => setLocalConfig({
                     ...localConfig,
@@ -1469,17 +1498,17 @@ function calculateMetrics(data) {
             <path d="M12 8v4"/>
             <path d="M12 16h.01"/>
           </svg>
-          Advanced
+          {t('settings.advanced.title')}
         </h2>
-        <p className="text-xs text-muted-foreground/60">Advanced application settings</p>
+        <p className="text-xs text-muted-foreground/60">{t('settings.advanced.description')}</p>
       </div>
       
       <div className="space-y-4">
         <div>
           <label className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-foreground">Developer Mode</div>
-              <div className="text-xs text-muted-foreground/60">Enable developer tools and features</div>
+              <div className="text-sm font-medium text-foreground">{t('settings.advanced.developerMode')}</div>
+              <div className="text-xs text-muted-foreground/60">{t('settings.advanced.developerModeDescription')}</div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input 
@@ -1502,8 +1531,8 @@ function calculateMetrics(data) {
         <div>
           <label className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-foreground">Auto Update</div>
-              <div className="text-xs text-muted-foreground/60">Automatically download and install updates</div>
+              <div className="text-sm font-medium text-foreground">{t('settings.advanced.autoUpdate')}</div>
+              <div className="text-xs text-muted-foreground/60">{t('settings.advanced.autoUpdateDescription')}</div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input 
@@ -1572,24 +1601,24 @@ function calculateMetrics(data) {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Saving...
+                {t('common.loading')}
               </>
             ) : saveStatus === 'saved' ? (
               <>
                 <svg className="w-3 h-3 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                 </svg>
-                Saved
+                {t('common.success')}
               </>
             ) : saveStatus === 'error' ? (
               <>
                 <svg className="w-3 h-3 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
-                Error
+                {t('common.error')}
               </>
             ) : (
-              'Save Changes'
+              t('common.save')
             )}
           </button>
         </div>
