@@ -1,29 +1,29 @@
-# Dirty Tracking System Design
+# 脏标记系统设计
 
-**Branch Name:** `feature/dirty-tracking`  
-**Date:** 2025-07-14  
-**Status:** Implemented ✅
+**分支名称：** `feature/dirty-tracking`
+**日期：** 2025-07-14
+**状态：** 已实现 ✅
 
-## Overview
+## 概述
 
-This document outlines the implementation of a dirty tracking system for FloatNote to ensure we only save notes that have actually changed. This builds upon the recent optimization where we switched from bulk saves to individual note saves.
+本文档概述了 FloatNote 脏标记系统的实现，确保我们只保存实际发生变化的笔记。这建立在最近的优化基础上，我们从批量保存切换到了单条笔记保存。
 
-## Design Principles
+## 设计原则
 
-1. **Hybrid Approach**: Combine internal dirty flags with file hashing for comprehensive change detection
-2. **Performance**: Minimal overhead during normal editing operations
-3. **Reliability**: Detect both internal edits and external file changes
-4. **Simplicity**: Clear, maintainable implementation
+1. **混合方法**：结合内部脏标记和文件哈希，实现全面的变更检测
+2. **性能**：正常编辑操作期间开销最小
+3. **可靠性**：检测内部编辑和外部文件变更
+4. **简洁性**：清晰、可维护的实现
 
-## Implementation Strategy
+## 实现策略
 
-### 1. Internal Change Tracking (Dirty Flags)
+### 1. 内部变更跟踪（脏标记）
 
-**Purpose**: Track changes made within the application
-**Implementation**: HashMap of note IDs to dirty states
+**目的**：跟踪应用内进行的变更
+**实现**：笔记 ID 到脏状态的 HashMap
 
 ```rust
-// In NotesState
+// NotesState 中
 pub struct NotesState {
     notes: Arc<Mutex<HashMap<String, Note>>>,
     dirty_flags: Arc<Mutex<HashMap<String, bool>>>,
@@ -31,54 +31,54 @@ pub struct NotesState {
 }
 ```
 
-**Benefits**:
-- Zero-cost during editing (just set a flag)
-- Immediate change detection
-- No computational overhead
+**优势**：
+- 编辑期间零成本（只需设置标记）
+- 即时变更检测
+- 无计算开销
 
-### 2. External Change Detection (Content Hashing)
+### 2. 外部变更检测（内容哈希）
 
-**Purpose**: Detect when files are modified outside the application
-**Implementation**: SHA-256 hashes stored in the notes index
+**目的**：检测应用外部修改的文件
+**实现**：存储在笔记索引中的 SHA-256 哈希
 
 ```rust
 pub struct NoteIndexEntry {
-    // ... existing fields ...
-    file_hash: Option<String>, // SHA-256 hash of file content
-    content_hash: Option<String>, // SHA-256 hash of note content only
+    // ... 现有字段 ...
+    file_hash: Option<String>, // 文件内容的 SHA-256 哈希
+    content_hash: Option<String>, // 仅笔记内容的 SHA-256 哈希
 }
 ```
 
-**Benefits**:
-- Detects external editors/sync conflicts
-- Provides data integrity verification
-- Enables smart sync in future
+**优势**：
+- 检测外部编辑器/同步冲突
+- 提供数据完整性验证
+- 为未来智能同步奠定基础
 
-## Implementation Plan
+## 实现计划
 
-### Phase 1: Backend Infrastructure
+### 第一阶段：后端基础设施
 
-1. Add dirty tracking to `NotesState`:
+1. 向 `NotesState` 添加脏标记跟踪：
    ```rust
-   // Track which notes have unsaved changes
+   // 跟踪哪些笔记有未保存的更改
    dirty_flags: Arc<Mutex<HashMap<String, bool>>>
-   
-   // Track content hashes for comparison
+
+   // 跟踪内容哈希用于比较
    content_hashes: Arc<Mutex<HashMap<String, String>>>
    ```
 
-2. Update `update_note` command:
-   - Compare new content with stored hash
-   - Only save if content actually changed
-   - Update hash after successful save
+2. 更新 `update_note` 命令：
+   - 比较新内容与存储的哈希
+   - 仅在内容实际变化时保存
+   - 保存成功后更新哈希
 
-3. Add hash computation to `FileStorageManager`:
-   - Compute SHA-256 hash when saving notes
-   - Store in notes index for external change detection
+3. 向 `FileStorageManager` 添加哈希计算：
+   - 保存笔记时计算 SHA-256 哈希
+   - 存储在笔记索引中用于外部变更检测
 
-### Phase 2: Frontend Integration
+### 第二阶段：前端集成
 
-1. Add dirty state to note stores:
+1. 向笔记 store 添加脏状态：
    ```typescript
    interface NoteState {
      isDirty: boolean;
@@ -86,26 +86,26 @@ pub struct NoteIndexEntry {
    }
    ```
 
-2. Update save logic:
-   - Track content changes in editor
-   - Only invoke save command if content differs
-   - Show accurate save status
+2. 更新保存逻辑：
+   - 在编辑器中跟踪内容变化
+   - 仅在内容不同时调用保存命令
+   - 显示准确的保存状态
 
-### Phase 3: External Change Detection
+### 第三阶段：外部变更检测
 
-1. File watcher integration:
-   - Monitor notes directory for external changes
-   - Compare file hashes on change events
-   - Prompt user for conflict resolution
+1. 文件监视器集成：
+   - 监控笔记目录的外部变更
+   - 在变更事件时比较文件哈希
+   - 提示用户解决冲突
 
-2. Startup validation:
-   - Check file hashes against index
-   - Detect notes modified while app was closed
-   - Reload changed notes automatically
+2. 启动验证：
+   - 检查文件哈希与索引的一致性
+   - 检测应用关闭期间修改的笔记
+   - 自动重新加载变更的笔记
 
-## Technical Details
+## 技术细节
 
-### Hash Computation
+### 哈希计算
 
 ```rust
 use sha2::{Sha256, Digest};
@@ -117,7 +117,7 @@ fn compute_content_hash(content: &str) -> String {
 }
 ```
 
-### Dirty Flag Management
+### 脏标记管理
 
 ```rust
 impl NotesState {
@@ -125,12 +125,12 @@ impl NotesState {
         let mut flags = self.dirty_flags.lock().await;
         flags.insert(note_id.to_string(), true);
     }
-    
+
     pub fn clear_dirty(&self, note_id: &str) {
         let mut flags = self.dirty_flags.lock().await;
         flags.remove(note_id);
     }
-    
+
     pub fn is_dirty(&self, note_id: &str) -> bool {
         let flags = self.dirty_flags.lock().await;
         flags.get(note_id).copied().unwrap_or(false)
@@ -138,22 +138,22 @@ impl NotesState {
 }
 ```
 
-## Benefits
+## 优势
 
-1. **Performance**: Only save when necessary
-2. **Reliability**: Detect all types of changes
-3. **User Experience**: Accurate save indicators
-4. **Future-Proof**: Enables advanced sync features
+1. **性能**：仅在必要时保存
+2. **可靠性**：检测所有类型的变更
+3. **用户体验**：准确的保存指示器
+4. **面向未来**：支持高级同步功能
 
-## Testing Strategy
+## 测试策略
 
-1. Unit tests for hash computation
-2. Integration tests for dirty flag lifecycle
-3. E2E tests for save optimization
-4. Manual testing of external change detection
+1. 哈希计算的单元测试
+2. 脏标记生命周期的集成测试
+3. 保存优化的端到端测试
+4. 外部变更检测的手动测试
 
-## Migration Notes
+## 迁移说明
 
-- Existing notes will get hashes on first save
-- No breaking changes to current functionality
-- Gradual rollout possible with feature flags
+- 现有笔记将在首次保存时获取哈希
+- 对当前功能无破坏性变更
+- 可通过功能标记逐步推出

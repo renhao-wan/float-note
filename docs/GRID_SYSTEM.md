@@ -1,209 +1,209 @@
-# FloatNote Grid System Documentation
+# FloatNote 栅格系统文档
 
-## Overview
+## 概述
 
-This document defines the comprehensive grid system for consistent spacing and positioning throughout the FloatNote application. The goal is to ensure visual harmony across all views and components.
+本文档定义了 FloatNote 应用中全面的栅格系统，用于确保一致的间距和定位。目标是在所有视图和组件之间实现视觉和谐。
 
-## Base Unit System
+## 基础单位系统
 
-Our grid system is based on a 4px base unit, following the Tailwind CSS spacing scale:
+我们的栅格系统基于 4px 基础单位，遵循 Tailwind CSS 间距比例：
 
-- **Base unit**: 4px (0.25rem)
-- **Spacing scale**: Multipliers of the base unit
+- **基础单位**：4px (0.25rem)
+- **间距比例**：基础单位的倍数
 
-### Spacing Values
+### 间距值
 
-| Token | Pixels | Rem | Usage |
-|-------|--------|-----|--------|
-| 0     | 0px    | 0rem | No spacing |
-| 0.5   | 2px    | 0.125rem | Hairline spacing |
-| 1     | 4px    | 0.25rem | Tight spacing |
-| 1.5   | 6px    | 0.375rem | Small gaps |
-| 2     | 8px    | 0.5rem | Default small spacing |
-| 3     | 12px   | 0.75rem | Default medium spacing |
-| 4     | 16px   | 1rem | Standard spacing |
-| 5     | 20px   | 1.25rem | Large spacing |
-| 6     | 24px   | 1.5rem | Extra large spacing |
-| 8     | 32px   | 2rem | Section spacing |
+| 令牌 | 像素 | Rem | 用途 |
+|------|------|-----|------|
+| 0 | 0px | 0rem | 无间距 |
+| 0.5 | 2px | 0.125rem | 发丝间距 |
+| 1 | 4px | 0.25rem | 紧凑间距 |
+| 1.5 | 6px | 0.375rem | 小间隙 |
+| 2 | 8px | 0.5rem | 默认小间距 |
+| 3 | 12px | 0.75rem | 默认中等间距 |
+| 4 | 16px | 1rem | 标准间距 |
+| 5 | 20px | 1.25rem | 大间距 |
+| 6 | 24px | 1.5rem | 超大间距 |
+| 8 | 32px | 2rem | 区块间距 |
 
-## Component Grid Structure
+## 组件栅格结构
 
-### Window Layout
+### 窗口布局
 
 ```
 ┌─────────────────────────────────────────┐
-│ Title Bar (height: 32px)                │
+│ 标题栏 (高度: 32px)                      │
 ├─────┬───────────────────────────────────┤
-│ Nav │ Content Area                      │
-│ Bar │                                   │
+│ 导航 │ 内容区域                          │
+│ 栏  │                                   │
 │(32px)│                                   │
 ├─────┴───────────────────────────────────┤
-│ Status Bar (height: 24px)               │
+│ 状态栏 (高度: 24px)                      │
 └─────────────────────────────────────────┘
 ```
 
-**Note**: Implementation found the title bar was set to 48px (h-12) which was causing inconsistent spacing. This has been corrected to 32px (h-8) to match the navigation bar width and create visual harmony.
+**注意**：实现中发现标题栏设置为 48px (h-12)，导致间距不一致。已修正为 32px (h-8)，与导航栏宽度匹配，实现视觉和谐。
 
-### Navigation Bar
-- **Width**: 32px (8 units)
-- **Icon size**: 12px (3 units)
-- **Button size**: 20px × 20px (w-5 h-5)
-- **Button margin**: 2px (0.5 units)
-- **Top padding**: 4px (1 unit)
-- **Bottom padding**: 4px (1 unit)
-- **Buttons use flexbox centering for perfect icon alignment**
+### 导航栏
+- **宽度**：32px（8 单位）
+- **图标大小**：12px（3 单位）
+- **按钮大小**：20px × 20px (w-5 h-5)
+- **按钮间距**：2px（0.5 单位）
+- **顶部内边距**：4px（1 单位）
+- **底部内边距**：4px（1 单位）
+- **按钮使用 flexbox 居中以实现完美图标对齐**
 
-### Title Bar
-- **Height**: 32px (8 units) - corrected from 48px
-- **Horizontal padding**: 16px (4 units) 
-- **Vertical alignment**: center (flex items-center)
-- **Title font size**: 11px
-- **Stats font size**: 10px
-- **Border**: bottom border with 30% opacity
+### 标题栏
+- **高度**：32px（8 单位）- 从 48px 修正
+- **水平内边距**：16px（4 单位）
+- **垂直对齐**：居中 (flex items-center)
+- **标题字体大小**：11px
+- **统计字体大小**：10px
+- **边框**：底部边框，30% 不透明度
 
-### Status Bar  
-- **Height**: 24px (6 units)
-- **Horizontal padding**: 12px (3 units)
-- **Vertical alignment**: center (flex items-center)
-- **Font size**: 12px (text-xs)
-- **Icon size**: 16px (w-4 h-4)
-- **Gap between items**: 12px (gap-3)
+### 状态栏
+- **高度**：24px（6 单位）
+- **水平内边距**：12px（3 单位）
+- **垂直对齐**：居中 (flex items-center)
+- **字体大小**：12px (text-xs)
+- **图标大小**：16px (w-4 h-4)
+- **项目间距**：12px (gap-3)
 
-### Content Panels
+### 内容面板
 
-#### Notes List Panel
-- **Header height**: 76px total (fixed height container)
-  - **Uses flexbox centering for consistent alignment**
-  - **Title + button row**: flex items with 12px gap
-  - **Search input**: separate row below title
-- **List item padding**: 12px (3 units)
-- **List item margin**: 8px (2 units) 
-- **List container padding**: 8px (2 units)
+#### 笔记列表面板
+- **头部高度**：总计 76px（固定高度容器）
+  - **使用 flexbox 居中以实现一致对齐**
+  - **标题 + 按钮行**：flex 项目，12px 间距
+  - **搜索输入**：标题下方单独一行
+- **列表项内边距**：12px（3 单位）
+- **列表项间距**：8px（2 单位）
+- **列表容器内边距**：8px（2 单位）
 
-#### Settings Panel
-- **Section headers**: 76px height (matching notes panel headers)
-  - **Title**: 14px font size
-  - **Subtitle**: 12px font size, 60% opacity
-  - **Icon**: 14px size with 8px gap
-- **Section spacing**: 16px (4 units) between sections
-- **Card padding**: 16px (4 units)
-- **Card spacing**: 12px (3 units) between cards
+#### 设置面板
+- **区块头部**：76px 高度（与笔记面板头部匹配）
+  - **标题**：14px 字体大小
+  - **副标题**：12px 字体大小，60% 不透明度
+  - **图标**：14px 大小，8px 间距
+- **区块间距**：16px（4 单位）
+- **卡片内边距**：16px（4 单位）
+- **卡片间距**：12px（3 单位）
 
-#### Editor Panel
-- **Default padding**: 24px (6 units)
-- **Focus mode padding**: 32px horizontal, 48px vertical (8/12 units)
-- **Line height**: 1.6 (editor), 1.65 (preview)
+#### 编辑器面板
+- **默认内边距**：24px（6 单位）
+- **专注模式内边距**：水平 32px，垂直 48px（8/12 单位）
+- **行高**：1.6（编辑器），1.65（预览）
 
-## Standardized Component Spacing
+## 标准化组件间距
 
-### Headers
-All headers should follow this structure:
+### 头部
+所有头部应遵循此结构：
 ```tsx
 <div className="p-4 border-b border-border/20">
   <div className="flex items-center justify-between mb-3">
-    <h2 className="text-sm font-medium text-foreground">Title</h2>
-    <button className="...">Action</button>
+    <h2 className="text-sm font-medium text-foreground">标题</h2>
+    <button className="...">操作</button>
   </div>
-  <!-- Optional subtitle or search -->
+  <!-- 可选副标题或搜索 -->
 </div>
 ```
 
-### Section Headers
+### 区块头部
 ```tsx
 <div className="mb-4">
   <h2 className="text-sm font-semibold text-foreground mb-1">
-    Section Title
+    区块标题
   </h2>
   <p className="text-xs text-muted-foreground/60">
-    Section description
+    区块描述
   </p>
 </div>
 ```
 
-### Cards
+### 卡片
 ```tsx
 <div className="bg-card/20 rounded-lg p-4 border border-border/10">
-  <h3 className="text-xs font-medium mb-3">Card Title</h3>
-  <!-- Card content -->
+  <h3 className="text-xs font-medium mb-3">卡片标题</h3>
+  <!-- 卡片内容 -->
 </div>
 ```
 
-### Form Controls
-- **Label margin bottom**: 8px (2 units)
-- **Input height**: 32px (8 units)
-- **Input padding**: 8px horizontal (2 units)
-- **Control group spacing**: 12px (3 units)
+### 表单控件
+- **标签底部间距**：8px（2 单位）
+- **输入框高度**：32px（8 单位）
+- **输入框内边距**：水平 8px（2 单位）
+- **控件组间距**：12px（3 单位）
 
-### Buttons
-- **Small button padding**: 4px (1 unit)
-- **Default button padding**: 8px horizontal, 6px vertical
-- **Large button padding**: 12px horizontal, 8px vertical
-- **Icon button size**: 20px (5 units)
+### 按钮
+- **小按钮内边距**：4px（1 单位）
+- **默认按钮内边距**：水平 8px，垂直 6px
+- **大按钮内边距**：水平 12px，垂直 8px
+- **图标按钮大小**：20px（5 单位）
 
-## Alignment Guidelines
+## 对齐指南
 
-### Vertical Rhythm
-Maintain consistent vertical spacing using multiples of 4px:
-- **Tight**: 4px, 8px
-- **Default**: 12px, 16px
-- **Loose**: 24px, 32px
+### 垂直节奏
+使用 4px 的倍数保持一致的垂直间距：
+- **紧凑**：4px、8px
+- **默认**：12px、16px
+- **宽松**：24px、32px
 
-### Horizontal Alignment
-- **Container padding**: 16px (4 units) standard
-- **Narrow containers**: 12px (3 units)
-- **Wide containers**: 24px (6 units)
+### 水平对齐
+- **容器内边距**：标准 16px（4 单位）
+- **窄容器**：12px（3 单位）
+- **宽容器**：24px（6 单位）
 
-### Icon Alignment
-- Icons should be optically centered, not mathematically centered
-- Use consistent icon sizes: 12px (small), 14px (default), 16px (large)
-- Maintain 4px minimum padding around interactive icons
+### 图标对齐
+- 图标应光学居中，而非数学居中
+- 使用一致的图标大小：12px（小）、14px（默认）、16px（大）
+- 交互图标周围保持最小 4px 内边距
 
-## Responsive Considerations
+## 响应式考虑
 
-### Minimum Sizes
-- **Minimum button size**: 20px × 20px
-- **Minimum input height**: 28px
-- **Minimum clickable area**: 44px × 44px (on touch devices)
+### 最小尺寸
+- **最小按钮大小**：20px × 20px
+- **最小输入框高度**：28px
+- **最小可点击区域**：44px × 44px（触摸设备）
 
-### Maximum Widths
-- **Search inputs**: 100% of container
-- **Settings cards**: 100% with max-width constraints
-- **Editor content**: Responsive to window size
+### 最大宽度
+- **搜索输入**：容器的 100%
+- **设置卡片**：100%，带最大宽度约束
+- **编辑器内容**：响应窗口大小
 
-## Implementation Checklist
+## 实现检查清单
 
-When implementing UI components, verify:
+实现 UI 组件时，请验证：
 
-- [x] Headers maintain consistent 76px height across views (Notes and Settings panels)
-- [x] Navigation buttons are 20px × 20px with 12px icons
-- [x] All spacing uses the defined scale (multiples of 4px)
-- [x] Section headers use 76px height with flexbox centering (consistent across notes and settings)
-- [x] Cards use standardized padding (16px)
-- [x] Form controls follow the defined spacing
-- [x] Icons are properly sized and aligned (12px nav, 14px sections)
-- [x] Hover states maintain spatial consistency
-- [x] Focus states don't cause layout shifts
+- [x] 头部在视图间保持一致的 76px 高度（笔记和设置面板）
+- [x] 导航按钮为 20px × 20px，图标 12px
+- [x] 所有间距使用定义的比例（4px 的倍数）
+- [x] 区块头部使用 76px 高度和 flexbox 居中（笔记和设置一致）
+- [x] 卡片使用标准化内边距（16px）
+- [x] 表单控件遵循定义的间距
+- [x] 图标大小和对齐正确（导航 12px，区块 14px）
+- [x] 悬停状态保持空间一致性
+- [x] 焦点状态不会导致布局偏移
 
-## Fixes Applied
+## 已应用的修复
 
-1. **Title Bar Height**: Reduced from 48px to 32px to match navigation width
-2. **Section Headers**: Standardized to 76px height (updated from 60px) for consistency
-3. **Navigation Buttons**: Fixed to exact 20px × 20px dimensions
-4. **Panel Headers**: Standardized Notes and Settings headers to 76px
-5. **Status Bar**: Confirmed 24px height with proper spacing
-6. **Title Font Size**: Updated from 11px to 13px for improved hierarchy
-7. **Note Footer Height**: Standardized to 24px height (h-6)
-8. **Small Icons**: Updated from 11px to 12px minimum size
-9. **Rounded Corners**: Fixed transparent window background interference
-10. **Settings Navigation Icons**: Added consistent 14px icons to sidebar header and 12px icons to sections
-11. **Save Button Optimization**: Reduced from px-4 py-2 to px-3 py-1.5 with text-xs
-12. **Button Icon Consistency**: Aligned Save button icons to 12px (w-3 h-3)
-13. **Backdrop Blur**: Added backdrop-blur-sm to Save button background
-14. **Footer Text Contrast**: Enhanced directory text to text-foreground/90
+1. **标题栏高度**：从 48px 减少到 32px，与导航宽度匹配
+2. **区块头部**：标准化为 76px 高度（从 60px 更新），保持一致性
+3. **导航按钮**：固定为精确的 20px × 20px 尺寸
+4. **面板头部**：笔记和设置头部标准化为 76px
+5. **状态栏**：确认 24px 高度，间距正确
+6. **标题字体大小**：从 11px 更新到 13px，改善层次感
+7. **笔记底部高度**：标准化为 24px 高度 (h-6)
+8. **小图标**：从 11px 更新到 12px 最小大小
+9. **圆角**：修复透明窗口背景干扰
+10. **设置导航图标**：侧边栏头部添加一致的 14px 图标，区块添加 12px 图标
+11. **保存按钮优化**：从 px-4 py-2 减少到 px-3 py-1.5，使用 text-xs
+12. **按钮图标一致性**：保存按钮图标对齐到 12px (w-3 h-3)
+13. **背景模糊**：保存按钮背景添加 backdrop-blur-sm
+14. **底部文本对比度**：目录文本增强到 text-foreground/90
 
-## CSS Variables
+## CSS 变量
 
-Consider adding these CSS variables for easier maintenance:
+考虑添加这些 CSS 变量以便维护：
 
 ```css
 :root {
@@ -218,68 +218,68 @@ Consider adding these CSS variables for easier maintenance:
 }
 ```
 
-## Design Consistency Standards
+## 设计一致性标准
 
-### Typography Hierarchy
-Established visual hierarchy with consistent font sizing:
-- **App Title**: 13px (improved from 11px for better prominence)
-- **Section Headers**: 14px (text-sm)
-- **Subsection Text**: 12px (text-xs) 
-- **Button Text**: 12px (text-xs) for proportional design
-- **Footer Text**: 12px with enhanced contrast (text-foreground/90 for directory)
+### 字体层次
+建立了一致的字体大小视觉层次：
+- **应用标题**：13px（从 11px 改进，更突出）
+- **区块头部**：14px (text-sm)
+- **子区块文本**：12px (text-xs)
+- **按钮文本**：12px (text-xs)，比例设计
+- **底部文本**：12px，增强对比度（目录使用 text-foreground/90）
 
-### Icon Size System
-Consistent iconography throughout the application:
-- **Navigation Icons**: 12px (w-3 h-3) - sidebar buttons
-- **Section Header Icons**: 14px (w-3.5 h-3.5) - main section headers  
-- **Subsection Icons**: 12px (w-3 h-3) - settings sidebar sections
-- **Footer Icons**: 16px (w-4 h-4) - status bar elements
-- **Button Icons**: 12px (w-3 h-3) - action buttons
+### 图标大小系统
+应用中一致的图标体系：
+- **导航图标**：12px (w-3 h-3) - 侧边栏按钮
+- **区块头部图标**：14px (w-3.5 h-3.5) - 主区块头部
+- **子区块图标**：12px (w-3 h-3) - 设置侧边栏区块
+- **底部图标**：16px (w-4 h-4) - 状态栏元素
+- **按钮图标**：12px (w-3 h-3) - 操作按钮
 
-### Visual Treatment Standards
-Enhanced visual consistency with proper transparency:
-- **Save Button**: px-3 py-1.5 with backdrop-blur-sm background
-- **Footer Text**: Improved contrast hierarchy (directory at 90% opacity)
-- **Section Headers**: Consistent 76px height with flexbox centering
-- **Icon Alignment**: Proper optical centering in all containers
+### 视觉处理标准
+通过适当的透明度增强视觉一致性：
+- **保存按钮**：px-3 py-1.5，带 backdrop-blur-sm 背景
+- **底部文本**：改进的对比度层次（目录 90% 不透明度）
+- **区块头部**：一致的 76px 高度，flexbox 居中
+- **图标对齐**：所有容器中正确的光学居中
 
-### Navigation Structure Consistency
-Unified navigation patterns across all views:
-- **Sidebar Headers**: Icon + title + optional action button
-- **Section Navigation**: Icon + title + subtitle structure
-- **Visual States**: Consistent hover, active, and selected states
+### 导航结构一致性
+所有视图统一的导航模式：
+- **侧边栏头部**：图标 + 标题 + 可选操作按钮
+- **区块导航**：图标 + 标题 + 副标题结构
+- **视觉状态**：一致的悬停、激活和选中状态
 
-## Common Patterns
+## 常用模式
 
-### Flex Spacing
-Use gap utilities for consistent spacing in flex containers:
+### Flex 间距
+在 flex 容器中使用 gap 工具类实现一致间距：
 ```tsx
-<div className="flex items-center gap-2"> <!-- 8px gap -->
-<div className="flex flex-col gap-3"> <!-- 12px gap -->
-<div className="space-y-4"> <!-- 16px vertical spacing -->
+<div className="flex items-center gap-2"> <!-- 8px 间距 -->
+<div className="flex flex-col gap-3"> <!-- 12px 间距 -->
+<div className="space-y-4"> <!-- 16px 垂直间距 -->
 ```
 
-### Margin/Padding Shortcuts
+### Margin/Padding 快捷方式
 - `m-0.5` = 2px
 - `p-1` = 4px
 - `p-2` = 8px
 - `p-3` = 12px
 - `p-4` = 16px
 
-## Debugging Grid Issues
+## 调试栅格问题
 
-When spacing appears inconsistent:
+当间距出现不一致时：
 
-1. Check for conflicting margin/padding
-2. Verify parent containers don't override spacing
-3. Ensure consistent use of border-box sizing
-4. Use browser DevTools grid overlay
-5. Check for CSS specificity issues
-6. Verify theme variables are applied correctly
+1. 检查是否有冲突的 margin/padding
+2. 验证父容器没有覆盖间距
+3. 确保一致使用 border-box 盒模型
+4. 使用浏览器 DevTools 栅格叠加层
+5. 检查 CSS 优先级问题
+6. 验证主题变量是否正确应用
 
-## Future Considerations
+## 未来考虑
 
-- Consider implementing a spacing debug mode that visualizes the grid
-- Add visual regression tests for spacing consistency
-- Create Figma/design tool templates matching this grid
-- Consider accessibility implications of spacing (WCAG target sizes)
+- 考虑实现栅格可视化的间距调试模式
+- 添加间距一致性的视觉回归测试
+- 创建与栅格匹配的 Figma/设计工具模板
+- 考虑间距的无障碍影响（WCAG 目标尺寸）

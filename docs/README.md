@@ -1,43 +1,43 @@
-# FloatNote Landing Page
+# FloatNote 落地页
 
-A beautiful, modern landing page for FloatNote - the AI-native spatial note-taking application.
+一个精美、现代的落地页，用于展示 FloatNote —— AI 原生空间笔记应用。
 
-## Features
+## 特性
 
-- 🎨 **Modern Design**: Glass-morphism UI with beautiful gradients and animations
-- 📱 **Fully Responsive**: Optimized for desktop, tablet, and mobile devices
-- ⚡ **Fast Loading**: Single HTML file with CDN resources for optimal performance
-- 🌟 **Interactive Elements**: Smooth scrolling, hover effects, and entrance animations
-- 🎯 **Conversion Focused**: Clear call-to-actions and download buttons
+- 🎨 **现代设计**：毛玻璃 UI，精美渐变和动画效果
+- 📱 **完全响应式**：针对桌面、平板和移动设备优化
+- ⚡ **快速加载**：单 HTML 文件，使用 CDN 资源，性能最优
+- 🌟 **交互元素**：平滑滚动、悬停效果和入场动画
+- 🎯 **转化导向**：清晰的行动号召和下载按钮
 
-## Sections
+## 页面板块
 
-- **Hero**: Eye-catching intro with animated visuals
-- **Features**: Comprehensive showcase of FloatNote's capabilities
-- **Demo**: Preview section (ready for video integration)
-- **Technical Highlights**: Developer-focused content
-- **Download**: Direct links to GitHub releases
-- **Footer**: Links and credits
+- **首屏**：引人注目的动画视觉介绍
+- **功能展示**：全面展示 FloatNote 的能力
+- **演示**：预览区域（可集成视频）
+- **技术亮点**：面向开发者的内容
+- **下载**：直达 GitHub releases 的链接
+- **页脚**：链接和致谢
 
-## Technology
+## 技术
 
-- Pure HTML5, CSS3, and vanilla JavaScript
-- Tailwind CSS for styling (CDN)
-- Custom animations and glass-morphism effects
-- Optimized for SEO and social sharing
+- 纯 HTML5、CSS3 和原生 JavaScript
+- Tailwind CSS 样式（CDN）
+- 自定义动画和毛玻璃效果
+- 针对 SEO 和社交分享优化
 
-## Usage
+## 使用方式
 
-Simply open `index.html` in any modern web browser or serve it from a web server.
+在任何现代浏览器中直接打开 `index.html`，或通过 Web 服务器提供服务。
 
-## Deployment
+## 部署
 
-This landing page can be deployed to:
+此落地页可部署到：
 - GitHub Pages
 - Netlify
 - Vercel
-- Any static hosting service
+- 任何静态托管服务
 
-## Customization
+## 自定义
 
-The page uses Tailwind CSS with custom configuration for easy theming and customization. All colors, animations, and content can be easily modified.
+页面使用 Tailwind CSS 并带有自定义配置，便于主题定制。所有颜色、动画和内容都可以轻松修改。

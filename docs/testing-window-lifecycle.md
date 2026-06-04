@@ -1,76 +1,76 @@
-# Testing Window Lifecycle Tracking
+# 测试窗口生命周期跟踪
 
-This document explains how to test the window lifecycle event tracking implementation in FloatNote.
+本文档说明如何测试 FloatNote 中窗口生命周期事件跟踪的实现。
 
-## What's Been Implemented
+## 已实现内容
 
-1. **Backend Window Lifecycle Tracking**
-   - `create_detached_window` now sets up event listeners for window destruction
-   - When a window is destroyed (closed by user or OS), it:
-     - Removes the window from backend state
-     - Saves the updated state to disk
-     - Emits a `window-destroyed` event to frontend with the note ID
+1. **后端窗口生命周期跟踪**
+   - `create_detached_window` 现在设置窗口销毁的事件监听器
+   - 当窗口被销毁（用户或操作系统关闭）时：
+     - 从后端状态中移除窗口
+     - 将更新后的状态保存到磁盘
+     - 向前端发出 `window-destroyed` 事件，携带笔记 ID
 
-2. **Frontend Event Listeners**
-   - App.tsx now listens for `window-destroyed` events
-   - When received, it refreshes the window list to sync with backend
-   - Also listens for `hybrid-window-destroyed` events for drag windows
+2. **前端事件监听器**
+   - App.tsx 现在监听 `window-destroyed` 事件
+   - 收到事件后刷新窗口列表以与后端同步
+   - 同时监听拖拽窗口的 `hybrid-window-destroyed` 事件
 
-3. **Window State Truth Command**
-   - New command `get_window_state_truth` provides complete visibility into:
-     - All Tauri windows and their properties
-     - All backend state entries
-     - Discrepancies between Tauri and backend state
-   - Accessible via Dev Toolbar "Window State Truth" button
+3. **窗口状态真相命令**
+   - 新命令 `get_window_state_truth` 提供完整的可见性：
+     - 所有 Tauri 窗口及其属性
+     - 所有后端状态条目
+     - Tauri 和后端状态之间的差异
+   - 可通过开发工具栏的 "Window State Truth" 按钮访问
 
-## How to Test
+## 测试方法
 
-### 1. Check Initial State
+### 1. 检查初始状态
 ```javascript
-// In browser console of main window
+// 在主窗口的浏览器控制台中
 await window.__TAURI__.invoke('get_window_state_truth')
 ```
 
-### 2. Create a Detached Window
-- Drag a note from the sidebar out to create a detached window
-- Or right-click a note and select "Open in New Window"
-- Or use the command palette (⌘K) and search for a note to open
+### 2. 创建分离窗口
+- 从侧边栏拖出笔记以创建分离窗口
+- 或右键点击笔记并选择「在新窗口中打开」
+- 或使用命令面板 (⌘K) 搜索要打开的笔记
 
-### 3. Verify Window is Tracked
+### 3. 验证窗口已被跟踪
 ```javascript
-// Check state again - should show the new window
+// 再次检查状态 - 应显示新窗口
 await window.__TAURI__.invoke('get_window_state_truth')
 ```
 
-### 4. Close the Detached Window
-- Click the close button on the detached window
-- Or press ⌘W in the detached window
+### 4. 关闭分离窗口
+- 点击分离窗口的关闭按钮
+- 或在分离窗口中按 ⌘W
 
-### 5. Verify Cleanup
+### 5. 验证清理
 ```javascript
-// Check state again - window should be removed
+// 再次检查状态 - 窗口应已被移除
 await window.__TAURI__.invoke('get_window_state_truth')
 ```
 
-## Expected Behavior
+## 预期行为
 
-- When a window is closed, you should see in the console:
+- 当窗口关闭时，你应该在控制台中看到：
   - `[FLOATNOTE] Window destroyed event received for note: <note-id>`
   - `[FLOATNOTE] Windows after destroy cleanup: [...]`
 
-- The Window State Truth output should show:
-  - Before closing: Window exists in both Tauri and backend state
-  - After closing: Window removed from both Tauri and backend state
+- Window State Truth 输出应显示：
+  - 关闭前：窗口同时存在于 Tauri 和后端状态中
+  - 关闭后：窗口从 Tauri 和后端状态中均已移除
 
-## Using the Dev Toolbar
+## 使用开发工具栏
 
-1. Click the "DEV" button in the bottom right of the main window
-2. Click "Window State Truth" to see current state
-3. An alert will show the complete state information
-4. Check the console for formatted output
+1. 点击主窗口右下角的 "DEV" 按钮
+2. 点击 "Window State Truth" 查看当前状态
+3. 弹窗将显示完整的状态信息
+4. 检查控制台获取格式化输出
 
-## Debugging Tips
+## 调试技巧
 
-- If windows appear "orphaned" in state, use "Clear All Windows" in dev toolbar
-- Use "Refresh Windows" to force sync between frontend and backend
-- Check logs at `~/Library/Application Support/com.blink.dev/logs/blink.log`
+- 如果窗口在状态中显示为「孤立」，使用开发工具栏中的 "Clear All Windows"
+- 使用 "Refresh Windows" 强制同步前端和后端
+- 检查日志：`~/Library/Application Support/com.float-note.dev/logs/float-note.log`

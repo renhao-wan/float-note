@@ -1,82 +1,82 @@
-# Dirty Tracking Implementation Summary
+# 脏标记实现总结
 
-**Date:** 2025-07-14  
-**Branch:** `feature/vim-mode` (contains all changes)
+**日期：** 2025-07-14
+**分支：** `feature/vim-mode`（包含所有变更）
 
-## What Was Implemented
+## 已实现内容
 
-### 1. Save Optimization
-- Changed from bulk saves to individual note saves
-- Only the modified note is saved when content changes
-- Significant performance improvement for workspaces with many notes
+### 1. 保存优化
+- 从批量保存改为单条笔记保存
+- 内容变更时仅保存修改的笔记
+- 对拥有大量笔记的工作区显著提升性能
 
-### 2. Dirty Tracking System
-- Created `DirtyTracker` module with SHA-256 content hashing
-- Tracks which notes have unsaved changes
-- Detects when content actually changes before saving
-- Prevents unnecessary disk writes
+### 2. 脏标记系统
+- 创建了带有 SHA-256 内容哈希的 `DirtyTracker` 模块
+- 跟踪哪些笔记有未保存的变更
+- 保存前检测内容是否实际变化
+- 防止不必要的磁盘写入
 
-### 3. Backend Changes
+### 3. 后端变更
 
-#### New Module: `dirty_tracker.rs`
-- `DirtyTracker` struct with content hash tracking
-- `has_content_changed()` - Compares new content against stored hash
-- `update_content_hash()` - Updates hash after successful save
-- `initialize_note()` - Sets up tracking for loaded notes
-- Unit tests for hash computation and dirty tracking
+#### 新模块：`dirty_tracker.rs`
+- `DirtyTracker` 结构体，带内容哈希跟踪
+- `has_content_changed()` - 比较新内容与存储的哈希
+- `update_content_hash()` - 保存成功后更新哈希
+- `initialize_note()` - 为加载的笔记设置跟踪
+- 哈希计算和脏标记跟踪的单元测试
 
-#### Updated Commands
-- `create_note` - Initializes dirty tracking for new notes
-- `update_note` - Checks if content changed before saving
-- `delete_note` - Removes note from dirty tracker
-- `reload_notes_from_directory` - Reinitializes tracking
-- `import_notes_from_directory` - Tracks imported notes
+#### 更新的命令
+- `create_note` - 为新笔记初始化脏标记跟踪
+- `update_note` - 保存前检查内容是否变化
+- `delete_note` - 从脏标记跟踪器中移除笔记
+- `reload_notes_from_directory` - 重新初始化跟踪
+- `import_notes_from_directory` - 跟踪导入的笔记
 
-#### File Storage Enhancement
-- Added SHA-256 hash computation to `FileStorageManager`
-- Notes index now includes file hashes for future external change detection
-- Hashes cover full file content (frontmatter + content)
+#### 文件存储增强
+- 向 `FileStorageManager` 添加 SHA-256 哈希计算
+- 笔记索引现在包含文件哈希，用于未来的外部变更检测
+- 哈希覆盖完整文件内容（frontmatter + 内容）
 
-### 4. State Management
-- Added `DirtyTrackerState` to application state
-- Initialized in `run()` function
-- Passed to all relevant commands
-- Properly managed across app lifecycle
+### 4. 状态管理
+- 向应用状态添加 `DirtyTrackerState`
+- 在 `run()` 函数中初始化
+- 传递给所有相关命令
+- 在应用生命周期中正确管理
 
-## Benefits Achieved
+## 已实现的优势
 
-1. **Performance**: Only changed notes are saved to disk
-2. **Accuracy**: Content changes detected via cryptographic hashing
-3. **Reliability**: No lost changes due to proper tracking
-4. **Future-Ready**: Infrastructure for external change detection
+1. **性能**：仅将变更的笔记保存到磁盘
+2. **准确性**：通过加密哈希检测内容变更
+3. **可靠性**：正确的跟踪不会丢失变更
+4. **面向未来**：为外部变更检测奠定基础
 
-## How It Works
+## 工作原理
 
-1. When a note is loaded, its content hash is computed and stored
-2. On update, new content hash is compared with stored hash
-3. Save only occurs if hashes differ (content actually changed)
-4. After successful save, stored hash is updated
-5. Metadata-only changes (title, tags) still save but are logged differently
+1. 加载笔记时，计算并存储其内容哈希
+2. 更新时，将新内容哈希与存储的哈希进行比较
+3. 仅在哈希不同时（内容实际变化）才执行保存
+4. 保存成功后，更新存储的哈希
+5. 仅元数据的变更（标题、标签）仍会保存，但以不同方式记录
 
-## Testing
+## 测试
 
-The implementation includes:
-- Unit tests for hash computation
-- Unit tests for dirty flag management
-- Integration with existing save flow
-- Successful compilation with no errors
+实现包含：
+- 哈希计算的单元测试
+- 脏标记管理的单元测试
+- 与现有保存流程的集成
+- 成功编译，无错误
 
-## Next Steps (Future Enhancements)
+## 后续步骤（未来增强）
 
-1. **Frontend Integration**: Add dirty indicators in UI
-2. **External Change Detection**: Use file hashes to detect external edits
-3. **Conflict Resolution**: Handle cases where files change outside app
-4. **Performance Metrics**: Add logging to measure save time improvements
+1. **前端集成**：在 UI 中添加脏标记指示器
+2. **外部变更检测**：使用文件哈希检测外部编辑
+3. **冲突解决**：处理应用外文件变更的情况
+4. **性能指标**：添加日志以衡量保存时间改进
 
-## Code Quality
+## 代码质量
 
-- Followed Rust best practices
-- Added comprehensive logging with [DIRTY_TRACKER] prefix
-- Included error handling and graceful fallbacks
-- Maintained backward compatibility
-- No breaking changes to existing functionality
+- 遵循 Rust 最佳实践
+- 添加了带有 [DIRTY_TRACKER] 前缀的全面日志
+- 包含错误处理和优雅降级
+- 保持向后兼容性
+- 对现有功能无破坏性变更

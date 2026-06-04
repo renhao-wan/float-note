@@ -1,105 +1,105 @@
-# FloatNote: AI-Native Spatial Notes
+# FloatNote：AI 原生空间笔记
 
-From static documents to intelligent, spatially aware notes.
-
----
-
-## Vision
-
-FloatNote reimagines note-taking as AI-native knowledge management. Notes aren’t static text but autonomous agents that can think, update, and contribute on their own.
-
-### Core Principles
-- **Spatial context**: where a note lives matters  
-- **Asynchronous work**: AI processes notes even when you’re not active  
-- **Conversational notes**: interact with each note as an ongoing dialogue  
-- **Emergent organization**: structure comes from AI understanding, not manual sorting  
-- **Multimodal inputs**: notes handle text, images, voice, and more  
+从静态文档到智能的、具有空间感知能力的笔记。
 
 ---
 
-## Current Features
+## 愿景
 
-### Multi-Window Spatial Notes
-- Detach notes into frameless, floating windows  
-- Spatial arrangement saved and restored  
-- Real-time sync between main app and detached windows  
-- Global shortcuts, focus mode, command palette  
+FloatNote 将笔记重新定义为 AI 原生的知识管理。笔记不再是静态文本，而是能够思考、更新和自主贡献的智能代理。
 
-### Customization
-- Markdown-first editor with preview  
-- Font, spacing, and theme controls  
-- Window transparency, always-on-top, typewriter mode  
-- Syntax highlighting for code  
-
-### Core Management
-- Instant search with fuzzy matching  
-- Auto-save with backups  
-- Smart title extraction  
-- Cross-platform support  
+### 核心原则
+- **空间上下文**：笔记所在的位置很重要
+- **异步工作**：即使你不活跃，AI 也在处理笔记
+- **对话式笔记**：将每条笔记作为持续对话进行交互
+- **涌现式组织**：结构来自 AI 理解，而非手动排序
+- **多模态输入**：笔记支持文本、图像、语音等多种形式
 
 ---
 
-## Tech Stack
-- **Frontend**: React, TypeScript, TailwindCSS, Zustand  
-- **Backend**: Rust (Tauri v2)  
-- **Storage**: JSON file-based, migratable to databases  
-- **Build**: Vite for dev and cross-platform desktop builds  
+## 当前功能
+
+### 多窗口空间笔记
+- 将笔记分离为无边框浮动窗口
+- 空间排列自动保存和恢复
+- 主应用与分离窗口之间实时同步
+- 全局快捷键、专注模式、命令面板
+
+### 个性化定制
+- Markdown 优先编辑器，支持实时预览
+- 字体、间距和主题控制
+- 窗口透明度、置顶、打字机模式
+- 代码语法高亮
+
+### 核心管理
+- 模糊匹配即时搜索
+- 自动保存与备份
+- 智能标题提取
+- 跨平台支持
 
 ---
 
-## Roadmap
-
-### Phase 1 (Done)
-- Multi-window spatial foundation  
-- Command palette, focus mode, customization  
-
-### Phase 2 (Next)
-- AI service integration (Claude, OpenAI)  
-- Per-note AI context and multimodal inputs  
-- Background processing  
-
-### Phase 3
-- Conversational notes with history  
-- Cross-note awareness  
-- Spatial context in reasoning  
-
-### Phase 4
-- Self-updating notes  
-- AI-generated insights and briefings  
-- Pattern recognition across notes  
-
-### Phase 5
-- Note-to-note AI conversations  
-- Ecosystem-level intelligence  
-- Collaborative knowledge evolution  
+## 技术栈
+- **前端**：React、TypeScript、TailwindCSS、Zustand
+- **后端**：Rust (Tauri v2)
+- **存储**：基于 JSON 文件，可迁移到数据库
+- **构建**：Vite 用于开发和跨平台桌面构建
 
 ---
 
-## Architecture
+## 路线图
 
-- **Spatial-first**: window positions as metadata, clustering for related notes  
-- **AI-native**: each note has its own AI context and memory  
-- **Local-first**: encrypted storage, optional sync  
-- **Rust backend** for performance and security  
+### 第一阶段（已完成）
+- 多窗口空间基础
+- 命令面板、专注模式、个性化定制
+
+### 第二阶段（进行中）
+- AI 服务集成（Claude、OpenAI）
+- 每条笔记的 AI 上下文和多模态输入
+- 后台处理
+
+### 第三阶段
+- 带历史记录的对话式笔记
+- 跨笔记感知
+- 推理中的空间上下文
+
+### 第四阶段
+- 自更新笔记
+- AI 生成的洞察和简报
+- 跨笔记模式识别
+
+### 第五阶段
+- 笔记间 AI 对话
+- 生态系统级智能
+- 协作知识演化
 
 ---
 
-## Contributing
+## 架构
 
-Areas for contribution:
-- AI integration  
-- Spatial clustering and intelligence  
-- Multimodal processing (voice, images, docs)  
-- Rust optimizations  
-
-Principles:
-- AI-native design  
-- Spatial awareness  
-- User empowerment  
-- Simple interactions → emergent behaviors  
+- **空间优先**：窗口位置作为元数据，相关笔记聚类
+- **AI 原生**：每条笔记都有自己的 AI 上下文和记忆
+- **本地优先**：加密存储，可选同步
+- **Rust 后端**：高性能和安全性
 
 ---
 
-## License
+## 贡献
+
+欢迎贡献的领域：
+- AI 集成
+- 空间聚类和智能
+- 多模态处理（语音、图像、文档）
+- Rust 优化
+
+原则：
+- AI 原生设计
+- 空间感知
+- 用户赋能
+- 简单交互 → 涌现行为
+
+---
+
+## 许可证
 
 MIT

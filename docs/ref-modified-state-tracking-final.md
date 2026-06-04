@@ -1,80 +1,80 @@
-# Modified State Tracking - Final Implementation
+# 修改状态跟踪 - 最终实现
 
-**Date:** 2025-07-14  
-**Status:** Complete ✅
+**日期：** 2025-07-14
+**状态：** 已完成 ✅
 
-## Summary
+## 概要
 
-We've implemented a comprehensive modified state tracking system that:
+我们实现了一个全面的修改状态跟踪系统：
 
-1. **Tracks which notes have been modified** - Simple flag-based tracking for UI indicators
-2. **Stores content hashes** - SHA-256 hashes of note content for change verification
-3. **Detects actual changes** - Only saves when content truly differs
-4. **Logs prominently** - Uses `log_info!` with 🔍 emoji when changes are detected
+1. **跟踪哪些笔记已被修改** - 基于标记的简单跟踪，用于 UI 指示器
+2. **存储内容哈希** - 笔记内容的 SHA-256 哈希，用于变更验证
+3. **检测实际变更** - 仅在内容真正不同时才保存
+4. **显著日志记录** - 检测到变更时使用带 🔍 emoji 的 `log_info!`
 
-## Key Design Decisions
+## 关键设计决策
 
-### Dual-Purpose Architecture
-- **Modified flags** - Quick state tracking for the current session
-- **Content hashes** - Reliable change detection and future drift detection
+### 双用途架构
+- **修改标记** - 当前会话的快速状态跟踪
+- **内容哈希** - 可靠的变更检测和未来的漂移检测
 
-### Why Keep Hashing?
-The user correctly pointed out that we could track modified state simply since "we are the editor". However, keeping the hashing provides:
-- Protection against saving unchanged content
-- Infrastructure for detecting external file changes
-- Foundation for future sync/conflict resolution features
+### 为什么保留哈希？
+用户正确指出，由于「我们是编辑器」，可以简单地跟踪修改状态。然而，保留哈希提供了：
+- 防止保存未变更内容的保护
+- 检测外部文件变更的基础设施
+- 未来同步/冲突解决功能的基础
 
-### Current Behavior
-- Computes and compares hashes on every update
-- Logs prominently when changes are detected
-- Does NOT take action on external changes (just logs)
-- Ready for future enhancement when needed
+### 当前行为
+- 每次更新时计算和比较哈希
+- 检测到变更时显著记录日志
+- 不对外部变更采取行动（仅记录）
+- 为未来增强做好准备
 
-## Implementation Details
+## 实现细节
 
-### Module: `modified_state_tracker.rs`
+### 模块：`modified_state_tracker.rs`
 ```rust
 pub struct ModifiedStateTracker {
-    dirty_flags: Arc<Mutex<HashMap<String, bool>>>,     // Quick modified state
-    content_hashes: Arc<Mutex<HashMap<String, String>>>, // SHA-256 hashes
+    dirty_flags: Arc<Mutex<HashMap<String, bool>>>,     // 快速修改状态
+    content_hashes: Arc<Mutex<HashMap<String, String>>>, // SHA-256 哈希
 }
 ```
 
-### Key Methods
-- `has_content_changed()` - Compares new content hash with stored
-- `mark_modified()` - Sets the modified flag for a note
-- `is_modified()` - Checks if a note has unsaved changes
-- `update_content_hash()` - Updates stored hash after save
+### 关键方法
+- `has_content_changed()` - 比较新内容哈希与存储的哈希
+- `mark_modified()` - 设置笔记的修改标记
+- `is_modified()` - 检查笔记是否有未保存的变更
+- `update_content_hash()` - 保存后更新存储的哈希
 
-### Integration Points
-- `create_note` - Initializes tracking for new notes
-- `update_note` - Checks for actual changes before saving
-- `delete_note` - Cleans up tracking data
-- App startup - Initializes tracking for all loaded notes
+### 集成点
+- `create_note` - 为新笔记初始化跟踪
+- `update_note` - 保存前检查实际变更
+- `delete_note` - 清理跟踪数据
+- 应用启动 - 为所有加载的笔记初始化跟踪
 
-## What This Enables
+## 启用的功能
 
-### Immediate Benefits
-- Only saves notes that actually changed
-- Reduces disk I/O significantly
-- Accurate save status indicators
+### 即时优势
+- 仅保存实际变更的笔记
+- 显著减少磁盘 I/O
+- 准确的保存状态指示器
 
-### Future Possibilities
-- External change detection (when files are edited outside FloatNote)
-- Conflict resolution UI
-- Sync status indicators
-- Undo/redo based on content states
+### 未来可能性
+- 外部变更检测（当文件在 FloatNote 外编辑时）
+- 冲突解决 UI
+- 同步状态指示器
+- 基于内容状态的撤销/重做
 
-## Logging Example
-When content changes are detected:
+## 日志示例
+检测到内容变更时：
 ```
 [MODIFIED_STATE] 🔍 Content change detected for note abc123: old_hash=a1b2c3d4, new_hash=e5f6g7h8
 ```
 
-## Next Steps (When Needed)
-1. Add file system watcher to detect external changes
-2. Implement UI indicators for modified state
-3. Add conflict resolution when external changes detected
-4. Performance metrics to measure save time improvements
+## 后续步骤（需要时）
+1. 添加文件系统监视器以检测外部变更
+2. 实现修改状态的 UI 指示器
+3. 检测到外部变更时添加冲突解决
+4. 性能指标以衡量保存时间改进
 
-The infrastructure is in place - we can enhance it gradually based on user needs.
+基础设施已就绪 - 我们可以根据用户需求逐步增强。
