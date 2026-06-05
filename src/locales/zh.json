@@ -251,8 +251,8 @@
   },
   "permissions": {
     "enableGlobalShortcuts": "启用全局快捷键",
-    "accessibilityRequired": "需要辅助功能权限",
-    "description": "FloatNote 需要辅助功能访问权限来启用全局快捷键，如 ⌘⌃⌥⇧N，以便在系统任何位置创建笔记。",
+    "accessibilityRequired": "需要系统权限",
+    "description": "FloatNote 需要系统权限来启用全局快捷键。请在系统设置中授予所需权限。",
     "setupSteps": "设置步骤",
     "step1": "点击下方「打开设置」",
     "step2": "在辅助功能应用列表中找到「FloatNote」",
