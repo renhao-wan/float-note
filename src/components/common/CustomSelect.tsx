@@ -77,7 +77,7 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border/30 rounded-lg shadow-elegant overflow-hidden z-50 max-h-48 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border/30 rounded-lg shadow-elegant overflow-hidden z-50 max-h-32 overflow-y-auto">
           {options.map((option) => (
             <button
               key={option.value}
