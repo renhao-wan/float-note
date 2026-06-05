@@ -224,7 +224,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                   // 立即保存配置
                   await handleConfigChange({ language: newLang });
                 }}
-                className="w-32 px-2 py-1 bg-background/20 border border-border/20 rounded-xl text-foreground text-xs focus:outline-none focus:border-primary/40 hover:bg-background/30 transition-colors appearance-none cursor-pointer font-mono"
+                className="w-32 px-2 py-1.5 bg-card/30 border border-border/30 rounded-2xl text-foreground text-xs focus:outline-none focus:border-primary/40 hover:bg-card/50 transition-colors appearance-none cursor-pointer font-mono"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                   backgroundPosition: 'right 0.5rem center',
