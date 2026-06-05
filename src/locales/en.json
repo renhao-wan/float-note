@@ -40,9 +40,7 @@
         "language": "Language",
         "languageDescription": "Switch language to change interface display",
         "notePreviews": "Note Previews",
-        "notePreviewsDescription": "Peek at note content without opening",
-        "windowOpacity": "Window Opacity",
-        "windowOpacityDescription": "Background transparency"
+        "notePreviewsDescription": "Peek at note content without opening"
       },
       "fileOperations": {
         "title": "File Operations",

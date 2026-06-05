@@ -40,9 +40,7 @@
         "language": "语言",
         "languageDescription": "切换语言以改变界面显示",
         "notePreviews": "笔记预览",
-        "notePreviewsDescription": "无需打开即可预览笔记内容",
-        "windowOpacity": "窗口透明度",
-        "windowOpacityDescription": "背景透明度"
+        "notePreviewsDescription": "无需打开即可预览笔记内容"
       },
       "fileOperations": {
         "title": "文件操作",

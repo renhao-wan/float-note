@@ -41,7 +41,6 @@ export interface AppConfig {
     vimMode?: boolean;
     wordWrap?: boolean;
     showNotePreviews?: boolean;
-    detachedWindowOpacity?: number; // 分离窗口默认透明度
     appFontFamily: string;
   };
   editor?: {
@@ -85,7 +84,6 @@ export const defaultConfig: AppConfig = {
     vimMode: false,
     wordWrap: true, // 自动换行
     showNotePreviews: false,
-    detachedWindowOpacity: 0.9, // 分离窗口默认透明度
     appFontFamily: 'Outfit, system-ui, sans-serif',
   },
   editor: {

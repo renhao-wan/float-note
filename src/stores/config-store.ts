@@ -58,23 +58,6 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
     }
   },
 
-  updateDetachedWindowOpacity: async (opacity: number) => {
-    const { config } = get();
-    const updatedConfig = {
-      ...config,
-      appearance: { ...config.appearance, detachedWindowOpacity: opacity }
-    };
-
-    try {
-      const newConfig = await configApi.updateConfig(updatedConfig);
-      set({ config: newConfig });
-    } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : 'Failed to update opacity'
-      });
-    }
-  },
-
   updateAlwaysOnTop: async (alwaysOnTop: boolean) => {
     const { config } = get();
     const updatedConfig = { ...config, alwaysOnTop };
