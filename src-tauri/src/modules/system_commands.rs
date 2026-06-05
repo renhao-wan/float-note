@@ -2,7 +2,7 @@ use crate::{log_error, log_info};
 use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
 
-/// Open system settings (macOS accessibility preferences)
+/// Open system settings (accessibility preferences)
 #[tauri::command]
 pub async fn open_system_settings() -> Result<(), String> {
     #[cfg(target_os = "macos")]
@@ -11,13 +11,27 @@ pub async fn open_system_settings() -> Result<(), String> {
             .arg("x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")
             .spawn()
             .map_err(|e| format!("Failed to open System Settings: {}", e))?;
-        Ok(())
     }
 
-    #[cfg(not(target_os = "macos"))]
+    #[cfg(target_os = "windows")]
     {
-        Err("System Settings only available on macOS".to_string())
+        // Windows 10/11 设置 URI - 打开键盘辅助功能设置
+        std::process::Command::new("cmd")
+            .args(["/C", "start", "ms-settings:easeofaccess-keyboard"])
+            .spawn()
+            .map_err(|e| format!("Failed to open System Settings: {}", e))?;
     }
+
+    #[cfg(target_os = "linux")]
+    {
+        // 尝试打开通用设置，不同桌面环境可能不同
+        std::process::Command::new("xdg-open")
+            .arg("settings://privacy")
+            .spawn()
+            .map_err(|e| format!("Failed to open System Settings: {}", e))?;
+    }
+
+    Ok(())
 }
 
 /// Open a directory in the system file manager
