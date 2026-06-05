@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 
 interface Option {
   value: string;
@@ -16,9 +16,30 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [dropdownWidth, setDropdownWidth] = useState<number | undefined>(undefined);
 
-  const selectedOption = options.find(opt => opt.value === value);
+  // 查找匹配的选项（精确匹配或包含匹配）
+  const selectedOption = useMemo(() => {
+    // 优先精确匹配
+    const exact = options.find(opt => opt.value === value);
+    if (exact) return exact;
+
+    // 模糊匹配：检查 value 是否包含选项值，或选项值是否包含 value
+    return options.find(opt =>
+      value.includes(opt.value) || opt.value.includes(value)
+    );
+  }, [value, options]);
+
+  // 获取显示标签
+  const displayLabel = useMemo(() => {
+    if (selectedOption) return selectedOption.label;
+    // 如果没有匹配的选项，显示 value 的简短版本
+    if (value) {
+      // 提取第一个字体名称
+      const firstFont = value.split(',')[0].trim().replace(/['"]/g, '');
+      return firstFont;
+    }
+    return '-';
+  }, [selectedOption, value]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -31,12 +52,6 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      setDropdownWidth(buttonRef.current.offsetWidth);
-    }
-  }, [isOpen]);
-
   return (
     <div ref={selectRef} className={`relative ${className}`}>
       <button
@@ -45,7 +60,7 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-2 py-1.5 bg-card/30 border border-border/30 rounded-lg text-foreground text-xs focus:outline-none focus:border-primary/40 hover:bg-card/50 transition-colors cursor-pointer font-mono flex items-center justify-between gap-1"
       >
-        <span className="truncate">{selectedOption?.label || '-'}</span>
+        <span className="truncate">{displayLabel}</span>
         <svg
           width="10"
           height="10"
@@ -62,10 +77,7 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
       </button>
 
       {isOpen && (
-        <div
-          className="absolute top-full left-0 mt-1 bg-card border border-border/30 rounded-lg shadow-elegant overflow-hidden z-50 max-h-48 overflow-y-auto"
-          style={{ width: dropdownWidth }}
-        >
+        <div className="absolute top-full left-0 mt-1 bg-card border border-border/30 rounded-lg shadow-elegant overflow-hidden z-50 max-h-48 overflow-y-auto w-max min-w-full">
           {options.map((option) => (
             <button
               key={option.value}
