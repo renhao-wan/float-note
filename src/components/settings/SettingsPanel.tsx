@@ -596,7 +596,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <span className="text-xs text-foreground/80 font-mono w-32">{t('settings.shortcuts.globalShortcuts.createNewNote')}</span>
               <div className="flex-1 flex items-center gap-2">
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌃</kbd>
+                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{isMac() ? '⌃' : 'Ctrl'}</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{isMac() ? '⌥' : 'Alt'}</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⇧</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">N</kbd>
@@ -607,7 +607,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <span className="text-xs text-foreground/80 font-mono w-32">{t('settings.shortcuts.globalShortcuts.toggleHoverMode')}</span>
               <div className="flex-1 flex items-center gap-2">
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌃</kbd>
+                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{isMac() ? '⌃' : 'Ctrl'}</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{isMac() ? '⌥' : 'Alt'}</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⇧</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">H</kbd>
