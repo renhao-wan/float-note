@@ -2099,10 +2099,18 @@ pub async fn set_detached_window_opacity_linux(
 
     #[cfg(target_os = "linux")]
     {
-        // 使用 X11: _NET_WM_WINDOW_OPACITY 属性
-        // 或 Wayland: wp_alpha 协议
-        // 实现细节待定
-        todo!("Implement Linux opacity - 使用 X11/Wayland API")
+        use gtk::prelude::*;
+
+        // 获取 GTK 窗口
+        let gtk_window = window.gtk_window().map_err(|e| e.to_string())?;
+
+        // 获取 GDK 窗口
+        let gdk_window = gtk_window.window().ok_or("Failed to get GDK window")?;
+
+        // 设置透明度（0.0-1.0），使用 GDK 的 set_opacity API
+        gdk_window.set_opacity(opacity);
+
+        Ok(())
     }
 
     #[cfg(not(target_os = "linux"))]
@@ -2117,13 +2125,23 @@ pub async fn get_detached_window_opacity_linux(
     app: AppHandle,
     window_label: String,
 ) -> Result<f64, String> {
-    let _window = app.get_webview_window(&window_label)
+    let window = app.get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
     #[cfg(target_os = "linux")]
     {
-        // 从配置中读取
-        Ok(1.0) // 默认不透明
+        use gtk::prelude::*;
+
+        // 获取 GTK 窗口
+        let gtk_window = window.gtk_window().map_err(|e| e.to_string())?;
+
+        // 获取 GDK 窗口
+        let gdk_window = gtk_window.window().ok_or("Failed to get GDK window")?;
+
+        // 获取透明度（0.0-1.0）
+        let opacity = gdk_window.opacity();
+
+        Ok(opacity)
     }
 
     #[cfg(not(target_os = "linux"))]
