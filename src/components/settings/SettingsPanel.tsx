@@ -22,7 +22,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
   useEffect(() => {
     // Set localConfig to match the loaded config directly
-    console.log('Config changed in SettingsPanel:', JSON.stringify(config, null, 2));
     setLocalConfig(config);
   }, [config]);
 
@@ -41,8 +40,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
   }, []);
 
   const handleSave = async () => {
-    console.log('Saving config:', JSON.stringify(localConfig, null, 2));
-    console.log('Appearance being saved:', JSON.stringify(localConfig.appearance, null, 2));
     setSaveStatus('saving');
     try {
       await updateConfig(localConfig);
@@ -72,8 +69,8 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             const title = file.name.replace(/\.(md|txt)$/i, '');
             // 调用 Tauri 命令创建笔记
             await invoke('create_note', { request: { title, content: text, tags: [] } });
-            // 刷新笔记列表
-            window.location.reload();
+            // 触发笔记列表刷新事件
+            window.dispatchEvent(new Event('notes-updated'));
           } catch (error) {
             console.error('Failed to import file:', error);
             alert('Failed to import file');
@@ -126,7 +123,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       }
     } catch (error) {
       console.error('Failed to set notes directory:', error);
-      alert('Failed to set notes directory: ' + error);
+      alert('Failed to set notes directory: ' + String(error));
     }
   };
 

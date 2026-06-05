@@ -93,13 +93,13 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
 
   // Get themes sorted: dark themes first, then light themes
   const allThemes = getAllThemes();
-  const darkThemes = allThemes.filter(t => {
-    const bg = t.colors.background;
+  const darkThemes = allThemes.filter(theme => {
+    const bg = theme.colors.background;
     // Simple heuristic: if background starts with #0 or #1, it's dark
     return bg.startsWith('#0') || bg.startsWith('#1') || bg.startsWith('#2');
   });
-  const lightThemes = allThemes.filter(t => {
-    const bg = t.colors.background;
+  const lightThemes = allThemes.filter(theme => {
+    const bg = theme.colors.background;
     return !bg.startsWith('#0') && !bg.startsWith('#1') && !bg.startsWith('#2');
   });
   const sortedThemes = [...darkThemes, ...lightThemes].reverse();
