@@ -167,6 +167,14 @@ pub fn run() {
             cleanup_destroyed_window,
             force_close_test_window,
             cleanup_stale_hybrid_windows,
+
+            // Detached window opacity commands
+            set_detached_window_opacity,
+            get_detached_window_opacity,
+            set_detached_window_opacity_windows,
+            get_detached_window_opacity_windows,
+            set_detached_window_opacity_linux,
+            get_detached_window_opacity_linux,
             
             // Drag and drop operations
             create_drag_ghost,

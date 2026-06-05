@@ -1962,3 +1962,147 @@ async fn save_window_size(note_id: String, width: f64, height: f64) -> Result<()
     }
     Ok(())
 }
+
+// ============================================================================
+// DETACHED WINDOW OPACITY COMMANDS
+// ============================================================================
+
+/// 设置分离窗口透明度（macOS）
+#[tauri::command]
+pub async fn set_detached_window_opacity(
+    app: AppHandle,
+    window_label: String,
+    opacity: f64,
+) -> Result<(), String> {
+    let window = app.get_webview_window(&window_label)
+        .ok_or("Window not found")?;
+
+    #[cfg(target_os = "macos")]
+    {
+        use tauri::Manager;
+        let ns_window = window.ns_window().map_err(|e| e.to_string())? as id;
+        unsafe {
+            let _: () = msg_send![ns_window, setAlphaValue: opacity];
+        }
+        Ok(())
+    }
+
+    #[cfg(not(target_os = "macos"))]
+    {
+        Err("Not implemented for this platform".to_string())
+    }
+}
+
+/// 获取分离窗口透明度（macOS）
+#[tauri::command]
+pub async fn get_detached_window_opacity(
+    app: AppHandle,
+    window_label: String,
+) -> Result<f64, String> {
+    let window = app.get_webview_window(&window_label)
+        .ok_or("Window not found")?;
+
+    #[cfg(target_os = "macos")]
+    {
+        use tauri::Manager;
+        let ns_window = window.ns_window().map_err(|e| e.to_string())? as id;
+        let opacity: f64 = unsafe { msg_send![ns_window, alphaValue] };
+        Ok(opacity)
+    }
+
+    #[cfg(not(target_os = "macos"))]
+    {
+        // 其他平台从配置中读取
+        Ok(1.0) // 默认不透明
+    }
+}
+
+/// 设置分离窗口透明度（Windows）
+#[tauri::command]
+pub async fn set_detached_window_opacity_windows(
+    app: AppHandle,
+    window_label: String,
+    opacity: f64,
+) -> Result<(), String> {
+    let window = app.get_webview_window(&window_label)
+        .ok_or("Window not found")?;
+
+    #[cfg(target_os = "windows")]
+    {
+        // 使用 Windows API: SetLayeredWindowAttributes
+        // 需要调用 user32.dll 的 SetLayeredWindowAttributes 函数
+        // 实现细节待定
+        todo!("Implement Windows opacity - 使用 Win32 API")
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        Err("Not Windows platform".to_string())
+    }
+}
+
+/// 获取分离窗口透明度（Windows）
+#[tauri::command]
+pub async fn get_detached_window_opacity_windows(
+    app: AppHandle,
+    window_label: String,
+) -> Result<f64, String> {
+    let _window = app.get_webview_window(&window_label)
+        .ok_or("Window not found")?;
+
+    #[cfg(target_os = "windows")]
+    {
+        // 从配置中读取
+        Ok(1.0) // 默认不透明
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        Err("Not Windows platform".to_string())
+    }
+}
+
+/// 设置分离窗口透明度（Linux）
+#[tauri::command]
+pub async fn set_detached_window_opacity_linux(
+    app: AppHandle,
+    window_label: String,
+    opacity: f64,
+) -> Result<(), String> {
+    let window = app.get_webview_window(&window_label)
+        .ok_or("Window not found")?;
+
+    #[cfg(target_os = "linux")]
+    {
+        // 使用 X11: _NET_WM_WINDOW_OPACITY 属性
+        // 或 Wayland: wp_alpha 协议
+        // 实现细节待定
+        todo!("Implement Linux opacity - 使用 X11/Wayland API")
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    {
+        Err("Not Linux platform".to_string())
+    }
+}
+
+/// 获取分离窗口透明度（Linux）
+#[tauri::command]
+pub async fn get_detached_window_opacity_linux(
+    app: AppHandle,
+    window_label: String,
+) -> Result<f64, String> {
+    let _window = app.get_webview_window(&window_label)
+        .ok_or("Window not found")?;
+
+    #[cfg(target_os = "linux")]
+    {
+        // 从配置中读取
+        Ok(1.0) // 默认不透明
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    {
+        Err("Not Linux platform".to_string())
+    }
+}
