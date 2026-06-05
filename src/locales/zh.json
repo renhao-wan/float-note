@@ -105,7 +105,8 @@
         "title": "窗口",
         "windowOpacity": "窗口透明度",
         "alwaysOnTop": "始终置顶",
-        "alwaysOnTopDescription": "保持窗口在其他窗口之上"
+        "alwaysOnTopDescription": "保持窗口在其他窗口之上",
+        "opacityUnavailable": "窗口透明度控制仅在 macOS 上可用"
       }
     },
     "shortcuts": {
@@ -209,7 +210,21 @@
   "titlebar": {
     "title": "FloatNote",
     "wordCount": "字数",
-    "lastSaved": "最后保存"
+    "lastSaved": "最后保存",
+    "minimize": "最小化",
+    "maximize": "最大化",
+    "restore": "还原",
+    "close": "关闭"
+  },
+  "editor": {
+    "saving": "保存中...",
+    "modified": "已修改",
+    "saved": "已保存",
+    "ready": "就绪",
+    "words": "字",
+    "edit": "编辑",
+    "preview": "预览",
+    "untitled": "无标题"
   },
   "sidebar": {
     "notes": "笔记",

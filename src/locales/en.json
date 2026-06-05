@@ -105,7 +105,8 @@
         "title": "Window",
         "windowOpacity": "Window Opacity",
         "alwaysOnTop": "Always on Top",
-        "alwaysOnTopDescription": "keep window above others"
+        "alwaysOnTopDescription": "keep window above others",
+        "opacityUnavailable": "Window opacity control is only available on macOS"
       }
     },
     "shortcuts": {
@@ -209,7 +210,21 @@
   "titlebar": {
     "title": "FloatNote",
     "wordCount": "words",
-    "lastSaved": "last saved"
+    "lastSaved": "last saved",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "restore": "Restore",
+    "close": "Close"
+  },
+  "editor": {
+    "saving": "Saving...",
+    "modified": "Modified",
+    "saved": "Saved",
+    "ready": "Ready",
+    "words": "words",
+    "edit": "Edit",
+    "preview": "Preview",
+    "untitled": "Untitled"
   },
   "sidebar": {
     "notes": "Notes",
