@@ -127,19 +127,19 @@
         "focusMode": "Focus Mode"
       },
       "permissions": {
-        "title": "Required macOS Permissions",
-        "accessibilityAccess": "Accessibility Access",
-        "accessibilityAccessDescription": "Required for global shortcuts (⌘⌃⌥⇧N, ⌘⌃⌥⇧H) to work system-wide.",
+        "title": "Required Permissions",
+        "accessibilityAccess": "Accessibility",
+        "accessibilityAccessDescription": "Global shortcuts (⌘⌃⌥⇧N, ⌘⌃⌥⇧H) require system-level support.",
         "inputMonitoring": "Input Monitoring",
-        "inputMonitoringDescription": "Enables detection of keyboard events for global shortcuts.",
+        "inputMonitoringDescription": "Enable keyboard event detection for global shortcuts.",
         "setupSteps": "Setup Steps",
-        "step1": "Click \"open accessibility settings\" below",
-        "step2": "Find \"FloatNote\" in the app list and enable it",
-        "step3": "Quit and restart FloatNote completely",
-        "step4": "Test shortcuts with the buttons above",
-        "warning": "Why these permissions?",
-        "warningDescription": "Global shortcuts allow you to create notes instantly from anywhere on your system - whether you're browsing, coding, or in a meeting. The \"Hyperkey\" (⌘⌃⌥⇧) combination is specifically chosen to avoid conflicts with existing shortcuts.",
-        "openAccessibilitySettings": "open accessibility settings →"
+        "step1": "Click 'Open System Settings' below",
+        "step2": "Find 'FloatNote' and enable the permission",
+        "step3": "Restart FloatNote to activate shortcuts",
+        "step4": "Use the button above to test shortcuts",
+        "warning": "Why are these permissions needed?",
+        "warningDescription": "Global shortcuts allow you to instantly create notes from anywhere in your system.",
+        "openAccessibilitySettings": "Open System Settings →"
       },
       "actions": {
         "reRegisterShortcuts": "re-register shortcuts",
