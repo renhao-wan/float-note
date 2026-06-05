@@ -6,10 +6,7 @@ use crate::types::{
     config::AppConfig,
     note::Note,
 };
-use crate::modules::{
-    file_notes_storage::FileNotesStorage,
-    database::{initialize_database, NoteRecord},
-};
+use crate::modules::file_notes_storage::FileNotesStorage;
 use crate::{log_info, log_error};
 
 fn create_test_note(id: &str, title: &str, content: &str, position: Option<i32>) -> Note {
@@ -118,54 +115,6 @@ async fn test_position_zero_bug_reproduction() {
     }
     
     log_info!("SIMPLIFIED_TEST", "✅ Position 0 bug reproduction test passed");
-}
-
-#[tokio::test] 
-async fn test_database_position_consistency() {
-    log_info!("SIMPLIFIED_TEST", "🧪 Testing database position consistency");
-    
-    let temp_dir = TempDir::new().unwrap();
-    let config = create_test_config(&temp_dir);
-    
-    // Create notes and save via file storage
-    let notes = vec![
-        create_test_note("db-zero", "DB Zero Note", "DB_ZERO_CONTENT", Some(0)),
-        create_test_note("db-one", "DB One Note", "DB_ONE_CONTENT", Some(1)),
-    ];
-    
-    let storage = FileNotesStorage::new(&config).unwrap();
-    let mut notes_map = HashMap::new();
-    for note in &notes {
-        notes_map.insert(note.id.clone(), note.clone());
-    }
-    
-    storage.save_all_notes(&notes_map).await.unwrap();
-    
-    // Load via database
-    let db = initialize_database(temp_dir.path()).unwrap();
-    let db_notes = db.get_all_notes().unwrap();
-    
-    log_info!("SIMPLIFIED_TEST", "Database returned {} notes", db_notes.len());
-    
-    // Find position 0 in database
-    let db_pos_0 = db_notes.iter().find(|n| n.position == 0);
-    assert!(db_pos_0.is_some(), "Database should have a note at position 0");
-    
-    let db_pos_0 = db_pos_0.unwrap();
-    assert_eq!(db_pos_0.id, "db-zero", "Database position 0 should be correct note");
-    
-    // Load via file system
-    let file_notes = storage.load_notes().await.unwrap();
-    let file_pos_0 = file_notes.values().find(|n| n.position == Some(0));
-    assert!(file_pos_0.is_some(), "File system should have a note at position 0");
-    
-    let file_pos_0 = file_pos_0.unwrap();
-    assert_eq!(file_pos_0.id, "db-zero", "File system position 0 should be correct note");
-    
-    // They should match
-    assert_eq!(db_pos_0.id, file_pos_0.id, "Database and file system should agree on position 0 ID");
-    
-    log_info!("SIMPLIFIED_TEST", "✅ Database position consistency test passed");
 }
 
 #[tokio::test]

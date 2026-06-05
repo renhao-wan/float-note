@@ -9,7 +9,6 @@ use crate::types::{
 use crate::modules::{
     file_notes_storage::FileNotesStorage,
     file_storage::FileStorageManager,
-    database::{initialize_database, NoteRecord},
 };
 use crate::{log_info, log_error, log_debug};
 
@@ -275,54 +274,6 @@ mod position_zero_tests {
     }
 
     #[tokio::test]
-    async fn test_database_vs_file_system_consistency() {
-        log_info!("POSITION_BUG_TEST", "🧪 Testing database vs file system consistency for position 0");
-        
-        let temp_dir = TempDir::new().unwrap();
-        let config = create_test_config(&temp_dir);
-        
-        let notes = vec![
-            create_test_note("db-note-0", "Database Note 0", "DB content 0", Some(0)),
-            create_test_note("db-note-1", "Database Note 1", "DB content 1", Some(1)),
-        ];
-        
-        // Save via file storage
-        let storage = FileStorageManager::new(&config).unwrap();
-        let mut notes_map = HashMap::new();
-        for note in &notes {
-            notes_map.insert(note.id.clone(), note.clone());
-            storage.save_note(note).await.unwrap();
-        }
-        storage.update_notes_index(&notes_map).await.unwrap();
-        
-        // Load via database
-        let db = initialize_database(temp_dir.path()).unwrap();
-        let db_notes = db.get_all_notes().unwrap();
-        
-        log_info!("POSITION_BUG_TEST", "Database notes:");
-        for note in &db_notes {
-            log_info!("POSITION_BUG_TEST", "  DB: {} (pos={})", note.title, note.position);
-        }
-        
-        // Load via file storage
-        let file_notes = storage.load_notes().await.unwrap();
-        
-        log_info!("POSITION_BUG_TEST", "File system notes:");
-        for (_, note) in &file_notes {
-            log_info!("POSITION_BUG_TEST", "  FILE: {} (pos={:?})", note.title, note.position);
-        }
-        
-        // Compare position 0 notes
-        let db_pos_0 = db_notes.iter().find(|n| n.position == 0).unwrap();
-        let file_pos_0 = file_notes.values().find(|n| n.position == Some(0)).unwrap();
-        
-        assert_eq!(db_pos_0.id, file_pos_0.id, "Position 0 IDs should match between DB and file");
-        assert_eq!(db_pos_0.title, file_pos_0.title, "Position 0 titles should match between DB and file");
-        
-        log_info!("POSITION_BUG_TEST", "✅ Database vs file system consistency test passed");
-    }
-
-    #[tokio::test] 
     async fn test_concurrent_note_access_position_0() {
         log_info!("POSITION_BUG_TEST", "🧪 Testing concurrent access to position 0 note");
         
@@ -470,137 +421,6 @@ mod position_zero_tests {
         assert_eq!(sorted_notes[1].title, "New Note");
         
         log_info!("POSITION_BUG_TEST", "✅ Note creation position assignment test passed");
-    }
-}
-
-/// Test position handling edge cases and database interactions
-#[cfg(test)]
-mod database_position_tests {
-    use super::*;
-    use test_utils::*;
-
-    #[tokio::test]
-    async fn test_database_position_uniqueness_constraint() {
-        log_info!("POSITION_BUG_TEST", "🧪 Testing database position uniqueness constraint");
-        
-        let temp_dir = TempDir::new().unwrap();
-        let db = initialize_database(temp_dir.path()).unwrap();
-        
-        let note1 = NoteRecord {
-            id: "db-test-1".to_string(),
-            title: "First Note".to_string(),
-            file_path: "first.md".to_string(),
-            created_at: chrono::Utc::now(),
-            updated_at: chrono::Utc::now(),
-            tags: vec![],
-            position: 0,
-            file_hash: "hash1".to_string(),
-        };
-        
-        let note2 = NoteRecord {
-            id: "db-test-2".to_string(),
-            title: "Second Note".to_string(),
-            file_path: "second.md".to_string(),
-            created_at: chrono::Utc::now(),
-            updated_at: chrono::Utc::now(),
-            tags: vec![],
-            position: 0, // Same position as note1
-            file_hash: "hash2".to_string(),
-        };
-        
-        // Insert first note
-        db.upsert_note(&note1).unwrap();
-        
-        // Try to insert second note with same position
-        // This should either succeed (replacing) or fail (constraint violation)
-        match db.upsert_note(&note2) {
-            Ok(_) => {
-                // If it succeeded, verify only one note has position 0
-                let all_notes = db.get_all_notes().unwrap();
-                let position_0_notes: Vec<_> = all_notes.iter()
-                    .filter(|n| n.position == 0)
-                    .collect();
-                
-                // Should have exactly one note at position 0
-                assert_eq!(position_0_notes.len(), 1, 
-                    "Should have exactly one note at position 0, got {}", position_0_notes.len());
-                
-                log_info!("POSITION_BUG_TEST", "Database allowed position override - {} is now at position 0", 
-                    position_0_notes[0].title);
-            }
-            Err(e) => {
-                log_info!("POSITION_BUG_TEST", "Database prevented position conflict: {}", e);
-                // This is also acceptable behavior
-            }
-        }
-        
-        log_info!("POSITION_BUG_TEST", "✅ Database position uniqueness test passed");
-    }
-
-    #[tokio::test]
-    async fn test_database_ordering_vs_application_ordering() {
-        log_info!("POSITION_BUG_TEST", "🧪 Testing database ordering vs application ordering");
-        
-        let temp_dir = TempDir::new().unwrap();
-        let db = initialize_database(temp_dir.path()).unwrap();
-        
-        // Insert notes in non-sequential order
-        let notes = vec![
-            NoteRecord {
-                id: "order-2".to_string(),
-                title: "Should be Third".to_string(),
-                file_path: "third.md".to_string(),
-                created_at: chrono::Utc::now(),
-                updated_at: chrono::Utc::now(),
-                tags: vec![],
-                position: 2,
-                file_hash: "hash3".to_string(),
-            },
-            NoteRecord {
-                id: "order-0".to_string(),
-                title: "Should be First".to_string(),
-                file_path: "first.md".to_string(),
-                created_at: chrono::Utc::now(),
-                updated_at: chrono::Utc::now(),
-                tags: vec![],
-                position: 0,
-                file_hash: "hash1".to_string(),
-            },
-            NoteRecord {
-                id: "order-1".to_string(),
-                title: "Should be Second".to_string(),
-                file_path: "second.md".to_string(),
-                created_at: chrono::Utc::now(),
-                updated_at: chrono::Utc::now(),
-                tags: vec![],
-                position: 1,
-                file_hash: "hash2".to_string(),
-            },
-        ];
-        
-        // Insert in random order
-        for note in &notes {
-            db.upsert_note(note).unwrap();
-        }
-        
-        // Get notes from database (should be ordered by position)
-        let db_notes = db.get_all_notes().unwrap();
-        
-        log_info!("POSITION_BUG_TEST", "Database returned notes in order:");
-        for (i, note) in db_notes.iter().enumerate() {
-            log_info!("POSITION_BUG_TEST", "  [{}] {} (pos={})", i, note.title, note.position);
-        }
-        
-        // Verify database ordering
-        assert_eq!(db_notes.len(), 3);
-        assert_eq!(db_notes[0].position, 0);
-        assert_eq!(db_notes[0].title, "Should be First");
-        assert_eq!(db_notes[1].position, 1);
-        assert_eq!(db_notes[1].title, "Should be Second");
-        assert_eq!(db_notes[2].position, 2);
-        assert_eq!(db_notes[2].title, "Should be Third");
-        
-        log_info!("POSITION_BUG_TEST", "✅ Database ordering test passed");
     }
 }
 

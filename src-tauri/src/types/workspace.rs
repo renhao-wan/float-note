@@ -25,24 +25,6 @@ pub struct WindowState {
     pub opacity: f64,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct NotesIndex {
-    pub notes: HashMap<String, NoteIndexEntry>,
-    pub last_updated: String,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct NoteIndexEntry {
-    pub id: String,
-    pub title: String,
-    pub file_path: String,
-    pub created_at: String,
-    pub updated_at: String,
-    pub tags: Vec<String>,
-    pub position: Option<i32>, // For manual ordering
-    pub file_hash: Option<String>, // For change detection
-}
-
 impl Default for WorkspaceState {
     fn default() -> Self {
         WorkspaceState {
@@ -67,15 +49,6 @@ impl Default for WindowState {
             is_detached: false,
             always_on_top: false,
             opacity: 1.0,
-        }
-    }
-}
-
-impl Default for NotesIndex {
-    fn default() -> Self {
-        NotesIndex {
-            notes: HashMap::new(),
-            last_updated: chrono::Utc::now().to_rfc3339(),
         }
     }
 }

@@ -3,7 +3,6 @@ pub mod storage;
 pub mod file_storage;
 pub mod file_notes_storage;
 pub mod file_operations;
-pub mod database;
 pub mod commands;
 pub mod note_commands;
 pub mod window_commands;

@@ -43,14 +43,11 @@ impl FileNotesStorage {
     pub async fn save_note(&self, note: &Note) -> Result<(), String> {
         // Save to disk
         self.storage.save_note(note).await?;
-        
+
         // Update cache
         let mut cache = self.cache.lock().await;
         cache.insert(note.id.clone(), note.clone());
-        
-        // Update the index
-        self.storage.update_notes_index(&cache).await?;
-        
+
         Ok(())
     }
     
@@ -58,14 +55,11 @@ impl FileNotesStorage {
     pub async fn delete_note(&self, note_id: &str) -> Result<(), String> {
         // Delete from disk
         self.storage.delete_note(note_id).await?;
-        
+
         // Remove from cache
         let mut cache = self.cache.lock().await;
         cache.remove(note_id);
-        
-        // Update the index
-        self.storage.update_notes_index(&cache).await?;
-        
+
         Ok(())
     }
     
@@ -78,19 +72,16 @@ impl FileNotesStorage {
     /// Save all notes from cache to disk (used for bulk operations)
     pub async fn save_all_notes(&self, notes: &HashMap<String, Note>) -> Result<(), String> {
         log_info!("FILE_NOTES_STORAGE", "Saving all {} notes to disk", notes.len());
-        
+
         // Update cache first
         let mut cache = self.cache.lock().await;
         *cache = notes.clone();
-        
+
         // Save each note to disk
         for (_, note) in notes.iter() {
             self.storage.save_note(note).await?;
         }
-        
-        // Update the index
-        self.storage.update_notes_index(notes).await?;
-        
+
         Ok(())
     }
     

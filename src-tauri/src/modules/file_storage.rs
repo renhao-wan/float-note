@@ -5,7 +5,7 @@ use sha2::{Sha256, Digest};
 
 use crate::types::{
     note::{Note, NoteFrontmatter},
-    workspace::{WorkspaceState, WindowState, NotesIndex, NoteIndexEntry},
+    workspace::{WorkspaceState, WindowState},
     config::AppConfig,
 };
 use crate::modules::storage::get_configured_notes_directory;
@@ -144,10 +144,7 @@ impl FileStorageManager {
         }
         
         log_info!("FILE_STORAGE", "Loaded {} notes from file system", notes.len());
-        
-        // Update the index
-        self.update_notes_index(&notes).await?;
-        
+
         Ok(notes)
     }
     
@@ -260,20 +257,15 @@ impl FileStorageManager {
     
     /// Delete a note file
     pub async fn delete_note(&self, note_id: &str) -> Result<(), String> {
-        // Find the note file by ID
-        let index = self.load_notes_index().await?;
-        
-        if let Some(entry) = index.notes.get(note_id) {
-            let file_path = self.notes_dir.join(&entry.file_path);
-            
-            if file_path.exists() {
-                fs::remove_file(&file_path)
-                    .map_err(|e| format!("Failed to delete note file: {}", e))?;
-                
-                log_info!("FILE_STORAGE", "Deleted note file: {:?}", file_path);
-            }
+        let file_path = self.notes_dir.join(format!("{}.md", note_id));
+
+        if file_path.exists() {
+            fs::remove_file(&file_path)
+                .map_err(|e| format!("Failed to delete note file: {}", e))?;
+
+            log_info!("FILE_STORAGE", "Deleted note file: {:?}", file_path);
         }
-        
+
         Ok(())
     }
     
@@ -333,88 +325,6 @@ impl FileStorageManager {
         let mut hasher = Sha256::new();
         hasher.update(content.as_bytes());
         format!("{:x}", hasher.finalize())
-    }
-    
-    /// Update notes index in database
-    pub async fn update_notes_index(&self, notes: &HashMap<String, Note>) -> Result<(), String> {
-        use crate::modules::database;
-        
-        // Initialize database
-        let db = database::initialize_database(&self.notes_dir)
-            .map_err(|e| format!("Failed to initialize database: {}", e))?;
-        
-        // Update each note in the database
-        for (_, note) in notes {
-            let filename = self.sanitize_filename(&note.title);
-            let file_path = format!("{}.md", filename);
-            
-            // Compute hash of the full file content
-            let frontmatter = NoteFrontmatter {
-                id: note.id.clone(),
-                title: note.title.clone(),
-                created_at: note.created_at.clone(),
-                updated_at: note.updated_at.clone(),
-                tags: note.tags.clone(),
-                position: note.position,
-            };
-            
-            let frontmatter_yaml = serde_yaml::to_string(&frontmatter)
-                .unwrap_or_default();
-            let file_content = format!("---\n{}---\n{}", frontmatter_yaml, note.content);
-            let file_hash = Self::compute_file_hash(&file_content);
-            
-            // Create database record
-            let note_record = database::NoteRecord {
-                id: note.id.clone(),
-                title: note.title.clone(),
-                file_path,
-                created_at: chrono::DateTime::parse_from_rfc3339(&note.created_at)
-                    .unwrap_or_else(|_| chrono::Utc::now().into())
-                    .with_timezone(&chrono::Utc),
-                updated_at: chrono::DateTime::parse_from_rfc3339(&note.updated_at)
-                    .unwrap_or_else(|_| chrono::Utc::now().into())
-                    .with_timezone(&chrono::Utc),
-                tags: note.tags.clone(),
-                position: note.position, // Keep Option<i32> as is
-                file_hash,
-            };
-            
-            // Upsert to database
-            db.upsert_note(&note_record)
-                .map_err(|e| format!("Failed to update database: {}", e))?;
-        }
-        
-        Ok(())
-    }
-    
-    /// Load notes index from database
-    async fn load_notes_index(&self) -> Result<NotesIndex, String> {
-        use crate::modules::database;
-        
-        // Initialize database
-        let db = database::initialize_database(&self.notes_dir)
-            .map_err(|e| format!("Failed to initialize database: {}", e))?;
-        
-        // Get all notes from database
-        let note_records = db.get_all_notes()
-            .map_err(|e| format!("Failed to load notes from database: {}", e))?;
-        
-        // Convert to index format
-        let mut index = NotesIndex::default();
-        for record in note_records {
-            index.notes.insert(record.id.clone(), NoteIndexEntry {
-                id: record.id.clone(),
-                title: record.title.clone(),
-                file_path: record.file_path.clone(),
-                created_at: record.created_at.to_rfc3339(),
-                updated_at: record.updated_at.to_rfc3339(),
-                tags: record.tags.clone(),
-                position: record.position, // Already Option<i32>
-                file_hash: Some(record.file_hash.clone()),
-            });
-        }
-        
-        Ok(index)
     }
     
     /// Sanitize filename for safe file system usage
