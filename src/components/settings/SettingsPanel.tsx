@@ -236,19 +236,21 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.language')}</span>
               <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.languageDescription')}</span>
             </div>
-            <CustomSelect
-              value={localConfig.language ?? 'zh'}
-              options={[
-                { value: 'zh', label: '简体中文' },
-                { value: 'en', label: 'English' },
-              ]}
-              onChange={async (newLang) => {
-                // 立即切换语言
-                i18n.changeLanguage(newLang);
-                // 立即保存配置
-                await handleConfigChange({ language: newLang as 'zh' | 'en' });
+            <div className="w-28">
+              <CustomSelect
+                value={localConfig.language ?? 'zh'}
+                options={[
+                  { value: 'zh', label: '简体中文' },
+                  { value: 'en', label: 'English' },
+                ]}
+                onChange={async (newLang) => {
+                  // 立即切换语言
+                  i18n.changeLanguage(newLang);
+                  // 立即保存配置
+                  await handleConfigChange({ language: newLang as 'zh' | 'en' });
               }}
             />
+            </div>
           </div>
 
           {/* Show Note Previews Toggle */}
@@ -479,7 +481,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             {/* Editor Font */}
             <div className="flex items-center gap-3">
               <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.editorFont')}</label>
-              <div className="flex-1">
+              <div className="flex-1 max-w-[200px]">
                 <CustomSelect
                   value={localConfig.appearance?.editorFontFamily || 'JetBrains Mono, monospace'}
                   onChange={(value) => handleAppearanceChange({ editorFontFamily: value })}
@@ -499,7 +501,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             {/* Content Font */}
             <div className="flex items-center gap-3">
               <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.contentFont')}</label>
-              <div className="flex-1">
+              <div className="flex-1 max-w-[200px]">
                 <CustomSelect
                   value={localConfig.appearance?.previewFontFamily || 'Source Serif 4, Georgia, serif'}
                   onChange={(value) => handleAppearanceChange({ previewFontFamily: value })}
