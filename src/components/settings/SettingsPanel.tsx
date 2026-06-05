@@ -55,30 +55,23 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
     }
   };
 
-  // 取消更改：恢复到上次保存的配置
-  const handleCancel = () => {
-    setLocalConfig(config);
-    // 重新应用保存的配置
-    updateConfig(config);
-  };
-
-  // 实时预览：更新本地配置并立即应用到 UI（不持久化）
-  const handleConfigChange = (update: Partial<AppConfig>) => {
+  // 实时预览 + 立即持久化
+  const handleConfigChange = async (update: Partial<AppConfig>) => {
     const newConfig = { ...localConfig, ...update };
     setLocalConfig(newConfig);
-    // 只更新 Zustand store（立即生效），不调用后端 API
-    useConfigStore.setState({ config: newConfig });
+    // 立即应用并持久化
+    await updateConfig(newConfig);
   };
 
-  // 实时预览：更新外观配置并立即应用到 UI（不持久化）
-  const handleAppearanceChange = (appearanceUpdate: Partial<AppConfig['appearance']>) => {
+  // 实时预览 + 立即持久化
+  const handleAppearanceChange = async (appearanceUpdate: Partial<AppConfig['appearance']>) => {
     const newConfig = {
       ...localConfig,
       appearance: { ...localConfig.appearance, ...appearanceUpdate }
     };
     setLocalConfig(newConfig);
-    // 只更新 Zustand store（立即生效），不调用后端 API
-    useConfigStore.setState({ config: newConfig });
+    // 立即应用并持久化
+    await updateConfig(newConfig);
   };
 
   const handleImportFile = async () => {
@@ -1174,49 +1167,38 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
         <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background/80 to-transparent -mb-12" />
       </div>
       <div className="border-t border-border/20 px-5 py-3 bg-background/60 backdrop-blur-xl flex-shrink-0">
-        <div className="flex justify-between items-center">
-          <div className="text-xs text-muted-foreground/60">
-            {t('common.save')} {t('common.to')} {t('common.persist')}
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleCancel}
-              className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium text-muted-foreground bg-background/40 border border-border/30 rounded hover:bg-background/60 focus:outline-none"
-            >
-              {t('common.cancel')}
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saveStatus === 'saving'}
-              className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium text-white bg-primary rounded hover:bg-primary/90 focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saveStatus === 'saving' ? (
-                <>
-                  <svg className="w-3 h-3 mr-2 -ml-1 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {t('common.loading')}
-                </>
-              ) : saveStatus === 'saved' ? (
-                <>
-                  <svg className="w-3 h-3 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  {t('common.success')}
-                </>
-              ) : saveStatus === 'error' ? (
-                <>
-                  <svg className="w-3 h-3 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                  </svg>
-                  {t('common.error')}
-                </>
-              ) : (
-                t('common.save')
-              )}
-            </button>
-          </div>
+        <div className="flex justify-end">
+          <button
+            onClick={handleSave}
+            disabled={saveStatus === 'saving'}
+            className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium text-white bg-primary rounded hover:bg-primary/90 focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saveStatus === 'saving' ? (
+              <>
+                <svg className="w-3 h-3 mr-2 -ml-1 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {t('common.loading')}
+              </>
+            ) : saveStatus === 'saved' ? (
+              <>
+                <svg className="w-3 h-3 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                {t('common.success')}
+              </>
+            ) : saveStatus === 'error' ? (
+              <>
+                <svg className="w-3 h-3 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                {t('common.error')}
+              </>
+            ) : (
+              t('common.save')
+            )}
+          </button>
         </div>
       </div>
     </div>
