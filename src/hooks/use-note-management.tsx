@@ -329,24 +329,28 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   const deleteNote = useCallback(async (noteId: string) => {
     console.log('[FLOATNOTE] Deleting note:', noteId);
     try {
+      // 计算下一个要选中的笔记（在调用 API 之前）
+      const currentIndex = notes.findIndex(note => note.id === noteId);
+      const remainingNotes = notes.filter(note => note.id !== noteId);
+      const nextNote = remainingNotes.length > 0
+        ? remainingNotes[Math.min(currentIndex, remainingNotes.length - 1)]
+        : null;
+
       await invoke('delete_note', { id: noteId });
 
-      // Use functional update to get the latest state, avoiding stale closure
-      setNotes(prev => {
-        const remainingNotes = prev.filter(note => note.id !== noteId);
-        if (selectedNoteIdRef.current === noteId) {
-          const nextNote = remainingNotes[0] || null;
-          // Use setTimeout to ensure selection update runs after state is committed
-          setTimeout(() => selectNote(nextNote?.id || null), 0);
-        }
-        return remainingNotes;
-      });
+      // 更新笔记列表
+      setNotes(remainingNotes);
+
+      // 如果删除的是当前选中的笔记，选择下一个
+      if (selectedNoteIdRef.current === noteId) {
+        selectNote(nextNote?.id || null);
+      }
 
       console.log('[FLOATNOTE] Note deleted successfully');
     } catch (error) {
       console.error('[FLOATNOTE] Failed to delete note:', error);
     }
-  }, [selectedNoteId, selectNote]);
+  }, [notes, selectNote]);
 
   // Load notes on mount and listen for data-loaded event
   useEffect(() => {
