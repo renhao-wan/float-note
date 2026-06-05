@@ -14,7 +14,7 @@ export function WindowWrapper({ children, className = '', style }: WindowWrapper
   if (!config) {
     return (
       <div
-        className={`w-full h-full text-foreground flex flex-col rounded-xl overflow-hidden border border-border/30 shadow-elegant ${className}`}
+        className={`w-full h-full text-foreground flex flex-col rounded-lg overflow-hidden border border-border/30 shadow-elegant ${className}`}
         style={{
           backgroundColor: `hsl(var(--background))`,
           height: '100%',
@@ -30,7 +30,7 @@ export function WindowWrapper({ children, className = '', style }: WindowWrapper
   
   return (
     <div
-      className={`w-full h-full text-foreground flex flex-col rounded-xl overflow-hidden border border-border/30 shadow-elegant ${className}`}
+      className={`w-full h-full text-foreground flex flex-col rounded-lg overflow-hidden border border-border/30 shadow-elegant ${className}`}
       style={{
         backgroundColor: windowOpacity !== undefined
           ? `hsl(var(--background) / ${windowOpacity})`

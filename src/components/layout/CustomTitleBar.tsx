@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { DetachedWindowsAPI } from '../../services/detached-windows-api';
 
@@ -15,9 +16,9 @@ interface CustomTitleBarProps {
   };
 }
 
-export function CustomTitleBar({ 
-  title, 
-  isMainWindow = false, 
+export function CustomTitleBar({
+  title,
+  isMainWindow = false,
   noteId,
   showTrafficLights = true,
   rightContent,
@@ -25,9 +26,34 @@ export function CustomTitleBar({
   isShaded = false,
   stats
 }: CustomTitleBarProps) {
-  // Check if we're running in Tauri context
-  const isTauri = typeof window !== 'undefined' && window.__TAURI__;
-  const appWindow = isTauri ? getCurrentWebviewWindow() : null;
+  // Get the current window directly - getCurrentWebviewWindow() handles Tauri context internally
+  const appWindow = getCurrentWebviewWindow();
+  const [isMaximized, setIsMaximized] = useState(false);
+
+  // Check initial maximized state and listen for changes
+  useEffect(() => {
+    if (!appWindow) return;
+
+    const checkMaximized = async () => {
+      try {
+        const maximized = await appWindow.isMaximized();
+        setIsMaximized(maximized);
+      } catch (error) {
+        console.error('Failed to check maximized state:', error);
+      }
+    };
+
+    checkMaximized();
+
+    // Listen for resize events to update maximized state
+    const unlisten = appWindow.onResized(() => {
+      checkMaximized();
+    });
+
+    return () => {
+      unlisten.then(fn => fn());
+    };
+  }, [appWindow]);
 
   const handleClose = async () => {
     if (onClose) {
@@ -76,85 +102,48 @@ export function CustomTitleBar({
     }
   };
 
+  // Manual drag implementation using Tauri API
+  const handleMouseDown = async (e: React.MouseEvent) => {
+    // Handle middle click for shade
+    if (e.button === 1) {
+      e.preventDefault();
+      await handleMiddleClick(e);
+      return;
+    }
+
+    // Only start drag on left click
+    if (e.button !== 0) return;
+
+    // Start dragging immediately on mousedown
+    if (appWindow) {
+      try {
+        await appWindow.startDragging();
+      } catch (error) {
+        console.error('Failed to start dragging:', error);
+      }
+    }
+  };
+
   return (
     <div
       className="h-8 flex items-center px-4 border-b border-border/30 bg-card/40 backdrop-blur-md"
-      data-tauri-drag-region
-      style={{ 
-        userSelect: 'none', 
+      style={{
+        userSelect: 'none',
         WebkitUserSelect: 'none',
-        cursor: 'grab'
-      }}
-      onDoubleClick={handleDoubleClick}
-      onMouseDown={(e) => {
-        // Handle middle click on the entire title bar
-        if (e.button === 1) {
-          e.preventDefault();
-          e.stopPropagation();
-          handleMiddleClick(e);
-          return;
-        }
-        
-        // Prevent drag interference from child elements
-        if ((e.target as HTMLElement).hasAttribute('data-tauri-drag-region')) {
-          e.preventDefault();
-          // Force grabbing cursor during drag
-          document.body.style.cursor = 'grabbing';
-          
-          // Reset cursor on mouse up
-          const handleMouseUp = () => {
-            document.body.style.cursor = '';
-            document.removeEventListener('mouseup', handleMouseUp);
-          };
-          document.addEventListener('mouseup', handleMouseUp);
-        }
       }}
     >
-      {/* Window controls (traffic lights on macOS) */}
-      {showTrafficLights && (
-        <div className="flex items-center gap-2.5" onMouseDown={(e) => e.stopPropagation()}>
-          {/* Close button */}
-          <button
-            onClick={handleClose}
-            onMouseDown={(e) => e.stopPropagation()}
-            className="w-3.5 h-3.5 rounded-full bg-red-500/90 hover:bg-red-500 transition-all duration-200 group relative shadow-sm"
-            title="Close"
-          >
-            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 text-red-900 font-bold transition-opacity duration-150" style={{ fontSize: '9px' }}>
-              ×
-            </span>
-          </button>
-          
-          {/* Minimize button */}
-          <button
-            onClick={handleMinimize}
-            onMouseDown={(e) => e.stopPropagation()}
-            className="w-3.5 h-3.5 rounded-full bg-yellow-500/90 hover:bg-yellow-500 transition-all duration-200 group relative shadow-sm"
-            title="Minimize"
-          >
-            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 text-yellow-900 font-bold transition-opacity duration-150" style={{ fontSize: '9px' }}>
-              −
-            </span>
-          </button>
-          
-          {/* Maximize button */}
-          <button
-            onClick={handleMaximize}
-            onMouseDown={(e) => e.stopPropagation()}
-            className="w-3.5 h-3.5 rounded-full bg-green-500/90 hover:bg-green-500 transition-all duration-200 group relative shadow-sm"
-            title="Maximize"
-          >
-            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 text-green-900 font-bold transition-opacity duration-150" style={{ fontSize: '9px' }}>
-              +
-            </span>
-          </button>
+      {/* Left side content */}
+      {rightContent && (
+        <div className="flex items-center gap-2">
+          {rightContent}
         </div>
       )}
-      
-      {/* Center title area */}
-      <div 
-        className="flex-1 flex items-center justify-center"
-        data-tauri-drag-region
+
+      {/* Center title area - draggable */}
+      <div
+        className="flex-1 flex items-center justify-center cursor-grab active:cursor-grabbing"
+        onMouseDown={handleMouseDown}
+        onDoubleClick={handleDoubleClick}
       >
         {isShaded && stats ? (
           <div className="flex items-center gap-4 text-xs text-foreground/70 font-medium select-none">
@@ -174,11 +163,49 @@ export function CustomTitleBar({
           </span>
         )}
       </div>
-      
-      {/* Right side content */}
-      {rightContent && (
-        <div className="flex items-center gap-2" onMouseDown={(e) => e.stopPropagation()}>
-          {rightContent}
+
+      {/* Window controls */}
+      {showTrafficLights && (
+        <div className="flex items-center gap-0.5 ml-2">
+          <button
+            onClick={handleMinimize}
+            className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground/80 hover:bg-foreground/5 transition-all duration-150"
+            title="Minimize"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <line x1="1.5" y1="5" x2="8.5" y2="5" />
+            </svg>
+          </button>
+
+          <button
+            onClick={handleMaximize}
+            className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground/80 hover:bg-foreground/5 transition-all duration-150"
+            title={isMaximized ? "Restore" : "Maximize"}
+          >
+            {isMaximized ? (
+              // Restore icon (two overlapping rectangles)
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2.5" y="0.5" width="6" height="6" rx="1" />
+                <path d="M0.5 3.5 L0.5 8.5 L5.5 8.5 L5.5 7.5" />
+              </svg>
+            ) : (
+              // Maximize icon (single rectangle)
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="1.5" y="1.5" width="7" height="7" rx="1" />
+              </svg>
+            )}
+          </button>
+
+          <button
+            onClick={handleClose}
+            className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all duration-150"
+            title="Close"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <line x1="1.5" y1="1.5" x2="8.5" y2="8.5" />
+              <line x1="8.5" y1="1.5" x2="1.5" y2="8.5" />
+            </svg>
+          </button>
         </div>
       )}
     </div>
