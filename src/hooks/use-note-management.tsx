@@ -269,7 +269,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   // Save note immediately (for Cmd+S)
   const saveNoteImmediately = useCallback(async () => {
-    if (!selectedNoteId || !currentContent === undefined) return;
+    if (!selectedNoteId || currentContent === undefined) return;
     
     // Clear any pending debounced save
     if (saveTimeoutRef.current) {
