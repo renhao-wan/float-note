@@ -129,7 +129,7 @@
       "permissions": {
         "title": "所需权限",
         "accessibilityAccess": "辅助功能权限",
-        "accessibilityAccessDescription": "全局快捷键（⌘⌃⌥⇧N、⌘⌃⌥⇧H）需要系统级支持。",
+        "accessibilityAccessDescription": "全局快捷键需要系统级支持。",
         "inputMonitoring": "输入监控",
         "inputMonitoringDescription": "启用键盘事件检测以支持全局快捷键。",
         "setupSteps": "设置步骤",

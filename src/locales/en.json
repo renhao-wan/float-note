@@ -129,7 +129,7 @@
       "permissions": {
         "title": "Required Permissions",
         "accessibilityAccess": "Accessibility",
-        "accessibilityAccessDescription": "Global shortcuts (⌘⌃⌥⇧N, ⌘⌃⌥⇧H) require system-level support.",
+        "accessibilityAccessDescription": "Global shortcuts require system-level support.",
         "inputMonitoring": "Input Monitoring",
         "inputMonitoringDescription": "Enable keyboard event detection for global shortcuts.",
         "setupSteps": "Setup Steps",
