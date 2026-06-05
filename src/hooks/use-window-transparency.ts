@@ -5,7 +5,7 @@ import { useConfigStore } from '../stores/config-store';
 import { isMac } from '../lib/platform';
 
 export const useWindowTransparency = () => {
-  const { config, updateOpacity: updateOpacityConfig, updateAlwaysOnTop } = useConfigStore();
+  const { config, updateDetachedWindowOpacity: updateOpacityConfig, updateAlwaysOnTop } = useConfigStore();
 
   // Ensure window is visible on mount
   useEffect(() => {

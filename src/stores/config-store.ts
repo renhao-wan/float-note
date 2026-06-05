@@ -10,7 +10,7 @@ interface ConfigStore {
   
   // Actions
   loadConfig: () => Promise<void>;
-  updateOpacity: (opacity: number) => Promise<void>;
+  updateDetachedWindowOpacity: (opacity: number) => Promise<void>;
   updateAlwaysOnTop: (alwaysOnTop: boolean) => Promise<void>;
   updateConfig: (config: Partial<AppConfig>) => Promise<void>;
   updateAppearance: (appearance: Partial<AppConfig['appearance']>) => Promise<void>;
@@ -51,7 +51,7 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
     }
   },
 
-  updateOpacity: async (opacity: number) => {
+  updateDetachedWindowOpacity: async (opacity: number) => {
     const { config } = get();
     const updatedConfig = {
       ...config,
