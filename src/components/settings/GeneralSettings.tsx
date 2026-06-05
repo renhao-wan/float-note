@@ -74,7 +74,7 @@ export function GeneralSettings({
           <div className="flex justify-between items-center gap-3">
             <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.author')}</span>
             <div className="flex-1"></div>
-            <span className="text-foreground font-mono">AI-Native Spatial Notes ✨</span>
+            <span className="text-foreground font-mono">Renhao Wan</span>
           </div>
         </div>
       </div>
