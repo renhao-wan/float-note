@@ -32,10 +32,11 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
   return (
     <div ref={selectRef} className={`relative ${className}`}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-2 py-1.5 bg-card/30 border border-border/30 rounded-lg text-foreground text-xs focus:outline-none focus:border-primary/40 hover:bg-card/50 transition-colors cursor-pointer font-mono flex items-center justify-between gap-1"
+        className="w-full px-2 py-1.5 bg-card/30 border border-border/30 rounded-lg text-foreground text-xs focus:outline-none focus:border-primary/40 hover:bg-card/50 transition-colors cursor-pointer font-mono flex items-center justify-between gap-1 min-w-0"
       >
-        <span className="truncate">{selectedOption?.label || '-'}</span>
+        <span className="truncate flex-1 text-left">{selectedOption?.label || '-'}</span>
         <svg
           width="10"
           height="10"
@@ -52,7 +53,7 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border/30 rounded-lg shadow-elegant overflow-hidden z-50 max-h-48 overflow-y-auto">
+        <div className="absolute top-full left-0 mt-1 bg-card border border-border/30 rounded-lg shadow-elegant overflow-hidden z-50 max-h-48 overflow-y-auto min-w-full">
           {options.map((option) => (
             <button
               key={option.value}
@@ -60,7 +61,7 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
                 onChange(option.value);
                 setIsOpen(false);
               }}
-              className={`w-full px-2 py-1.5 text-xs text-left transition-colors truncate ${
+              className={`w-full px-2 py-1.5 text-xs text-left transition-colors whitespace-nowrap ${
                 option.value === value
                   ? 'bg-primary/10 text-primary'
                   : 'text-foreground hover:bg-card/50'
