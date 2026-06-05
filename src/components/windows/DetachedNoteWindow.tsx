@@ -162,7 +162,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
           saveStatus.setSaveError('Failed to save note');
         }
       }
-    }, 30000); // 30 second save interval, same as main window
+    }, 3000); // 3 second save interval, same as main window
   }, [note, noteId, saveStatus]);
 
   const handleCloseWindow = async () => {

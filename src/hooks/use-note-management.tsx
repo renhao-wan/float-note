@@ -221,7 +221,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         options?.onSaveError?.(error);
         // Note: We don't revert local changes here since the user may have continued typing
       }
-    }, 30000); // 30 second save interval
+    }, 3000); // 3 second save interval
   }, [selectedNoteId, options]);
 
   // Save note immediately (for Cmd+S)
