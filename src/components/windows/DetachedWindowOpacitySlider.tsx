@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Slider } from '../ui/Slider';
 import { Eye, EyeOff } from '../../lib/lucide';
-import { transparencyManager } from '../../lib/transparency';
+import { getTransparencyManager } from '../../lib/transparency';
 import { TRANSPARENCY_CONFIG } from '../../lib/transparency/constants';
 
 interface DetachedWindowOpacitySliderProps {
@@ -16,7 +16,8 @@ export const DetachedWindowOpacitySlider = ({
   onOpacityChange,
 }: DetachedWindowOpacitySliderProps) => {
   const [opacity, setOpacity] = useState(initialOpacity);
-  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const transparencyManager = getTransparencyManager();
 
   // 应用透明度到窗口
   const applyOpacity = useCallback(async (value: number) => {
@@ -27,7 +28,7 @@ export const DetachedWindowOpacitySlider = ({
     } catch (error) {
       console.error('[OPACITY_SLIDER] Failed to apply opacity:', error);
     }
-  }, [windowLabel, onOpacityChange]);
+  }, [windowLabel, onOpacityChange, transparencyManager]);
 
   // 处理滑块变化
   const handleSliderChange = useCallback((value: number[]) => {
@@ -35,16 +36,14 @@ export const DetachedWindowOpacitySlider = ({
     setOpacity(newOpacity); // 立即更新 UI
 
     // 防抖：停止拖动 100ms 后才应用透明度
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
 
-    const timer = setTimeout(() => {
+    debounceTimerRef.current = setTimeout(() => {
       applyOpacity(newOpacity);
     }, 100);
-
-    setDebounceTimer(timer);
-  }, [debounceTimer, applyOpacity]);
+  }, [applyOpacity]);
 
   // 初始化时加载当前透明度
   useEffect(() => {
@@ -53,16 +52,16 @@ export const DetachedWindowOpacitySlider = ({
       setOpacity(currentOpacity);
     };
     loadOpacity();
-  }, [windowLabel]);
+  }, [windowLabel, transparencyManager]);
 
   // 清理防抖定时器
   useEffect(() => {
     return () => {
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [debounceTimer]);
+  }, []);
 
   return (
     <div className="flex items-center gap-2 px-2">

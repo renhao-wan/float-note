@@ -169,8 +169,8 @@ pub fn run() {
             cleanup_stale_hybrid_windows,
 
             // Detached window opacity commands
-            set_detached_window_opacity,
-            get_detached_window_opacity,
+            set_detached_window_opacity_macos,
+            get_detached_window_opacity_macos,
             set_detached_window_opacity_windows,
             get_detached_window_opacity_windows,
             set_detached_window_opacity_linux,

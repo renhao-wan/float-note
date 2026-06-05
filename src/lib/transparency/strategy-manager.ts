@@ -5,6 +5,43 @@ import { WindowsTransparencyStrategy } from './strategies/windows';
 import { LinuxTransparencyStrategy } from './strategies/linux';
 
 /**
+ * 检测当前平台
+ * 使用 userAgent 替代已废弃的 navigator.platform
+ * @returns 平台标识：'macos' | 'windows' | 'linux' | 'unknown'
+ */
+function detectPlatform(): 'macos' | 'windows' | 'linux' | 'unknown' {
+  // 优先使用 navigator.userAgent（更可靠）
+  if (typeof navigator !== 'undefined') {
+    const ua = navigator.userAgent.toLowerCase();
+    if (ua.includes('mac') || ua.includes('darwin')) return 'macos';
+    if (ua.includes('win')) return 'windows';
+    if (ua.includes('linux')) return 'linux';
+  }
+
+  // 回退到 navigator.platform（兼容旧代码）
+  if (typeof navigator !== 'undefined' && navigator.platform) {
+    const platform = navigator.platform.toLowerCase();
+    if (platform.includes('mac')) return 'macos';
+    if (platform.includes('win')) return 'windows';
+    if (platform.includes('linux')) return 'linux';
+  }
+
+  return 'unknown';
+}
+
+/**
+ * 透明度范围验证函数
+ * @param opacity 待验证的透明度值
+ * @returns 验证后的透明度值（在有效范围内）
+ */
+export function validateOpacityRange(opacity: number): number {
+  return Math.max(
+    TRANSPARENCY_CONFIG.range.min,
+    Math.min(TRANSPARENCY_CONFIG.range.max, opacity)
+  );
+}
+
+/**
  * 透明度策略管理器
  * 负责管理平台策略实例，提供统一的透明度控制 API
  */
@@ -20,13 +57,13 @@ export class TransparencyStrategyManager {
    * 根据当前平台创建策略实例
    */
   private createStrategy(): TransparencyStrategy {
-    const platform = navigator.platform.toLowerCase();
+    const platform = detectPlatform();
 
-    if (platform.includes('mac')) {
+    if (platform === 'macos') {
       return new MacOSTransparencyStrategy();
-    } else if (platform.includes('win')) {
+    } else if (platform === 'windows') {
       return new WindowsTransparencyStrategy();
-    } else if (platform.includes('linux')) {
+    } else if (platform === 'linux') {
       return new LinuxTransparencyStrategy();
     }
 
@@ -42,10 +79,7 @@ export class TransparencyStrategyManager {
    */
   async setOpacity(windowLabel: string, opacity: number): Promise<void> {
     // 验证透明度范围
-    const clampedOpacity = Math.max(
-      TRANSPARENCY_CONFIG.range.min,
-      Math.min(TRANSPARENCY_CONFIG.range.max, opacity)
-    );
+    const clampedOpacity = validateOpacityRange(opacity);
 
     // 调用平台策略
     await this.strategy.setOpacity(windowLabel, clampedOpacity);
@@ -115,5 +149,21 @@ export class TransparencyStrategyManager {
   }
 }
 
-// 单例导出
-export const transparencyManager = new TransparencyStrategyManager();
+// 懒加载单例
+let _transparencyManager: TransparencyStrategyManager | null = null;
+
+/**
+ * 获取透明度策略管理器单例
+ * 使用懒加载避免 SSR 环境问题
+ */
+export function getTransparencyManager(): TransparencyStrategyManager {
+  if (!_transparencyManager) {
+    _transparencyManager = new TransparencyStrategyManager();
+  }
+  return _transparencyManager;
+}
+
+// 保持向后兼容的导出（仅在浏览器环境创建）
+export const transparencyManager = typeof window !== 'undefined'
+  ? getTransparencyManager()
+  : null;

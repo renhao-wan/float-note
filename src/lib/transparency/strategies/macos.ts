@@ -13,7 +13,7 @@ export class MacOSTransparencyStrategy implements TransparencyStrategy {
    */
   async setOpacity(windowLabel: string, opacity: number): Promise<void> {
     try {
-      await invoke('set_detached_window_opacity', {
+      await invoke('set_detached_window_opacity_macos', {
         windowLabel,
         opacity,
       });
@@ -30,7 +30,7 @@ export class MacOSTransparencyStrategy implements TransparencyStrategy {
    */
   async getOpacity(windowLabel: string): Promise<number> {
     try {
-      const opacity = await invoke<number>('get_detached_window_opacity', {
+      const opacity = await invoke<number>('get_detached_window_opacity_macos', {
         windowLabel,
       });
       return opacity;

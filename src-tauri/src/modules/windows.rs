@@ -1969,7 +1969,7 @@ async fn save_window_size(note_id: String, width: f64, height: f64) -> Result<()
 
 /// 设置分离窗口透明度（macOS）
 #[tauri::command]
-pub async fn set_detached_window_opacity(
+pub async fn set_detached_window_opacity_macos(
     app: AppHandle,
     window_label: String,
     opacity: f64,
@@ -1995,7 +1995,7 @@ pub async fn set_detached_window_opacity(
 
 /// 获取分离窗口透明度（macOS）
 #[tauri::command]
-pub async fn get_detached_window_opacity(
+pub async fn get_detached_window_opacity_macos(
     app: AppHandle,
     window_label: String,
 ) -> Result<f64, String> {
