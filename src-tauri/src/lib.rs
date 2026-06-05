@@ -141,7 +141,6 @@ pub fn run() {
             toggle_all_windows_hover,
             set_window_focus,
             force_main_window_visible,
-            debug_webview_state,
             reload_main_window,
             create_detached_window,
             close_detached_window,
@@ -153,19 +152,10 @@ pub fn run() {
             toggle_main_window_shade,
             restore_detached_windows,
             clear_all_detached_windows,
-            debug_all_windows_state,
-            force_all_windows_opaque,
-            gather_all_windows_to_main_screen,
             recreate_missing_windows,
-            test_detached_window_creation,
-            get_window_state_truth,
             list_all_windows,
-            create_test_window,
-            test_window_events,
-            force_create_detached_window,
             cleanup_stale_windows,
             cleanup_destroyed_window,
-            force_close_test_window,
             cleanup_stale_hybrid_windows,
 
             // Detached window opacity commands
@@ -175,7 +165,7 @@ pub fn run() {
             get_detached_window_opacity_windows,
             set_detached_window_opacity_linux,
             get_detached_window_opacity_linux,
-            
+
             // Drag and drop operations
             create_drag_ghost,
             update_drag_ghost_position,
@@ -185,20 +175,17 @@ pub fn run() {
             update_hybrid_drag_position,
             close_hybrid_drag_window,
             finalize_hybrid_drag_window,
-            
+
             // System operations
             open_system_settings,
             open_directory_in_finder,
             open_directory_dialog,
-            
+
             // Menu and shortcuts
             update_app_menu,
             reregister_global_shortcuts,
-            
-            // Test and debug operations
-            test_emit_new_note,
-            test_database_migration,
-            test_window_creation,
+
+            // Logging
             get_log_file_path,
             get_recent_logs,
         ])

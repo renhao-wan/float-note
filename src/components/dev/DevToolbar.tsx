@@ -109,12 +109,7 @@ export function DevToolbar() {
       const notesDir = await invoke<string>('get_notes_directory');
       console.log('\n📁 NOTES DIRECTORY:');
       console.log(notesDir);
-      
-      // Window State
-      const windowState = await invoke<string>('get_window_state_truth');
-      console.log('\n🪟 WINDOW STATE:');
-      console.log(windowState);
-      
+
       // Recent Logs
       let logs = '';
       try {
@@ -124,14 +119,6 @@ export function DevToolbar() {
       } catch (e) {
         console.log('\n📝 RECENT BACKEND LOGS: (not available)');
         logs = '';
-      }
-      
-      // Parse window state safely
-      let parsedWindowState;
-      try {
-        parsedWindowState = JSON.parse(windowState);
-      } catch (e) {
-        parsedWindowState = windowState; // Keep as string if not valid JSON
       }
       
       // Compile all data for toolbar display
@@ -154,7 +141,6 @@ export function DevToolbar() {
           match: JSON.stringify(frontendIds) === JSON.stringify(backendIds)
         },
         notesDirectory: notesDir,
-        windowState: parsedWindowState,
         recentLogs: logs ? logs.split('\n').slice(0, 10) : []
       };
       
@@ -439,19 +425,6 @@ export function DevToolbar() {
               <button
                 onClick={async () => {
                   try {
-                    const truth = await invoke<string>('get_window_state_truth');
-                    showJson(truth);
-                  } catch (error) {
-                    showJson({ error: String(error) });
-                  }
-                }}
-                className="w-full px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[11px] font-light rounded transition-all text-left"
-              >
-                Window State Truth
-              </button>
-              <button
-                onClick={async () => {
-                  try {
                     const logs = await invoke<string>('get_recent_logs', { lines: 50 });
                     showJson(logs);
                   } catch (error) {
@@ -474,55 +447,6 @@ export function DevToolbar() {
                 className="w-full px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[11px] font-light rounded transition-all text-left"
               >
                 List All Windows
-              </button>
-            </div>
-          )}
-        </div>
-        
-        {/* Window Testing */}
-        <div>
-          <button
-            onClick={() => setActiveCategory(activeCategory === 'testing' ? null : 'testing')}
-            className={`w-full px-3 py-1.5 text-[12px] font-light rounded transition-all text-left flex items-center justify-between ${
-              activeCategory === 'testing' ? 'bg-green-600/20 text-green-300' : 'bg-white/5 hover:bg-white/10'
-            }`}
-          >
-            <span>🧪 Window Testing</span>
-            <span className="text-[10px] opacity-60">{activeCategory === 'testing' ? '−' : '+'}</span>
-          </button>
-          
-          {activeCategory === 'testing' && (
-            <div className="pl-4 space-y-1 border-l border-gray-700/30 ml-1.5 mt-1">
-              <button
-                onClick={async () => {
-                  console.log('[DEV] Creating test window...');
-                  await invoke('create_test_window');
-                  await refreshWindows();
-                }}
-                className="w-full px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[11px] font-light rounded transition-all text-left"
-              >
-                Create Test Window
-              </button>
-              <button
-                onClick={async () => {
-                  console.log('[DEV] Testing window events...');
-                  await invoke('test_window_events');
-                }}
-                className="w-full px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[11px] font-light rounded transition-all text-left"
-              >
-                Test Window Events
-              </button>
-              <button
-                onClick={async () => {
-                  const noteId = prompt('Enter note ID to detach:');
-                  if (noteId) {
-                    await invoke('force_create_detached_window', { noteId });
-                    await refreshWindows();
-                  }
-                }}
-                className="w-full px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[11px] font-light rounded transition-all text-left"
-              >
-                Force Detach Note
               </button>
             </div>
           )}
@@ -560,16 +484,6 @@ export function DevToolbar() {
                 className="w-full px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[11px] font-light rounded transition-all text-left"
               >
                 Cleanup Stale Windows
-              </button>
-              <button
-                onClick={async () => {
-                  await invoke('force_close_test_window');
-                  await refreshWindows();
-                  console.log('[DEV] Test window closed');
-                }}
-                className="w-full px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[11px] font-light rounded transition-all text-left"
-              >
-                Close Test Window
               </button>
               <button
                 onClick={async () => {
