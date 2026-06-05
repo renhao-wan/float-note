@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { AppConfig, defaultConfig, migrateConfig } from '../types/config';
+import { AppConfig, defaultConfig } from '../types/config';
 import { configApi } from '../services/config-api';
 import { emit } from '@tauri-apps/api/event';
 
@@ -7,7 +7,7 @@ interface ConfigStore {
   config: AppConfig;
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   loadConfig: () => Promise<void>;
   updateDetachedWindowOpacity: (opacity: number) => Promise<void>;
@@ -33,12 +33,19 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
         return;
       }
 
-      const config = migrateConfig(rawConfig);
-
-      if (!config || !config.appearance) {
-        set({ config: defaultConfig, isLoading: false });
-        return;
-      }
+      // 直接合并配置，使用默认值填充缺失字段
+      const config: AppConfig = {
+        ...defaultConfig,
+        ...rawConfig,
+        appearance: {
+          ...defaultConfig.appearance,
+          ...(rawConfig.appearance || {}),
+        },
+        storage: {
+          ...defaultConfig.storage,
+          ...(rawConfig.storage || {}),
+        },
+      };
 
       set({ config, isLoading: false });
     } catch (error) {

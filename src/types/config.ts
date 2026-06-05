@@ -100,35 +100,3 @@ export const defaultConfig: AppConfig = {
     useCustomDirectory: false,
   },
 };
-
-// Migration helper for old configs
-export const migrateConfig = (config: any): AppConfig => {
-  const migratedAppearance = {
-    ...defaultConfig.appearance,
-    ...(config.appearance || {}),
-  };
-
-  // 如果配置中没有 themeId，使用默认值
-  if (!migratedAppearance.themeId) {
-    migratedAppearance.themeId = 'arctic-frost';
-  }
-
-  // 迁移旧的 opacity 字段到新位置
-  if (config.opacity !== undefined && migratedAppearance.detachedWindowOpacity === undefined) {
-    migratedAppearance.detachedWindowOpacity = config.opacity;
-  }
-
-  // 删除旧的 windowOpacity 字段
-  delete migratedAppearance.windowOpacity;
-
-  return {
-    ...defaultConfig,
-    ...config,
-    language: config.language || 'zh', // 未设置则默认中文
-    appearance: migratedAppearance,
-    storage: {
-      ...defaultConfig.storage,
-      ...(config.storage || {}),
-    },
-  };
-};
