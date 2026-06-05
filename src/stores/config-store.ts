@@ -53,13 +53,16 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
 
   updateOpacity: async (opacity: number) => {
     const { config } = get();
-    const updatedConfig = { ...config, opacity };
-    
+    const updatedConfig = {
+      ...config,
+      appearance: { ...config.appearance, detachedWindowOpacity: opacity }
+    };
+
     try {
       const newConfig = await configApi.updateConfig(updatedConfig);
       set({ config: newConfig });
     } catch (error) {
-      set({ 
+      set({
         error: error instanceof Error ? error.message : 'Failed to update opacity'
       });
     }

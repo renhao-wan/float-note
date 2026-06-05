@@ -30,10 +30,11 @@ export const useWindowTransparency = () => {
     const applyOpacity = async () => {
       if (!isMac()) return;
       try {
+        const opacity = config?.appearance?.detachedWindowOpacity;
         // Only run in Tauri context and when config is available
-        if (typeof window !== 'undefined' && window.__TAURI__ && config && typeof config.opacity === 'number') {
-          console.log('Applying opacity:', config.opacity);
-          await invoke('set_window_opacity', { opacity: config.opacity });
+        if (typeof window !== 'undefined' && window.__TAURI__ && config && typeof opacity === 'number') {
+          console.log('Applying opacity:', opacity);
+          await invoke('set_window_opacity', { opacity });
         }
       } catch (error) {
         console.error('Failed to apply window opacity:', error);
@@ -41,7 +42,7 @@ export const useWindowTransparency = () => {
     };
 
     applyOpacity();
-  }, [config?.opacity]);
+  }, [config?.appearance?.detachedWindowOpacity]);
 
   // Apply always on top when config changes
   useEffect(() => {
@@ -90,8 +91,8 @@ export const useWindowTransparency = () => {
   }, [updateAlwaysOnTop]);
 
   return {
-    opacity: config?.opacity ?? 1,
-    isTransparent: (config?.opacity ?? 1) < 1.0,
+    opacity: config?.appearance?.detachedWindowOpacity ?? 0.9,
+    isTransparent: (config?.appearance?.detachedWindowOpacity ?? 0.9) < 1.0,
     alwaysOnTop: config?.alwaysOnTop ?? false,
     updateOpacity,
     toggleAlwaysOnTop,

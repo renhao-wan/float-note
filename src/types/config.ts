@@ -1,5 +1,4 @@
 export interface AppConfig {
-  opacity: number;
   alwaysOnTop: boolean;
   language: 'zh' | 'en'; // 新增：语言偏好
   shortcuts: {
@@ -42,7 +41,7 @@ export interface AppConfig {
     vimMode?: boolean;
     wordWrap?: boolean;
     showNotePreviews?: boolean;
-    windowOpacity?: number; // Background transparency (0-1)
+    detachedWindowOpacity?: number; // 分离窗口默认透明度
     appFontFamily: string;
   };
   editor?: {
@@ -60,7 +59,6 @@ export interface AppConfig {
 }
 
 export const defaultConfig: AppConfig = {
-  opacity: 1,
   alwaysOnTop: false,
   language: 'zh', // 默认中文
   shortcuts: {
@@ -86,6 +84,7 @@ export const defaultConfig: AppConfig = {
     typewriterMode: false,
     vimMode: false,
     showNotePreviews: false,
+    detachedWindowOpacity: 0.9, // 分离窗口默认透明度
     appFontFamily: 'Outfit, system-ui, sans-serif',
   },
   editor: {
@@ -113,6 +112,14 @@ export const migrateConfig = (config: any): AppConfig => {
   if (!migratedAppearance.themeId) {
     migratedAppearance.themeId = 'arctic-frost';
   }
+
+  // 迁移旧的 opacity 字段到新位置
+  if (config.opacity !== undefined && migratedAppearance.detachedWindowOpacity === undefined) {
+    migratedAppearance.detachedWindowOpacity = config.opacity;
+  }
+
+  // 删除旧的 windowOpacity 字段
+  delete migratedAppearance.windowOpacity;
 
   return {
     ...defaultConfig,

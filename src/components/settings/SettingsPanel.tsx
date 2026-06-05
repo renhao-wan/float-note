@@ -269,15 +269,15 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                   min="0.1"
                   max="1.0"
                   step="0.05"
-                  value={localConfig.appearance?.windowOpacity}
-                  onChange={(e) => handleAppearanceChange({ windowOpacity: parseFloat(e.target.value) })}
+                  value={localConfig.appearance?.detachedWindowOpacity}
+                  onChange={(e) => handleAppearanceChange({ detachedWindowOpacity: parseFloat(e.target.value) })}
                   className="slider-input"
                 />
               </div>
               <span className="text-xs text-muted-foreground/70">🫧</span>
             </div>
             <span className="text-xs text-muted-foreground/70 min-w-[3rem] text-right font-mono">
-              {Math.round((localConfig.appearance?.windowOpacity ?? 1) * 100)}%
+              {Math.round((localConfig.appearance?.detachedWindowOpacity ?? 1) * 100)}%
             </span>
           </div>
           
@@ -512,18 +512,17 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                 <span className="text-xs text-muted-foreground/70">30%</span>
                 <div className="flex-1 relative h-5 slider-container">
                   <div className="slider-track"></div>
-                  <input type="range" min="0.3" max="1.0" step="0.05" value={localConfig.opacity}
+                  <input type="range" min="0.3" max="1.0" step="0.05" value={localConfig.appearance?.detachedWindowOpacity ?? 0.9}
                     onChange={async (e) => {
                       const v = parseFloat(e.target.value);
-                      setLocalConfig({ ...localConfig, opacity: v });
+                      handleAppearanceChange({ detachedWindowOpacity: v });
                       try { await invoke('set_window_opacity', { opacity: v }); } catch {}
                     }}
-                    onMouseUp={async () => { await updateConfig(localConfig); }}
                     className="slider-input" />
                 </div>
                 <span className="text-xs text-muted-foreground/70">100%</span>
               </div>
-              <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">{Math.round(localConfig.opacity * 100)}%</span>
+              <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">{Math.round((localConfig.appearance?.detachedWindowOpacity ?? 0.9) * 100)}%</span>
             </div>
             <div className="flex items-center gap-3">
               <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.window.alwaysOnTop')}</label>

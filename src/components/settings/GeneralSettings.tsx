@@ -159,12 +159,12 @@ export function GeneralSettings({
                   min="0.1"
                   max="1.0"
                   step="0.05"
-                  value={localConfig.appearance?.windowOpacity}
+                  value={localConfig.appearance?.detachedWindowOpacity}
                   onChange={(e) => setLocalConfig({
                     ...localConfig,
                     appearance: {
                       ...localConfig.appearance,
-                      windowOpacity: parseFloat(e.target.value)
+                      detachedWindowOpacity: parseFloat(e.target.value)
                     }
                   })}
                   className="slider-input"
@@ -173,7 +173,7 @@ export function GeneralSettings({
               <span className="text-xs text-muted-foreground/70">🫧</span>
             </div>
             <span className="text-xs text-muted-foreground/70 min-w-[3rem] text-right font-mono">
-              {Math.round((localConfig.appearance?.windowOpacity ?? 1) * 100)}%
+              {Math.round((localConfig.appearance?.detachedWindowOpacity ?? 1) * 100)}%
             </span>
           </div>
 

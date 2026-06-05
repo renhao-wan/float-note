@@ -26,7 +26,7 @@ export function WindowWrapper({ children, className = '', style }: WindowWrapper
     );
   }
   
-  const windowOpacity = config.appearance?.windowOpacity;
+  const windowOpacity = config.appearance?.detachedWindowOpacity;
   
   return (
     <div
