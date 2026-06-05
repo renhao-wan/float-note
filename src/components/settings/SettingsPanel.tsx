@@ -6,6 +6,7 @@ import { ThemeSelector } from './ThemeSelector';
 import { notesApi } from '../../services/tauri-api';
 import { getModifierSymbol, isMac } from '../../lib/platform';
 import { AppConfig } from '../../types/config';
+import { CustomSelect } from '../common/CustomSelect';
 
 interface SettingsPanelProps {
   selectedSection: 'general' | 'appearance' | 'shortcuts' | 'editor';
@@ -214,29 +215,19 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.language')}</span>
               <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.languageDescription')}</span>
             </div>
-            <div className="flex items-center">
-              <select
-                value={localConfig.language ?? 'zh'}
-                onChange={async (e) => {
-                  const newLang = e.target.value as 'zh' | 'en';
-                  // 立即切换语言
-                  i18n.changeLanguage(newLang);
-                  // 立即保存配置
-                  await handleConfigChange({ language: newLang });
-                }}
-                className="w-32 px-2 py-1.5 bg-card/30 border border-border/30 rounded-2xl text-foreground text-xs focus:outline-none focus:border-primary/40 hover:bg-card/50 transition-colors appearance-none cursor-pointer font-mono"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                  backgroundPosition: 'right 0.5rem center',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundSize: '1.5em 1.5em',
-                  paddingRight: '2.5rem'
-                }}
-              >
-                <option value="zh">简体中文</option>
-                <option value="en">English</option>
-              </select>
-            </div>
+            <CustomSelect
+              value={localConfig.language ?? 'zh'}
+              options={[
+                { value: 'zh', label: '简体中文' },
+                { value: 'en', label: 'English' },
+              ]}
+              onChange={async (newLang) => {
+                // 立即切换语言
+                i18n.changeLanguage(newLang);
+                // 立即保存配置
+                await handleConfigChange({ language: newLang as 'zh' | 'en' });
+              }}
+            />
           </div>
 
           {/* Show Note Previews Toggle */}
