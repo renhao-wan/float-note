@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { applyTheme, getAllThemes, getThemeById } from '../../types/theme';
 import { useConfigStore } from '../../stores/config-store';
@@ -18,6 +18,18 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
   // Theme being hovered (visual preview only)
   const [hoverThemeId, setHoverThemeId] = useState<string | null>(null);
 
+  // Refs to track latest values for cleanup function
+  const previewThemeIdRef = useRef(previewThemeId);
+  const savedThemeIdRef = useRef(savedThemeId);
+
+  useEffect(() => {
+    previewThemeIdRef.current = previewThemeId;
+  }, [previewThemeId]);
+
+  useEffect(() => {
+    savedThemeIdRef.current = savedThemeId;
+  }, [savedThemeId]);
+
   // Apply preview theme when it changes
   useEffect(() => {
     const themeToApply = previewThemeId || savedThemeId;
@@ -30,8 +42,9 @@ export function ThemeSelector({ onSave }: ThemeSelectorProps) {
   // Reset preview on unmount
   useEffect(() => {
     return () => {
-      if (previewThemeId) {
-        const savedTheme = getThemeById(savedThemeId);
+      // 使用 ref 获取最新值
+      if (previewThemeIdRef.current && savedThemeIdRef.current) {
+        const savedTheme = getThemeById(savedThemeIdRef.current);
         if (savedTheme) {
           applyTheme(savedTheme);
         }
