@@ -76,11 +76,19 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
       };
     };
     
+    let cancelled = false;
     let cleanup: (() => void) | undefined;
-    setupListeners().then(fn => { cleanup = fn; });
-    
+    setupListeners().then(fn => {
+      if (cancelled) {
+        fn();
+      } else {
+        cleanup = fn;
+      }
+    });
+
     // Cleanup function to clear save timeout on unmount
     return () => {
+      cancelled = true;
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
@@ -265,12 +273,18 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
       return unlisten;
     };
     
+    let cancelled = false;
     let cleanup: (() => void) | undefined;
     setupConfigListener().then(fn => {
-      cleanup = fn;
+      if (cancelled) {
+        fn();
+      } else {
+        cleanup = fn;
+      }
     });
-    
+
     return () => {
+      cancelled = true;
       if (cleanup) {
         cleanup();
       }

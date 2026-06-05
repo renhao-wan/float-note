@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { noteSyncService, useNoteSync } from '../services/note-sync';
@@ -46,7 +46,10 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   // Update ref when selectedNoteId changes
   selectedNoteIdRef.current = selectedNoteId;
 
-  const selectedNote = notes.find(note => note.id === selectedNoteId);
+  const selectedNote = useMemo(
+    () => notes.find(note => note.id === selectedNoteId),
+    [notes, selectedNoteId]
+  );
 
   // Real-time sync for selected note
   useNoteSync(selectedNoteId, (updatedNote) => {
@@ -167,7 +170,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       setSelectedNoteId(noteId);
       setCurrentContent(note.content);
     }
-  }, [notes, selectedNoteId]);
+  }, [notes]);
 
   // Update note content with debouncing
   const updateNoteContent = useCallback((content: string) => {
@@ -202,7 +205,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       try {
         // Update in backend
         const updatedNote = await invoke<Note>('update_note', {
-          id: selectedNoteId,
+          id: selectedNoteIdRef.current,
           request: {
             title,
             content,
@@ -309,10 +312,18 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       return unlisten;
     };
     
+    let cancelled = false;
     let unlisten: (() => void) | undefined;
-    setupListener().then(fn => { unlisten = fn; });
-    
+    setupListener().then(fn => {
+      if (cancelled) {
+        fn();
+      } else {
+        unlisten = fn;
+      }
+    });
+
     return () => {
+      cancelled = true;
       if (unlisten) unlisten();
       // Clear any pending save timeout
       if (saveTimeoutRef.current) {
