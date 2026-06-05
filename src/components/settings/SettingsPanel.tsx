@@ -573,24 +573,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
           </h3>
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.window.windowOpacity')}</label>
-              <div className="flex-1 flex items-center gap-2">
-                <span className="text-xs text-muted-foreground/70">30%</span>
-                <div className="flex-1 relative h-5 slider-container">
-                  <div className="slider-track"></div>
-                  <input type="range" min="0.3" max="1.0" step="0.05" value={localConfig.appearance?.detachedWindowOpacity ?? 0.9}
-                    onChange={async (e) => {
-                      const v = parseFloat(e.target.value);
-                      handleAppearanceChange({ detachedWindowOpacity: v });
-                      try { await invoke('set_window_opacity', { opacity: v }); } catch {}
-                    }}
-                    className="slider-input" />
-                </div>
-                <span className="text-xs text-muted-foreground/70">100%</span>
-              </div>
-              <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">{Math.round((localConfig.appearance?.detachedWindowOpacity ?? 0.9) * 100)}%</span>
-            </div>
-            <div className="flex items-center gap-3">
               <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.window.alwaysOnTop')}</label>
               <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.appearance.window.alwaysOnTopDescription')}</span>
               <button onClick={async () => {
