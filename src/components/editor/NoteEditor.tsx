@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
 import { MarkdownRenderer } from '../common/MarkdownRenderer';
 
@@ -85,6 +85,13 @@ export function NoteEditor({
   editorClassName = "",
   previewClassName = ""
 }: NoteEditorProps) {
+  // Sync hidden textarea value with CodeMirror content
+  useEffect(() => {
+    if (textareaRef?.current && content) {
+      textareaRef.current.value = content;
+    }
+  }, [content, textareaRef]);
+
   // Shared paper style logic
   const paperStyleClass = getPaperStyleClass(config.notePaperStyle);
   
