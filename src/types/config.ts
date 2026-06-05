@@ -83,6 +83,7 @@ export const defaultConfig: AppConfig = {
     focusMode: false,
     typewriterMode: false,
     vimMode: false,
+    wordWrap: true, // 自动换行
     showNotePreviews: false,
     detachedWindowOpacity: 0.9, // 分离窗口默认透明度
     appFontFamily: 'Outfit, system-ui, sans-serif',
