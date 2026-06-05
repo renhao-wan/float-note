@@ -493,6 +493,8 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                     { value: 'IBM Plex Mono, monospace', label: 'IBM Plex Mono' },
                     { value: 'Menlo, Monaco, monospace', label: 'Menlo' },
                     { value: 'Consolas, monospace', label: 'Consolas' },
+                    { value: 'system-ui', label: 'System UI' },
+                    { value: 'monospace', label: 'Monospace' },
                   ]}
                 />
               </div>
@@ -511,6 +513,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                     { value: 'Times New Roman, serif', label: 'Times New Roman' },
                     { value: 'Merriweather, serif', label: 'Merriweather' },
                     { value: 'Inter, -apple-system, sans-serif', label: 'Inter' },
+                    { value: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', label: 'Inter (Full)' },
                     { value: 'system-ui, -apple-system, sans-serif', label: 'System UI' },
                     { value: 'Outfit, system-ui, sans-serif', label: 'Outfit' },
                   ]}
