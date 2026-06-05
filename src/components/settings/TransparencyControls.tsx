@@ -3,8 +3,10 @@ import { Button } from '../ui/Button';
 import { useWindowTransparency } from '../../hooks/use-window-transparency';
 import { Eye, EyeOff, Pin, PinOff } from '../../lib/lucide';
 import { isMac } from '../../lib/platform';
+import { useTranslation } from 'react-i18next';
 
 export const TransparencyControls = () => {
+  const { t } = useTranslation();
   const { opacity, isTransparent, alwaysOnTop, updateOpacity, toggleAlwaysOnTop } = useWindowTransparency();
 
   const handleOpacityChange = (value: number[]) => {
@@ -43,7 +45,7 @@ export const TransparencyControls = () => {
 
       {!isMac() && (
         <div className="text-xs text-muted-foreground/60 mt-2">
-          Window opacity control is only available on macOS
+          {t('settings.appearance.window.opacityUnavailable')}
         </div>
       )}
 
