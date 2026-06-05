@@ -217,13 +217,12 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <div className="flex items-center">
               <select
                 value={localConfig.language ?? 'zh'}
-                onChange={(e) => {
+                onChange={async (e) => {
                   const newLang = e.target.value as 'zh' | 'en';
-                  setLocalConfig({
-                    ...localConfig,
-                    language: newLang,
-                  });
+                  // 立即切换语言
                   i18n.changeLanguage(newLang);
+                  // 立即保存配置
+                  await handleConfigChange({ language: newLang });
                 }}
                 className="w-32 px-2 py-1 bg-background/20 border border-border/20 rounded-xl text-foreground text-xs focus:outline-none focus:border-primary/40 hover:bg-background/30 transition-colors appearance-none cursor-pointer font-mono"
                 style={{
@@ -251,13 +250,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                 type="checkbox"
                 id="note-previews"
                 checked={localConfig.appearance?.showNotePreviews ?? false}
-                onChange={(e) => setLocalConfig({
-                  ...localConfig,
-                  appearance: {
-                    ...localConfig.appearance,
-                    showNotePreviews: e.target.checked
-                  }
-                })}
+                onChange={(e) => handleAppearanceChange({ showNotePreviews: e.target.checked })}
                 className="w-4 h-4 text-primary bg-background border border-border/30 rounded-xl focus:ring-primary/50 focus:ring-2 cursor-pointer"
               />
             </div>
@@ -286,13 +279,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                   max="1.0"
                   step="0.05"
                   value={localConfig.appearance?.windowOpacity}
-                  onChange={(e) => setLocalConfig({
-                    ...localConfig,
-                    appearance: {
-                      ...localConfig.appearance,
-                      windowOpacity: parseFloat(e.target.value)
-                    }
-                  })}
+                  onChange={(e) => handleAppearanceChange({ windowOpacity: parseFloat(e.target.value) })}
                   className="slider-input"
                 />
               </div>
@@ -1029,12 +1016,8 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <div className="flex items-center gap-3 flex-1">
                 <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.wordWrapDescription')}</span>
                 <button
-                  onClick={() => setLocalConfig({
-                    ...localConfig,
-                    appearance: {
-                      ...localConfig.appearance,
-                      wordWrap: localConfig.appearance?.wordWrap === false ? true : !localConfig.appearance?.wordWrap
-                    }
+                  onClick={() => handleAppearanceChange({
+                    wordWrap: localConfig.appearance?.wordWrap === false ? true : !localConfig.appearance?.wordWrap
                   })}
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
                     localConfig.appearance?.wordWrap !== false ? 'bg-primary' : 'bg-background/40 border border-border/40'
