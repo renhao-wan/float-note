@@ -689,30 +689,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               >
                 {shortcutStatus === 'registering' ? t('settings.shortcuts.actions.registering') : t('settings.shortcuts.actions.reRegisterShortcuts')}
               </button>
-              
-              <button
-                onClick={async () => {
-                  console.log('[FLOATNOTE] [SETTINGS] Testing event emission...');
-                  try {
-                    const result = await invoke<string>('test_emit_new_note');
-                    console.log('[FLOATNOTE] [SETTINGS] Test result:', result);
-                    setShortcutMessage('Test event emitted successfully');
-                    setShortcutStatus('success');
-                    setTimeout(() => {
-                      setShortcutStatus('idle');
-                      setShortcutMessage('');
-                    }, 3000);
-                  } catch (error: any) {
-                    console.error('[FLOATNOTE] [SETTINGS] Test failed:', error);
-                    setShortcutMessage('Test failed: ' + error.toString());
-                    setShortcutStatus('error');
-                  }
-                }}
-                className="px-3 py-1.5 text-xs bg-background/40 border border-border/40 hover:bg-background/60 rounded transition-all font-mono"
-              >
-                {t('settings.shortcuts.actions.testEvent')}
-              </button>
-              
+
               <button
                 onClick={async () => {
                   console.log('[FLOATNOTE] [SETTINGS] Testing hover toggle...');

@@ -385,25 +385,6 @@ export function DevToolbar() {
               >
                 Compare Frontend vs Backend
               </button>
-              <button
-                onClick={async () => {
-                  try {
-                    const result = await invoke<string>('test_database_migration');
-                    showJson({ 
-                      success: true,
-                      result: result.split('\n')
-                    });
-                  } catch (error) {
-                    showJson({ 
-                      success: false,
-                      error: String(error) 
-                    });
-                  }
-                }}
-                className="w-full px-2.5 py-1 bg-green-600/20 hover:bg-green-600/30 text-[11px] font-light rounded transition-all text-left text-green-300"
-              >
-                🗄️ Test Database Migration
-              </button>
             </div>
           )}
         </div>
