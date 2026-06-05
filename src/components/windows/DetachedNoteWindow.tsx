@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { invoke } from '@tauri-apps/api/core';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
@@ -257,7 +257,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('beforeunload', handleWindowClose);
     };
-  }, [noteId]);
+  }, [noteId, handleCloseWindow]);
 
   // Listen for config updates to sync across windows
   useEffect(() => {
@@ -353,7 +353,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
   const wordCount = getWordCount(content);
 
   // Create a unified config object for NoteEditor
-  const noteEditorConfig: EditorConfig = {
+  const noteEditorConfig: EditorConfig = useMemo(() => ({
     fontSize: config.appearance?.fontSize || 15,
     fontFamily: config.appearance?.appFontFamily || 'system-ui',
     lineHeight: config.appearance?.lineHeight || 1.6,
@@ -366,7 +366,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     wordWrap: config.appearance?.wordWrap,
     notePaperStyle: config.appearance?.notePaperStyle,
     backgroundPattern: config.appearance?.backgroundPattern
-  };
+  }), [config.appearance]);
 
   return (
     <WindowWrapper className="detached-note-window">

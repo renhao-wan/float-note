@@ -257,7 +257,7 @@ export function useDragToDetach({ onDrop: _onDrop, dragThreshold = 5 }: UseDragT
       }
     };
 
-    const handleMouseUp = async (_e: MouseEvent) => {
+    const handleMouseUp = async (e: MouseEvent) => {
       const ref = dragRef.current;
 
       if (ref.noteId && ref.realWindowLabel) {
@@ -286,7 +286,7 @@ export function useDragToDetach({ onDrop: _onDrop, dragThreshold = 5 }: UseDragT
         } else {
           // Either didn't drag or dropped inside sidebar - close the window
           if (ref.isDragging && !ref.isOutsideSidebar) {
-            showDragCancelEffect(_e.clientX, _e.clientY);
+            showDragCancelEffect(e.clientX, e.clientY);
           }
 
           await invoke('close_hybrid_drag_window', {

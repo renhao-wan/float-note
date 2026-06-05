@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Note } from '../../types';
 import { extractTitleFromContent } from '../../lib/utils';
@@ -49,9 +49,9 @@ export function EditorArea({
   const { t } = useTranslation();
   const { config } = useConfigStore();
   const [vimStatus, setVimStatus] = useState<VimStatus>({ mode: 'NORMAL' });
-  // const [lastSavedContent, setLastSavedContent] = useState<string | null>(null);
+
   // Create a unified config object for NoteEditor
-  const noteEditorConfig: EditorConfig = {
+  const noteEditorConfig: EditorConfig = useMemo(() => ({
     fontSize: editorConfig.fontSize || 15,
     fontFamily: editorConfig.editorFontFamily || 'system-ui',
     lineHeight: editorConfig.lineHeight || 1.6,
@@ -63,7 +63,7 @@ export function EditorArea({
     typewriterMode: config?.appearance?.typewriterMode,
     wordWrap: config?.appearance?.wordWrap,
     notePaperStyle: editorConfig.notePaperStyle
-  };
+  }), [editorConfig, config?.appearance?.vimMode, config?.appearance?.typewriterMode, config?.appearance?.wordWrap]);
 
   // Header component with mode toggle
   const renderHeader = () => (

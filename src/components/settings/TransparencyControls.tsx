@@ -36,6 +36,7 @@ export const TransparencyControls = () => {
           min={0.1}
           step={0.1}
           className="w-full"
+          disabled={!isMac()}
         />
       </div>
       

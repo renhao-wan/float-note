@@ -87,7 +87,7 @@ export function NoteEditor({
 }: NoteEditorProps) {
   // Sync hidden textarea value with CodeMirror content
   useEffect(() => {
-    if (textareaRef?.current && content) {
+    if (textareaRef?.current && content !== undefined) {
       textareaRef.current.value = content;
     }
   }, [content, textareaRef]);
