@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { DetachedWindowsAPI } from '../../services/detached-windows-api';
 
@@ -26,6 +27,7 @@ export function CustomTitleBar({
   isShaded = false,
   stats
 }: CustomTitleBarProps) {
+  const { t } = useTranslation();
   // Get the current window directly - getCurrentWebviewWindow() handles Tauri context internally
   const appWindow = getCurrentWebviewWindow();
   const [isMaximized, setIsMaximized] = useState(false);
@@ -170,7 +172,7 @@ export function CustomTitleBar({
           <button
             onClick={handleMinimize}
             className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground/80 hover:bg-foreground/5 transition-all duration-150"
-            title="Minimize"
+            title={t('titlebar.minimize')}
           >
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
               <line x1="1.5" y1="5" x2="8.5" y2="5" />
@@ -180,7 +182,7 @@ export function CustomTitleBar({
           <button
             onClick={handleMaximize}
             className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground/80 hover:bg-foreground/5 transition-all duration-150"
-            title={isMaximized ? "Restore" : "Maximize"}
+            title={isMaximized ? t('titlebar.restore') : t('titlebar.maximize')}
           >
             {isMaximized ? (
               // Restore icon (two overlapping rectangles)
@@ -199,7 +201,7 @@ export function CustomTitleBar({
           <button
             onClick={handleClose}
             className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all duration-150"
-            title="Close"
+            title={t('titlebar.close')}
           >
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
               <line x1="1.5" y1="1.5" x2="8.5" y2="8.5" />

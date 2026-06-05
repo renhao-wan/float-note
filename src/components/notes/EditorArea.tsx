@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Note } from '../../types';
 import { extractTitleFromContent } from '../../lib/utils';
 import { useConfigStore } from '../../stores/config-store';
@@ -45,6 +46,7 @@ export function EditorArea({
   onSave,
   onPreviewToggle
 }: EditorAreaProps) {
+  const { t } = useTranslation();
   const { config } = useConfigStore();
   const [vimStatus, setVimStatus] = useState<VimStatus>({ mode: 'NORMAL' });
   // const [lastSavedContent, setLastSavedContent] = useState<string | null>(null);
@@ -103,7 +105,7 @@ export function EditorArea({
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
             <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
           </svg>
-          Edit
+          {t('editor.edit')}
         </button>
         <button
           onClick={() => onPreviewToggle()}
@@ -118,7 +120,7 @@ export function EditorArea({
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
             <circle cx="12" cy="12" r="3"/>
           </svg>
-          Preview
+          {t('editor.preview')}
         </button>
       </div>
     </div>
@@ -132,12 +134,12 @@ export function EditorArea({
         <div className="flex items-center gap-1.5">
           {saveStatus.isSaving ? (
             <>
-              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Saving...</span>
+              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.saving')}</span>
               <div className="w-1 h-1 bg-yellow-500/60 rounded-full animate-pulse"></div>
             </>
           ) : saveStatus.isModified ? (
             <>
-              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Modified</span>
+              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.modified')}</span>
               <div className="w-1 h-1 bg-orange-500/60 rounded-full"></div>
             </>
           ) : saveStatus.saveError ? (
@@ -147,12 +149,12 @@ export function EditorArea({
             </>
           ) : saveStatus.lastSaved ? (
             <>
-              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Saved</span>
+              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.saved')}</span>
               <div className="w-1 h-1 bg-green-500/60 rounded-full"></div>
             </>
           ) : (
             <>
-              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Ready</span>
+              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.ready')}</span>
               <div className="w-1 h-1 bg-gray-500/60 rounded-full"></div>
             </>
           )}
@@ -166,7 +168,7 @@ export function EditorArea({
       
       {/* Word count */}
       <div className="text-xs text-muted-foreground/60 font-medium">
-        {wordCount} words
+        {wordCount} {t('editor.words')}
       </div>
     </div>
   );

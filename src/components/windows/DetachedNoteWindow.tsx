@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { invoke } from '@tauri-apps/api/core';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { listen } from '@tauri-apps/api/event';
@@ -22,6 +23,7 @@ interface DetachedNoteWindowProps {
 }
 
 export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
+  const { t } = useTranslation();
   const { config, loadConfig } = useConfigStore();
   const [note, setNote] = useState<Note | null>(null);
   const [content, setContent] = useState('');
@@ -392,7 +394,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
                 <div className="flex items-center gap-1.5">
                   {saveStatus.isSaving ? (
                     <>
-                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Saving...</span>
+                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.saving')}</span>
                       <div className="w-1 h-1 bg-yellow-500/60 rounded-full animate-pulse"></div>
                     </>
                   ) : saveStatus.saveError ? (
@@ -402,17 +404,17 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
                     </>
                   ) : modifiedState.isModified ? (
                     <>
-                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Modified</span>
+                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.modified')}</span>
                       <div className="w-1 h-1 bg-orange-500/60 rounded-full"></div>
                     </>
                   ) : saveStatus.lastSaved ? (
                     <>
-                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Saved {saveStatus.getRelativeTime}</span>
+                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.saved')} {saveStatus.getRelativeTime}</span>
                       <div className="w-1 h-1 bg-green-500/60 rounded-full"></div>
                     </>
                   ) : (
                     <>
-                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Ready</span>
+                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.ready')}</span>
                       <div className="w-1 h-1 bg-gray-500/60 rounded-full"></div>
                     </>
                   )}
@@ -421,7 +423,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
               
               {content && (
                 <span className="text-xs text-muted-foreground/40 font-light" style={{ fontSize: '10px' }}>
-                  {getWordCount(content)} words
+                  {getWordCount(content)} {t('editor.words')}
                 </span>
               )}
             </div>
