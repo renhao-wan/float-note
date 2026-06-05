@@ -19,7 +19,10 @@
     "help": "帮助",
     "about": "关于",
     "to": "以",
-    "persist": "持久化"
+    "persist": "持久化",
+    "browse": "浏览",
+    "set": "设置",
+    "current": "当前"
   },
   "settings": {
     "general": {

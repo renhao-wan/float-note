@@ -333,18 +333,18 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                 onClick={() => handleBrowseDirectory()}
                 className="px-3 py-2 text-xs bg-background/40 hover:bg-background/60 border border-border/30 rounded-2xl transition-colors"
               >
-                Browse
+                {t('common.browse')}
               </button>
               <button
                 onClick={() => handleSetNotesDirectory()}
                 className="px-3 py-2 text-xs bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 rounded-2xl transition-colors"
               >
-                Set
+                {t('common.set')}
               </button>
             </div>
             {currentNotesDirectory && (
               <div className="text-xs text-muted-foreground/70 font-mono bg-muted/10 px-2 py-1 rounded-xl">
-                Current: {currentNotesDirectory}
+                {t('common.current')}: {currentNotesDirectory}
               </div>
             )}
           </div>
