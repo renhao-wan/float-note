@@ -2029,14 +2029,39 @@ pub async fn set_detached_window_opacity_windows(
 
     #[cfg(target_os = "windows")]
     {
-        // 使用 Windows API: SetLayeredWindowAttributes
-        // 需要调用 user32.dll 的 SetLayeredWindowAttributes 函数
-        // 实现细节待定
-        todo!("Implement Windows opacity - 使用 Win32 API")
+        use windows::Win32::Foundation::{COLORREF, HWND};
+        use windows::Win32::UI::WindowsAndMessaging::{
+            GetWindowLongW, SetLayeredWindowAttributes, SetWindowLongW,
+            GWL_EXSTYLE, LWA_ALPHA, WS_EX_LAYERED,
+        };
+
+        // 获取窗口句柄
+        let hwnd = window.hwnd().map_err(|e| e.to_string())?;
+        let hwnd = HWND(hwnd.0 as _);
+
+        // 获取当前扩展样式
+        let ex_style = unsafe { GetWindowLongW(hwnd, GWL_EXSTYLE) };
+
+        // 添加 WS_EX_LAYERED 样式（如果还没有）
+        if (ex_style & WS_EX_LAYERED.0 as i32) == 0 {
+            unsafe {
+                SetWindowLongW(hwnd, GWL_EXSTYLE, ex_style | WS_EX_LAYERED.0 as i32);
+            }
+        }
+
+        // 设置透明度（0-255）
+        let alpha = (opacity * 255.0) as u8;
+        unsafe {
+            SetLayeredWindowAttributes(hwnd, COLORREF(0), alpha, LWA_ALPHA)
+                .map_err(|e| format!("Failed to set opacity: {}", e))?;
+        }
+
+        Ok(())
     }
 
     #[cfg(not(target_os = "windows"))]
     {
+        let _ = (window, opacity);
         Err("Not Windows platform".to_string())
     }
 }
