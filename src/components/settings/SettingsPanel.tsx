@@ -60,8 +60,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
   const handleImportFile = async () => {
     try {
-      // For now, let's use a simple input approach
-      // In the future, we can use Tauri's file dialog
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = '.md,.txt';
@@ -70,13 +68,15 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
         if (file) {
           try {
             const text = await file.text();
-            // For now, create a note from the file content
-            // This will be enhanced when we add proper file import
-            console.log('File content:', text);
-            alert('File import functionality coming soon! For now, copy and paste the content into a new note.');
+            // 从文件名提取标题（去掉扩展名）
+            const title = file.name.replace(/\.(md|txt)$/i, '');
+            // 调用 Tauri 命令创建笔记
+            await invoke('create_note', { request: { title, content: text, tags: [] } });
+            // 刷新笔记列表
+            window.location.reload();
           } catch (error) {
-            console.error('Failed to read file:', error);
-            alert('Failed to read file');
+            console.error('Failed to import file:', error);
+            alert('Failed to import file');
           }
         }
       };
