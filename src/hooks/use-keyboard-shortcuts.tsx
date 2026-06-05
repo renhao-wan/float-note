@@ -32,7 +32,7 @@ export function useKeyboardShortcuts({
       return;
     }
 
-    // Hyper key (Cmd+Ctrl+Alt+Shift) + number combinations for quick note access
+    // Hyper key (Primary modifier+Ctrl+Alt+Shift) + number combinations for quick note access
     if (e.metaKey && e.ctrlKey && e.altKey && e.shiftKey) {
       const numberKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
       if (numberKeys.includes(e.key)) {
@@ -69,7 +69,7 @@ export function useKeyboardShortcuts({
           break;
       }
 
-      // Cmd/Ctrl + Shift combinations
+      // Primary modifier/Ctrl + Shift combinations
       if (e.shiftKey) {
         switch (e.key) {
           case 'P':

@@ -106,7 +106,7 @@ export function useChordShortcuts({
 
     // Handle chord initiators (Hyper+Key combinations)
     if (e.metaKey && e.ctrlKey && e.altKey && e.shiftKey) {
-      // Note: Hyper = Cmd+Ctrl+Alt+Shift
+      // Note: Hyper = Primary modifier+Ctrl+Alt+Shift
       // Hyper+N is reserved for quick new note creation
       console.log('[CHORD] Hyper key detected:', e.key, 'current mode:', chordMode);
       switch (e.key.toLowerCase()) {
