@@ -294,7 +294,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
   if (loading) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-background text-foreground">
-        <div className="text-sm text-muted-foreground">Loading note...</div>
+        <div className="text-sm text-muted-foreground">{t('editor.loading')}</div>
       </div>
     );
   }
@@ -302,7 +302,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
   if (error) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-background text-foreground">
-        <div className="text-sm text-red-400">Error: {error}</div>
+        <div className="text-sm text-red-400">{t('editor.error')}{error}</div>
       </div>
     );
   }
@@ -310,7 +310,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
   if (!note) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-background text-foreground">
-        <div className="text-sm text-muted-foreground">Note not found</div>
+        <div className="text-sm text-muted-foreground">{t('editor.notFound')}</div>
       </div>
     );
   }
@@ -325,7 +325,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
             ? 'bg-primary/20 text-primary shadow-sm'
             : 'text-muted-foreground/60 hover:text-foreground hover:bg-primary/5'
         }`}
-        title="Edit mode"
+        title={t('editor.editMode')}
       >
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -339,7 +339,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
             ? 'bg-primary/20 text-primary shadow-sm'
             : 'text-muted-foreground/60 hover:text-foreground hover:bg-primary/5'
         }`}
-        title="Preview mode"
+        title={t('editor.previewMode')}
       >
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -392,7 +392,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
           config={noteEditorConfig}
           vimStatus={vimStatus}
           onVimStatusChange={setVimStatus}
-          placeholder="Start writing..."
+          placeholder={t('editor.placeholder')}
           autoFocus={true}
           className="flex-1 flex flex-col overflow-hidden"
           editorClassName="p-6 pt-5"
@@ -413,7 +413,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
                     </>
                   ) : saveStatus.saveError ? (
                     <>
-                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Error saving</span>
+                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.errorSaving')}</span>
                       <div className="w-1 h-1 bg-red-500/60 rounded-full"></div>
                     </>
                   ) : modifiedState.isModified ? (

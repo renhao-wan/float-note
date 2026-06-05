@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
 import { MarkdownRenderer } from '../common/MarkdownRenderer';
 
@@ -76,7 +77,7 @@ export function NoteEditor({
   onPreviewToggle,
   config,
   onVimStatusChange,
-  placeholder = "Start writing...",
+  placeholder,
   autoFocus = false,
   className = "",
   textareaRef,
@@ -85,6 +86,9 @@ export function NoteEditor({
   editorClassName = "",
   previewClassName = ""
 }: NoteEditorProps) {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder ?? t('editor.placeholder');
+
   // Sync hidden textarea value with CodeMirror content
   useEffect(() => {
     if (textareaRef?.current && content !== undefined) {
@@ -112,7 +116,7 @@ export function NoteEditor({
               value={content}
               onChange={onContentChange}
               onSave={onSave}
-              placeholder={placeholder}
+              placeholder={resolvedPlaceholder}
               vimMode={config.vimMode || false}
               fontSize={config.fontSize}
               fontFamily={config.editorFontFamily || config.fontFamily || 'system-ui'}

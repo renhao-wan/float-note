@@ -106,7 +106,10 @@
         "windowOpacity": "窗口透明度",
         "alwaysOnTop": "始终置顶",
         "alwaysOnTopDescription": "保持窗口在其他窗口之上",
-        "opacityUnavailable": "窗口透明度控制仅在 macOS 上可用"
+        "opacityUnavailable": "窗口透明度控制仅在 macOS 上可用",
+        "opacity": "透明度：",
+        "unpin": "取消置顶",
+        "pin": "置顶"
       }
     },
     "shortcuts": {
@@ -214,7 +217,11 @@
     "minimize": "最小化",
     "maximize": "最大化",
     "restore": "还原",
-    "close": "关闭"
+    "close": "关闭",
+    "middleClickUnshade": "中键点击取消收起",
+    "wordCountWithCount": "{{count}} 字",
+    "savedWithTime": "已保存 {{time}}",
+    "middleClickShade": "中键点击收起"
   },
   "editor": {
     "saving": "保存中...",
@@ -224,7 +231,15 @@
     "words": "字",
     "edit": "编辑",
     "preview": "预览",
-    "untitled": "无标题"
+    "untitled": "无标题",
+    "loading": "加载笔记中...",
+    "error": "错误：",
+    "notFound": "笔记未找到",
+    "editMode": "编辑模式",
+    "previewMode": "预览模式",
+    "placeholder": "开始写作...",
+    "errorSaving": "保存错误",
+    "selectNote": "选择一个笔记开始编辑"
   },
   "sidebar": {
     "notes": "笔记",

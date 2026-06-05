@@ -144,7 +144,7 @@ export function EditorArea({
             </>
           ) : saveStatus.saveError ? (
             <>
-              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>Error saving</span>
+              <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.errorSaving')}</span>
               <div className="w-1 h-1 bg-red-500/60 rounded-full"></div>
             </>
           ) : saveStatus.lastSaved ? (
@@ -194,7 +194,7 @@ export function EditorArea({
         />
       ) : (
         <div className="flex-1 flex items-center justify-center text-muted-foreground/40">
-          <p style={{ fontFamily: 'var(--font-ui)' }}>Select a note to start editing</p>
+          <p style={{ fontFamily: 'var(--font-ui)' }}>{t('editor.selectNote')}</p>
         </div>
       )}
     </div>

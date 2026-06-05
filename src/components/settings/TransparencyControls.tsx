@@ -25,7 +25,7 @@ export const TransparencyControls = () => {
         ) : (
           <Eye className="h-4 w-4 text-gray-600" />
         )}
-        <span className="text-sm font-medium text-gray-700">Opacity:</span>
+        <span className="text-sm font-medium text-gray-700">{t('settings.appearance.window.opacity')}</span>
       </div>
       
       <div className="flex-1 max-w-32">
@@ -59,12 +59,12 @@ export const TransparencyControls = () => {
         {alwaysOnTop ? (
           <>
             <PinOff className="h-4 w-4" />
-            Unpin
+            {t('settings.appearance.window.unpin')}
           </>
         ) : (
           <>
             <Pin className="h-4 w-4" />
-            Pin
+            {t('settings.appearance.window.pin')}
           </>
         )}
       </Button>

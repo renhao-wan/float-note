@@ -106,7 +106,10 @@
         "windowOpacity": "Window Opacity",
         "alwaysOnTop": "Always on Top",
         "alwaysOnTopDescription": "keep window above others",
-        "opacityUnavailable": "Window opacity control is only available on macOS"
+        "opacityUnavailable": "Window opacity control is only available on macOS",
+        "opacity": "Opacity:",
+        "unpin": "Unpin",
+        "pin": "Pin"
       }
     },
     "shortcuts": {
@@ -214,7 +217,11 @@
     "minimize": "Minimize",
     "maximize": "Maximize",
     "restore": "Restore",
-    "close": "Close"
+    "close": "Close",
+    "middleClickUnshade": "Middle-click to unshade",
+    "wordCountWithCount": "{{count}} words",
+    "savedWithTime": "Saved {{time}}",
+    "middleClickShade": "Middle-click to shade"
   },
   "editor": {
     "saving": "Saving...",
@@ -224,7 +231,15 @@
     "words": "words",
     "edit": "Edit",
     "preview": "Preview",
-    "untitled": "Untitled"
+    "untitled": "Untitled",
+    "loading": "Loading note...",
+    "error": "Error: ",
+    "notFound": "Note not found",
+    "editMode": "Edit mode",
+    "previewMode": "Preview mode",
+    "placeholder": "Start writing...",
+    "errorSaving": "Error saving",
+    "selectNote": "Select a note to start editing"
   },
   "sidebar": {
     "notes": "Notes",

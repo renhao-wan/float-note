@@ -149,18 +149,18 @@ export function CustomTitleBar({
       >
         {isShaded && stats ? (
           <div className="flex items-center gap-4 text-xs text-foreground/70 font-medium select-none">
-            <span title="Middle-click to unshade">{title}</span>
+            <span title={t('titlebar.middleClickUnshade')}>{title}</span>
             <div className="flex items-center gap-3 text-[10px] text-foreground/50">
               {stats.wordCount !== undefined && (
-                <span>{stats.wordCount} words</span>
+                <span>{t('titlebar.wordCountWithCount', { count: stats.wordCount })}</span>
               )}
               {stats.lastSaved && (
-                <span>• Saved {stats.lastSaved}</span>
+                <span>• {t('titlebar.savedWithTime', { time: stats.lastSaved })}</span>
               )}
             </div>
           </div>
         ) : (
-          <span className="text-foreground/70 font-medium select-none tracking-wide" style={{ fontSize: '13px', fontFamily: 'var(--font-ui)' }} title="Middle-click to shade">
+          <span className="text-foreground/70 font-medium select-none tracking-wide" style={{ fontSize: '13px', fontFamily: 'var(--font-ui)' }} title={t('titlebar.middleClickShade')}>
             {title}
           </span>
         )}
