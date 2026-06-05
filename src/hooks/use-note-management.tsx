@@ -334,7 +334,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       // Use functional update to get the latest state, avoiding stale closure
       setNotes(prev => {
         const remainingNotes = prev.filter(note => note.id !== noteId);
-        if (selectedNoteId === noteId) {
+        if (selectedNoteIdRef.current === noteId) {
           const nextNote = remainingNotes[0] || null;
           // Use setTimeout to ensure selection update runs after state is committed
           setTimeout(() => selectNote(nextNote?.id || null), 0);
