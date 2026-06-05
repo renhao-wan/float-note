@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { ResizablePanel } from '../windows/ResizablePanel';
 
-type SettingsSection = 'general' | 'appearance' | 'shortcuts' | 'editor' | 'advanced';
+type SettingsSection = 'general' | 'appearance' | 'shortcuts' | 'editor';
 
 interface SettingsNavigationProps {
   sidebarVisible: boolean;
@@ -101,7 +101,7 @@ export function SettingsNavigation({
                 <p className="text-xs text-muted-foreground/60">{t('settings.shortcuts.navDescription')}</p>
               </button>
               
-              <button 
+              <button
                 onClick={() => onSectionChange('editor')}
                 className={`w-full p-3 rounded-2xl text-left transition-all ${
                   selectedSection === 'editor'
@@ -119,25 +119,6 @@ export function SettingsNavigation({
                   }`}>{t('settings.editor.title')}</h3>
                 </div>
                 <p className="text-xs text-muted-foreground/60">{t('settings.editor.navDescription')}</p>
-              </button>
-              
-              <button 
-                onClick={() => onSectionChange('advanced')}
-                className={`w-full p-3 rounded-2xl text-left transition-all ${
-                  selectedSection === 'advanced'
-                    ? 'bg-primary/10 border border-primary/20'
-                    : 'hover:bg-background/60 border border-transparent'
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70 flex-shrink-0">
-                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
-                  </svg>
-                  <h3 className={`text-sm font-medium ${
-                    selectedSection === 'advanced' ? 'text-primary' : 'text-foreground'
-                  }`}>{t('settings.advanced.title')}</h3>
-                </div>
-                <p className="text-xs text-muted-foreground/60">{t('settings.advanced.navDescription')}</p>
               </button>
             </div>
           </div>

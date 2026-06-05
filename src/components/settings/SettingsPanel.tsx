@@ -8,7 +8,7 @@ import { getModifierSymbol, isMac } from '../../lib/platform';
 import { AppConfig } from '../../types/config';
 
 interface SettingsPanelProps {
-  selectedSection: 'general' | 'appearance' | 'shortcuts' | 'editor' | 'advanced';
+  selectedSection: 'general' | 'appearance' | 'shortcuts' | 'editor';
 }
 
 export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
@@ -1036,71 +1036,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
   );
 
 
-  const renderAdvancedSection = () => (
-    <div data-section="advanced" className="space-y-6">
-      <div className="h-[40px] flex flex-col justify-center">
-        <h2 className="text-sm font-medium text-foreground mb-1 flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/70">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M12 8v4"/>
-            <path d="M12 16h.01"/>
-          </svg>
-          {t('settings.advanced.title')}
-        </h2>
-        <p className="text-xs text-muted-foreground/60">{t('settings.advanced.description')}</p>
-      </div>
-      
-      <div className="space-y-4">
-        <div>
-          <label className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-medium text-foreground">{t('settings.advanced.developerMode')}</div>
-              <div className="text-xs text-muted-foreground/60">{t('settings.advanced.developerModeDescription')}</div>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={localConfig.advanced?.developerMode || false}
-                onChange={(e) => handleConfigChange({
-                  advanced: {
-                    ...localConfig.advanced,
-                    developerMode: e.target.checked
-                  }
-                })}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-          </label>
-        </div>
-        
-        <div>
-          <label className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-medium text-foreground">{t('settings.advanced.autoUpdate')}</div>
-              <div className="text-xs text-muted-foreground/60">{t('settings.advanced.autoUpdateDescription')}</div>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={localConfig.advanced?.autoUpdate !== false}
-                onChange={(e) => handleConfigChange({
-                  advanced: {
-                    ...localConfig.advanced,
-                    autoUpdate: e.target.checked
-                  }
-                })}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-          </label>
-        </div>
-      </div>
-    </div>
-  );
-
-
   const renderSection = () => {
     switch (selectedSection) {
       case 'general':
@@ -1111,8 +1046,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
         return renderShortcutsSection();
       case 'editor':
         return renderEditorSection();
-      case 'advanced':
-        return renderAdvancedSection();
       default:
         return renderAppearanceSection();
     }
