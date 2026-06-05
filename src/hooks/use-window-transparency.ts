@@ -2,6 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { invoke } from '@tauri-apps/api/core';
 import { useConfigStore } from '../stores/config-store';
+import { isMac } from '../lib/platform';
 
 export const useWindowTransparency = () => {
   const { config, updateOpacity: updateOpacityConfig, updateAlwaysOnTop } = useConfigStore();
@@ -27,6 +28,7 @@ export const useWindowTransparency = () => {
   // Apply opacity to window when config changes
   useEffect(() => {
     const applyOpacity = async () => {
+      if (!isMac()) return;
       try {
         // Only run in Tauri context and when config is available
         if (typeof window !== 'undefined' && window.__TAURI__ && config && typeof config.opacity === 'number') {
@@ -37,7 +39,7 @@ export const useWindowTransparency = () => {
         console.error('Failed to apply window opacity:', error);
       }
     };
-    
+
     applyOpacity();
   }, [config?.opacity]);
 
@@ -58,6 +60,10 @@ export const useWindowTransparency = () => {
   }, [config?.alwaysOnTop]);
 
   const updateOpacity = useCallback(async (newOpacity: number) => {
+    if (!isMac()) {
+      console.warn('[FLOATNOTE] Window opacity is only available on macOS');
+      return;
+    }
     try {
       await invoke('set_window_opacity', { opacity: newOpacity });
       await updateOpacityConfig(newOpacity);

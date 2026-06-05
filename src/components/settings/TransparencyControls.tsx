@@ -2,6 +2,7 @@ import { Slider } from '../ui/Slider';
 import { Button } from '../ui/Button';
 import { useWindowTransparency } from '../../hooks/use-window-transparency';
 import { Eye, EyeOff, Pin, PinOff } from '../../lib/lucide';
+import { isMac } from '../../lib/platform';
 
 export const TransparencyControls = () => {
   const { opacity, isTransparent, alwaysOnTop, updateOpacity, toggleAlwaysOnTop } = useWindowTransparency();
@@ -39,6 +40,12 @@ export const TransparencyControls = () => {
       <span className="text-sm text-gray-600 min-w-[3rem]">
         {Math.round(opacity * 100)}%
       </span>
+
+      {!isMac() && (
+        <div className="text-xs text-muted-foreground/60 mt-2">
+          Window opacity control is only available on macOS
+        </div>
+      )}
 
       <Button
         variant="outline"
