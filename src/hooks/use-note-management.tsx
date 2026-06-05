@@ -16,7 +16,7 @@ interface UseNoteManagementReturn {
   // Actions
   loadNotes: () => Promise<void>;
   createNewNote: () => Promise<void>;
-  selectNote: (noteId: string) => void;
+  selectNote: (noteId: string | null) => void;
   updateNoteContent: (content: string) => void;
   saveNoteImmediately: () => Promise<void>;
   deleteNote: (noteId: string) => Promise<void>;
@@ -164,7 +164,12 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   }, []);
 
   // Select a note
-  const selectNote = useCallback((noteId: string) => {
+  const selectNote = useCallback((noteId: string | null) => {
+    if (!noteId) {
+      setSelectedNoteId(null);
+      setCurrentContent('');
+      return;
+    }
     console.log('[FLOATNOTE] [SELECT] Selecting note:', {
       noteId,
       previousSelectedId: selectedNoteId,
@@ -325,28 +330,23 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     console.log('[FLOATNOTE] Deleting note:', noteId);
     try {
       await invoke('delete_note', { id: noteId });
-      
-      // Remove from local state
-      setNotes(prev => prev.filter(note => note.id !== noteId));
-      
-      // If this was the selected note, clear selection or select another
-      if (selectedNoteId === noteId) {
-        const remainingNotes = notes.filter(note => note.id !== noteId);
-        if (remainingNotes.length > 0) {
-          const nextNote = remainingNotes[0];
-          setSelectedNoteId(nextNote.id);
-          setCurrentContent(nextNote.content);
-        } else {
-          setSelectedNoteId(null);
-          setCurrentContent('');
+
+      // Use functional update to get the latest state, avoiding stale closure
+      setNotes(prev => {
+        const remainingNotes = prev.filter(note => note.id !== noteId);
+        if (selectedNoteId === noteId) {
+          const nextNote = remainingNotes[0] || null;
+          // Use setTimeout to ensure selection update runs after state is committed
+          setTimeout(() => selectNote(nextNote?.id || null), 0);
         }
-      }
-      
+        return remainingNotes;
+      });
+
       console.log('[FLOATNOTE] Note deleted successfully');
     } catch (error) {
       console.error('[FLOATNOTE] Failed to delete note:', error);
     }
-  }, [selectedNoteId, notes]);
+  }, [selectedNoteId, selectNote]);
 
   // Load notes on mount and listen for data-loaded event
   useEffect(() => {
