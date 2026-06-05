@@ -50,18 +50,8 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   // Real-time sync for selected note
   useNoteSync(selectedNoteId, (updatedNote) => {
-    console.log('[FLOATNOTE] [SYNC] Received note update:', {
-      selectedNoteId,
-      updatedNoteId: updatedNote?.id,
-      updatedNoteTitle: updatedNote?.title,
-      contentLength: updatedNote?.content?.length
-    });
-    
     if (updatedNote && selectedNoteId === updatedNote.id) {
-      console.log('[FLOATNOTE] [SYNC] Updating current content for note:', selectedNoteId);
       setCurrentContent(updatedNote.content);
-    } else {
-      console.log('[FLOATNOTE] [SYNC] Ignoring update - note ID mismatch or no update');
     }
   });
 
@@ -69,12 +59,9 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   // Load notes from backend
   const loadNotes = useCallback(async () => {
     setLoading(true);
-    const startTime = performance.now();
     try {
       // Try to load notes from Tauri - if this fails, we'll fall back to demo data
       const loadedNotes = await invoke<Note[]>('get_notes');
-      const loadTime = performance.now() - startTime;
-      console.log(`[FLOATNOTE] Notes loaded in ${loadTime.toFixed(2)}ms (${loadedNotes.length} notes)`);
       setNotes(loadedNotes);
       
       // If we have notes but no selected note, select the first one by position
@@ -131,7 +118,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   // Create new note
   const createNewNote = useCallback(async () => {
-    console.log('[FLOATNOTE] Creating new note...');
     try {
       const newNote = await invoke<Note>('create_note', {
         request: {
@@ -140,8 +126,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
           tags: []
         }
       });
-      
-      console.log('[FLOATNOTE] Created note:', newNote.id);
+
       // Add the new note to the list - backend already handles positioning
       setNotes(prev => {
         const updated = [...prev, newNote];
@@ -170,46 +155,17 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       setCurrentContent('');
       return;
     }
-    console.log('[FLOATNOTE] [SELECT] Selecting note:', {
-      noteId,
-      previousSelectedId: selectedNoteId,
-      notesCount: notes.length
-    });
-    
-    // DEBUG: Log the note at position 0 before selection
-    const noteAtPosition0 = notes.find(n => n.position === 0);
-    const noteAtIndex0 = notes[0];
-    console.log('[FLOATNOTE] [DEBUG] Before selection:', {
-      noteAtPosition0: noteAtPosition0 ? { id: noteAtPosition0.id, title: noteAtPosition0.title } : 'none',
-      noteAtIndex0: noteAtIndex0 ? { id: noteAtIndex0.id, title: noteAtIndex0.title, position: noteAtIndex0.position } : 'none'
-    });
-    
+
     // Clear any pending save for the previous note
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
       saveTimeoutRef.current = null;
     }
-    
+
     const note = notes.find(n => n.id === noteId);
     if (note) {
-      console.log('[FLOATNOTE] [SELECT] Found note:', {
-        noteId: note.id,
-        title: note.title,
-        contentLength: note.content.length,
-        position: note.position
-      });
       setSelectedNoteId(noteId);
       setCurrentContent(note.content);
-      
-      // DEBUG: Log the note at position 0 after selection
-      const noteAtPosition0After = notes.find(n => n.position === 0);
-      const noteAtIndex0After = notes[0];
-      console.log('[FLOATNOTE] [DEBUG] After selection:', {
-        noteAtPosition0: noteAtPosition0After ? { id: noteAtPosition0After.id, title: noteAtPosition0After.title } : 'none',
-        noteAtIndex0: noteAtIndex0After ? { id: noteAtIndex0After.id, title: noteAtIndex0After.title, position: noteAtIndex0After.position } : 'none'
-      });
-    } else {
-      console.error('[FLOATNOTE] [SELECT] Note not found:', noteId);
     }
   }, [notes, selectedNoteId]);
 
@@ -240,11 +196,9 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
     // Set new timeout for saving to backend (debounced)
     saveTimeoutRef.current = setTimeout(async () => {
-      console.log('[FLOATNOTE] Saving note content to backend (debounced):', selectedNoteId);
-      
       // Notify save is starting
       options?.onSaveStart?.();
-      
+
       try {
         // Update in backend
         const updatedNote = await invoke<Note>('update_note', {
@@ -256,14 +210,12 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
           }
         });
 
-        console.log('[FLOATNOTE] Note saved successfully:', updatedNote.id);
-        
         // Notify save completed
         options?.onSaveComplete?.();
-        
+
         // Notify other windows about the update
         noteSyncService.noteUpdated(updatedNote);
-        
+
       } catch (error) {
         console.error('[FLOATNOTE] Failed to save note:', error);
         options?.onSaveError?.(error);
@@ -275,21 +227,19 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   // Save note immediately (for Cmd+S)
   const saveNoteImmediately = useCallback(async () => {
     if (!selectedNoteId || currentContent === undefined) return;
-    
+
     // Clear any pending debounced save
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
       saveTimeoutRef.current = null;
     }
-    
-    console.log('[FLOATNOTE] Saving note immediately:', selectedNoteId);
-    
+
     // Notify save is starting
     options?.onSaveStart?.();
-    
+
     try {
       const title = extractTitleFromContent(currentContent);
-      
+
       // Update in backend
       const updatedNote = await invoke<Note>('update_note', {
         id: selectedNoteId,
@@ -300,8 +250,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         }
       });
 
-      console.log('[FLOATNOTE] Note saved immediately:', updatedNote.id);
-      
       // Update local state to reflect saved state
       setNotes(prev => {
         const updated = prev.map(note => 
@@ -327,7 +275,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   // Delete a note
   const deleteNote = useCallback(async (noteId: string) => {
-    console.log('[FLOATNOTE] Deleting note:', noteId);
     try {
       // 计算下一个要选中的笔记（在调用 API 之前）
       const currentIndex = notes.findIndex(note => note.id === noteId);
@@ -345,8 +292,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       if (selectedNoteIdRef.current === noteId) {
         selectNote(nextNote?.id || null);
       }
-
-      console.log('[FLOATNOTE] Note deleted successfully');
     } catch (error) {
       console.error('[FLOATNOTE] Failed to delete note:', error);
     }
@@ -359,7 +304,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     // Listen for data-loaded event from backend
     const setupListener = async () => {
       const unlisten = await listen('data-loaded', () => {
-        console.log('[FLOATNOTE] Backend data loaded, reloading notes...');
         loadNotes();
       });
       return unlisten;

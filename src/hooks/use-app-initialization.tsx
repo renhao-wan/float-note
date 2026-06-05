@@ -14,53 +14,30 @@ export function useAppInitialization({ isDetachedWindow }: AppInitializationProp
 
   // Load config and windows on startup
   useEffect(() => {
-    console.log('[FLOATNOTE] [FRONTEND] App initialization starting...');
-    console.log('[FLOATNOTE] [FRONTEND] Tauri detection:', {
-      windowExists: typeof window !== 'undefined',
-      tauriExists: typeof window !== 'undefined' && !!window.__TAURI__,
-      tauriValue: typeof window !== 'undefined' ? window.__TAURI__ : 'window undefined',
-      href: window.location.href,
-      userAgent: navigator.userAgent.includes('Tauri')
-    });
-    
     const initializeApp = async () => {
       // Just request the data - backend will load it asynchronously
-      console.log('[FLOATNOTE] [FRONTEND] Requesting initial data...');
       Promise.all([
         loadConfig().catch(err => console.warn('[FLOATNOTE] Config load failed:', err)),
         loadWindows().catch(err => console.warn('[FLOATNOTE] Windows load failed:', err))
       ]);
-      
+
       // Listen for data-loaded event from backend
       const unlisten = await listen('data-loaded', () => {
-        console.log('[FLOATNOTE] [FRONTEND] ✅ Backend data loaded, refreshing...');
         loadConfig();
         loadWindows();
       });
-      
+
       // Clean up listener on unmount
       return () => {
         unlisten();
       };
     };
-    
-    // DEBUG: Add a global function to test restore
-    (window as any).testRestoreWindows = async () => {
-      try {
-        console.log('Calling restore_detached_windows...');
-        const { invoke } = await import('@tauri-apps/api/core');
-        const restored = await invoke<string[]>('restore_detached_windows');
-        console.log('Restored windows:', restored);
-      } catch (error) {
-        console.error('Failed to restore windows:', error);
-      }
-    };
-    
+
     let cleanup: (() => void) | undefined;
     initializeApp().then(cleanupFn => {
       cleanup = cleanupFn;
     });
-    
+
     return () => {
       if (cleanup) cleanup();
     };

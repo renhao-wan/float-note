@@ -25,30 +25,25 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
 
   loadConfig: async () => {
     set({ isLoading: true, error: null });
-    const startTime = performance.now();
     try {
       const rawConfig = await configApi.getConfig();
-      const loadTime = performance.now() - startTime;
-      console.log(`[FLOATNOTE] Config loaded in ${loadTime.toFixed(2)}ms`);
-      
+
       if (!rawConfig) {
-        console.warn('[FLOATNOTE] Received null config from backend, using defaults');
         set({ config: defaultConfig, isLoading: false });
         return;
       }
-      
+
       const config = migrateConfig(rawConfig);
-      
+
       if (!config || !config.appearance) {
-        console.warn('[FLOATNOTE] Invalid config structure, using defaults');
         set({ config: defaultConfig, isLoading: false });
         return;
       }
-      
+
       set({ config, isLoading: false });
     } catch (error) {
       console.warn('[FLOATNOTE] Failed to load config, using defaults:', error);
-      set({ 
+      set({
         config: defaultConfig,
         isLoading: false,
         error: null
@@ -135,9 +130,8 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
       // Emit config-updated event to notify all windows
       try {
         await emit('config-updated', newConfig);
-        console.log('[CONFIG] Config updated event emitted successfully');
       } catch (error) {
-        console.error('[CONFIG] Failed to emit config-updated event:', error);
+        console.error('[FLOATNOTE] Failed to emit config-updated event:', error);
       }
     } catch (error) {
       console.error('[FLOATNOTE] Error updating config:', error);

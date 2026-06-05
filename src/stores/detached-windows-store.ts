@@ -25,34 +25,27 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
   error: null,
 
   loadWindows: async () => {
-    console.log('[DETACHED-WINDOWS-STORE] 🚀 loadWindows() called - starting window load...');
     set({ loading: true, error: null });
     try {
       // Only load from Tauri in desktop context
       if (typeof window !== 'undefined' && window.__TAURI__) {
-        console.log('[DETACHED-WINDOWS-STORE] ✅ Tauri context detected, loading windows...');
         const windows = await DetachedWindowsAPI.getDetachedWindows();
-        console.log('[DETACHED-WINDOWS-STORE] ✅ Successfully loaded', windows.length, 'windows on startup:', windows);
         set({ windows, loading: false });
-        console.log('[DETACHED-WINDOWS-STORE] ✅ Windows set in store, loading complete');
       } else {
         // Browser mode - no detached windows
-        console.log('[FLOATNOTE] [WINDOWS] 🌐 No detached windows in browser mode');
         set({ windows: [], loading: false });
       }
     } catch (error) {
-      console.error('[DETACHED-WINDOWS-STORE] ❌ Failed to load detached windows on startup:', error);
+      console.error('[DETACHED-WINDOWS-STORE] Failed to load detached windows:', error);
       set({ error: error as string, loading: false });
     }
   },
 
   createWindow: async (noteId: string, x?: number, y?: number, width?: number, height?: number): Promise<DetachedWindow | null> => {
-    console.log('[DETACHED-WINDOWS] Creating window for note:', noteId, { x, y, width, height });
     const { windows, forceCloseWindow } = get();
-    
+
     // If window already exists, force close it first to allow recreation
     if (Array.isArray(windows) && windows.some(w => w.note_id === noteId)) {
-      console.log('[DETACHED-WINDOWS] Window already exists, force closing first...');
       await forceCloseWindow(noteId);
       // Wait a bit for cleanup
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -60,7 +53,6 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
 
     set({ loading: true, error: null });
     try {
-      console.log('[DETACHED-WINDOWS] Calling API to create window...');
       const newWindow = await DetachedWindowsAPI.createDetachedWindow({
         note_id: noteId,
         x,
@@ -68,15 +60,13 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
         width,
         height
       });
-      console.log('[DETACHED-WINDOWS] Window created:', newWindow);
-      
+
       // Refresh windows list to ensure consistency
       await get().refreshWindows();
-      
+
       return newWindow;
     } catch (error) {
       console.error('[DETACHED-WINDOWS] Failed to create detached window:', error);
-      console.error('[DETACHED-WINDOWS] Error details:', JSON.stringify(error));
       set({ error: error as string, loading: false });
       return null;
     }
@@ -108,23 +98,22 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
 
   forceCloseWindow: async (noteId: string): Promise<void> => {
     const { windows } = get();
-    
+
     try {
       // Try to close via API first
       await DetachedWindowsAPI.closeDetachedWindow(noteId);
-    } catch (error) {
-      console.log('API close failed, removing from state anyway:', error);
+    } catch {
+      // API close failed, removing from state anyway
     }
-    
+
     // Always remove from local state regardless of API result
-    set({ 
+    set({
       windows: windows.filter(w => w.note_id !== noteId)
     });
   },
 
   refreshWindows: async (): Promise<void> => {
     // Disabled to prevent loading loops - will be replaced with simple coordinate system
-    console.log('[DETACHED-WINDOWS-STORE] refreshWindows disabled');
   },
 
   updateWindowPosition: async (windowLabel: string, x: number, y: number) => {
