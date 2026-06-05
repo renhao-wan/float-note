@@ -13,6 +13,7 @@ import { CustomTitleBar } from '../layout/CustomTitleBar';
 import { WindowWrapper } from '../layout/WindowWrapper';
 import { extractTitleFromContent, getWordCount } from '../../lib/utils';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
+import { isPrimaryModifier } from '../../lib/platform';
 
 import { Note } from '../../types';
 
@@ -187,9 +188,9 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     
     // Define the keyboard handler inside useEffect to avoid stale closures
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Log all Cmd key combinations for debugging
-      if (e.metaKey) {
-        console.log('[DETACHED-WINDOW] Cmd key combo detected:', {
+      // Log all primary modifier key combinations for debugging
+      if (isPrimaryModifier(e)) {
+        console.log('[DETACHED-WINDOW] Primary modifier key combo detected:', {
           key: e.key,
           shiftKey: e.shiftKey,
           altKey: e.altKey,
@@ -197,19 +198,19 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
         });
       }
 
-      // Cmd+Shift+P to toggle preview mode
-      if (e.metaKey && e.shiftKey && e.key.toLowerCase() === 'p') {
+      // Primary+Shift+P to toggle preview mode
+      if (isPrimaryModifier(e) && e.shiftKey && e.key.toLowerCase() === 'p') {
         e.preventDefault();
         console.log('[DETACHED-WINDOW] Toggling preview mode');
         setIsPreviewMode(prev => !prev);
       }
 
-      // Cmd+W to close window
-      if (e.metaKey && e.key.toLowerCase() === 'w') {
+      // Primary+W to close window
+      if (isPrimaryModifier(e) && e.key.toLowerCase() === 'w') {
         e.preventDefault();
         e.stopPropagation(); // Stop event from bubbling
-        console.log('[DETACHED-WINDOW] Cmd+W pressed, closing window...');
-        
+        console.log('[DETACHED-WINDOW] Primary+W pressed, closing window...');
+
         // Ensure we're in the right window context
         if (window.location.search.includes(`note=${noteId}`)) {
           console.log('[DETACHED-WINDOW] Confirmed this is the correct window');
@@ -220,7 +221,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
             appWindow.close().catch(() => {});
           });
         } else {
-          console.warn('[DETACHED-WINDOW] Window context mismatch, ignoring Cmd+W');
+          console.warn('[DETACHED-WINDOW] Window context mismatch, ignoring Primary+W');
         }
       }
     };
