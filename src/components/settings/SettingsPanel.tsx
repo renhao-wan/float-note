@@ -4,6 +4,7 @@ import { useConfigStore } from '../../stores/config-store';
 import { invoke } from '@tauri-apps/api/core';
 import { ThemeSelector } from './ThemeSelector';
 import { notesApi } from '../../services/tauri-api';
+import { getModifierSymbol } from '../../lib/platform';
 
 interface SettingsPanelProps {
   selectedSection: 'general' | 'appearance' | 'shortcuts' | 'editor' | 'advanced';
@@ -594,7 +595,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <div className="flex items-center gap-3">
               <span className="text-xs text-foreground/80 font-mono w-32">{t('settings.shortcuts.globalShortcuts.createNewNote')}</span>
               <div className="flex-1 flex items-center gap-2">
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
+                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌃</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌥</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⇧</kbd>
@@ -605,7 +606,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <div className="flex items-center gap-3">
               <span className="text-xs text-foreground/80 font-mono w-32">{t('settings.shortcuts.globalShortcuts.toggleHoverMode')}</span>
               <div className="flex-1 flex items-center gap-2">
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
+                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌃</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌥</kbd>
                 <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⇧</kbd>
@@ -814,21 +815,21 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
           <div className="flex justify-between items-center">
             <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.commandPalette')}</span>
             <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
+              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">K</kbd>
             </div>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.newNote')}</span>
             <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
+              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">N</kbd>
             </div>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.togglePreview')}</span>
             <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
+              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⇧</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">P</kbd>
             </div>
@@ -836,14 +837,14 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
           <div className="flex justify-between items-center">
             <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.openSettings')}</span>
             <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
+              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">,</kbd>
             </div>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.focusMode')}</span>
             <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⌘</kbd>
+              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
               <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">.</kbd>
             </div>
           </div>

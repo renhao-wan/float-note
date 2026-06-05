@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Note } from '../../types';
 import { extractTitleFromContent } from '../../lib/utils';
 import { useConfigStore } from '../../stores/config-store';
+import { getModifierSymbol } from '../../lib/platform';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
 
 interface SaveStatus {
@@ -96,7 +97,7 @@ export function EditorArea({
               ? 'text-primary' 
               : 'text-muted-foreground/60 hover:text-foreground hover:bg-white/5'
           }`}
-          title="Edit mode (⌘⇧P)"
+          title={`Edit mode (${getModifierSymbol()}⇧P)`}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -111,7 +112,7 @@ export function EditorArea({
               ? 'text-primary' 
               : 'text-muted-foreground/60 hover:text-foreground hover:bg-white/5'
           }`}
-          title="Preview mode (⌘⇧P)"
+          title={`Preview mode (${getModifierSymbol()}⇧P)`}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>

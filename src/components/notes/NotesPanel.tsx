@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ResizablePanel } from '../windows/ResizablePanel';
 import { markdownToPlainText, truncateText } from '../../lib/utils';
 import { Note } from '../../types';
+import { getModifierSymbol } from '../../lib/platform';
 
 interface NotesPanelProps {
   sidebarVisible: boolean;
@@ -104,7 +105,7 @@ export function NotesPanel({
               <button
                 onClick={onCreateNewNote}
                 className="text-muted-foreground hover:text-primary p-1 rounded-md transition-all duration-200 hover:bg-primary/10"
-                title={`${t('notes.create')} (⌘N)`}
+                title={`${t('notes.create')} (${getModifierSymbol()}N)`}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <line x1="12" y1="5" x2="12" y2="19"/>
