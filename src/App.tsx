@@ -26,11 +26,10 @@ import {
   useDetachedWindowsStore,
   useConfigStore 
 } from './stores';
-import { 
+import {
   useAppInitialization,
   useSaveStatus,
   useModifiedState,
-  useWindowTransparency,
   useTypewriterMode,
   useDragToDetach,
   useWindowShade,
@@ -89,10 +88,7 @@ function App() {
   // Save status tracking
   const saveStatus = useSaveStatus();
   const modifiedState = useModifiedState();
-  
-  // Window transparency hook - handles opacity changes
-  useWindowTransparency();
-  
+
   // Typewriter mode hook
   const textareaRef = useTypewriterMode();
   

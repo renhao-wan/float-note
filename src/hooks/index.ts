@@ -14,4 +14,3 @@ export { useTypewriterMode } from './use-typewriter-mode';
 export { useWindowManager } from './use-window-manager';
 export { useWindowShade } from './use-window-shade';
 export { useWindowTracking } from './use-window-tracking';
-export { useWindowTransparency } from './use-window-transparency';
