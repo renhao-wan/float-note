@@ -5,6 +5,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { ThemeSelector } from './ThemeSelector';
 import { notesApi } from '../../services/tauri-api';
 import { getModifierSymbol, isMac } from '../../lib/platform';
+import { AppConfig } from '../../types/config';
 
 interface SettingsPanelProps {
   selectedSection: 'general' | 'appearance' | 'shortcuts' | 'editor' | 'advanced';
@@ -44,8 +45,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
     try {
       await updateConfig(localConfig);
       setSaveStatus('saved');
-      console.log('Config saved successfully');
-      
+
       // Reset status after 2 seconds
       setTimeout(() => setSaveStatus('idle'), 2000);
     } catch (error) {
@@ -53,6 +53,25 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }
+  };
+
+  // 实时预览：更新本地配置并立即应用
+  const handleConfigChange = async (update: Partial<AppConfig>) => {
+    const newConfig = { ...localConfig, ...update };
+    setLocalConfig(newConfig);
+    // 立即应用更改到 UI
+    await updateConfig(newConfig);
+  };
+
+  // 实时预览：更新外观配置并立即应用
+  const handleAppearanceChange = async (appearanceUpdate: Partial<AppConfig['appearance']>) => {
+    const newConfig = {
+      ...localConfig,
+      appearance: { ...localConfig.appearance, ...appearanceUpdate }
+    };
+    setLocalConfig(newConfig);
+    // 立即应用更改到 UI
+    await updateConfig(newConfig);
   };
 
   const handleImportFile = async () => {
@@ -463,10 +482,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                     max="24"
                     step="1"
                     value={localConfig.appearance?.fontSize ?? 15}
-                    onChange={(e) => setLocalConfig({
-                      ...localConfig,
-                      appearance: { ...localConfig.appearance, fontSize: parseInt(e.target.value) }
-                    })}
+                    onChange={(e) => handleAppearanceChange({ fontSize: parseInt(e.target.value) })}
                     className="slider-input"
                   />
                 </div>
@@ -490,10 +506,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                     max="2.0"
                     step="0.1"
                     value={localConfig.appearance?.lineHeight ?? 1.6}
-                    onChange={(e) => setLocalConfig({
-                      ...localConfig,
-                      appearance: { ...localConfig.appearance, lineHeight: parseFloat(e.target.value) }
-                    })}
+                    onChange={(e) => handleAppearanceChange({ lineHeight: parseFloat(e.target.value) })}
                     className="slider-input"
                   />
                 </div>
@@ -516,7 +529,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <div className="flex gap-1.5 flex-1">
               {['#d4a053', '#5a9e96', '#d45858', '#7c9a6e', '#9e8a6e', '#8b7ec8'].map(color => (
                 <button key={color}
-                  onClick={() => setLocalConfig({ ...localConfig, appearance: { ...localConfig.appearance, accentColor: color } })}
+                  onClick={() => handleAppearanceChange({ accentColor: color })}
                   className={`w-7 h-7 rounded-lg border-2 transition-all ${localConfig.appearance?.accentColor === color ? 'border-primary scale-110 shadow-glow' : 'border-transparent hover:border-primary/30 hover:scale-105'}`}
                   style={{ backgroundColor: color }}
                 />
@@ -538,7 +551,11 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                 <div className="flex-1 relative h-5 slider-container">
                   <div className="slider-track"></div>
                   <input type="range" min="0.3" max="1.0" step="0.05" value={localConfig.opacity}
-                    onChange={async (e) => { const v = parseFloat(e.target.value); setLocalConfig({ ...localConfig, opacity: v }); try { await invoke('set_window_opacity', { opacity: v }); } catch {} }}
+                    onChange={async (e) => {
+                      const v = parseFloat(e.target.value);
+                      setLocalConfig({ ...localConfig, opacity: v });
+                      try { await invoke('set_window_opacity', { opacity: v }); } catch {}
+                    }}
                     onMouseUp={async () => { await updateConfig(localConfig); }}
                     className="slider-input" />
                 </div>
@@ -549,7 +566,12 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <div className="flex items-center gap-3">
               <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.window.alwaysOnTop')}</label>
               <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.appearance.window.alwaysOnTopDescription')}</span>
-              <button onClick={async () => { const v = !localConfig.alwaysOnTop; setLocalConfig({ ...localConfig, alwaysOnTop: v }); try { await invoke('set_window_always_on_top', { alwaysOnTop: v }); } catch {} await updateConfig({ ...localConfig, alwaysOnTop: v }); }}
+              <button onClick={async () => {
+                const v = !localConfig.alwaysOnTop;
+                setLocalConfig({ ...localConfig, alwaysOnTop: v });
+                try { await invoke('set_window_always_on_top', { alwaysOnTop: v }); } catch {}
+                await updateConfig({ ...localConfig, alwaysOnTop: v });
+              }}
                 className={`relative w-8 h-4 rounded-full transition-colors ${localConfig.alwaysOnTop ? 'bg-primary' : 'bg-background/40 border border-border/40'}`}>
                 <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform ${localConfig.alwaysOnTop ? 'translate-x-4' : 'translate-x-0'}`} />
               </button>
@@ -876,8 +898,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               max="3"
               step="0.1"
               value={localConfig.editor?.lineHeight || 1.6}
-              onChange={(e) => setLocalConfig({
-                ...localConfig,
+              onChange={(e) => handleConfigChange({
                 editor: {
                   ...localConfig.editor,
                   lineHeight: parseFloat(e.target.value)
@@ -916,13 +937,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               ].map((style) => (
                 <button
                   key={style.key}
-                  onClick={() => setLocalConfig({
-                    ...localConfig,
-                    appearance: {
-                      ...localConfig.appearance,
-                      notePaperStyle: style.key as any
-                    }
-                  })}
+                  onClick={() => handleAppearanceChange({ notePaperStyle: style.key as any })}
                   className={`p-3 rounded-xl border-2 transition-all text-left ${
                     (localConfig.appearance?.notePaperStyle || 'none') === style.key
                       ? 'border-primary/50 bg-primary/5'
@@ -958,13 +973,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <div className="flex items-center gap-3 flex-1">
                 <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.focusModeDescription')}</span>
                 <button
-                  onClick={() => setLocalConfig({
-                    ...localConfig,
-                    appearance: {
-                      ...localConfig.appearance,
-                      focusMode: !localConfig.appearance?.focusMode
-                    }
-                  })}
+                  onClick={() => handleAppearanceChange({ focusMode: !localConfig.appearance?.focusMode })}
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
                     localConfig.appearance?.focusMode ? 'bg-primary' : 'bg-background/40 border border-border/40'
                   }`}
@@ -982,13 +991,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <div className="flex items-center gap-3 flex-1">
                 <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.syntaxHighlightingDescription')}</span>
                 <button
-                  onClick={() => setLocalConfig({
-                    ...localConfig,
-                    appearance: {
-                      ...localConfig.appearance,
-                      syntaxHighlighting: !localConfig.appearance?.syntaxHighlighting
-                    }
-                  })}
+                  onClick={() => handleAppearanceChange({ syntaxHighlighting: !localConfig.appearance?.syntaxHighlighting })}
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
                     localConfig.appearance?.syntaxHighlighting ? 'bg-primary' : 'bg-background/40 border border-border/40'
                   }`}
@@ -1006,13 +1009,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <div className="flex items-center gap-3 flex-1">
                 <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.typewriterModeDescription')}</span>
                 <button
-                  onClick={() => setLocalConfig({
-                    ...localConfig,
-                    appearance: {
-                      ...localConfig.appearance,
-                      typewriterMode: !localConfig.appearance?.typewriterMode
-                    }
-                  })}
+                  onClick={() => handleAppearanceChange({ typewriterMode: !localConfig.appearance?.typewriterMode })}
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
                     localConfig.appearance?.typewriterMode ? 'bg-primary' : 'bg-background/40 border border-border/40'
                   }`}
@@ -1030,13 +1027,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <div className="flex items-center gap-3 flex-1">
                 <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.vimModeDescription')}</span>
                 <button
-                  onClick={() => setLocalConfig({
-                    ...localConfig,
-                    appearance: {
-                      ...localConfig.appearance,
-                      vimMode: !localConfig.appearance?.vimMode
-                    }
-                  })}
+                  onClick={() => handleAppearanceChange({ vimMode: !localConfig.appearance?.vimMode })}
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
                     localConfig.appearance?.vimMode ? 'bg-primary' : 'bg-background/40 border border-border/40'
                   }`}
@@ -1100,11 +1091,10 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <div className="text-xs text-muted-foreground/60">{t('settings.advanced.developerModeDescription')}</div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={localConfig.advanced?.developerMode || false}
-                onChange={(e) => setLocalConfig({
-                  ...localConfig,
+                onChange={(e) => handleConfigChange({
                   advanced: {
                     ...localConfig.advanced,
                     developerMode: e.target.checked
@@ -1124,11 +1114,10 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <div className="text-xs text-muted-foreground/60">{t('settings.advanced.autoUpdateDescription')}</div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={localConfig.advanced?.autoUpdate !== false}
-                onChange={(e) => setLocalConfig({
-                  ...localConfig,
+                onChange={(e) => handleConfigChange({
                   advanced: {
                     ...localConfig.advanced,
                     autoUpdate: e.target.checked
