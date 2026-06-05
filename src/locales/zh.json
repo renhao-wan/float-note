@@ -98,7 +98,25 @@
         "editorView": "编辑器视图",
         "previewMode": "预览模式",
         "rendered": "渲染",
-        "markdown": "Markdown"
+        "markdown": "Markdown",
+        "fonts": {
+          "jetbrainsMono": "JetBrains Mono",
+          "firaCode": "Fira Code",
+          "sourceCodePro": "Source Code Pro",
+          "cascadiaCode": "Cascadia Code",
+          "ibmPlexMono": "IBM Plex Mono",
+          "menlo": "Menlo",
+          "consolas": "Consolas",
+          "systemUi": "系统字体",
+          "monospace": "等宽字体",
+          "sourceSerif": "Source Serif 4",
+          "georgia": "Georgia",
+          "timesNewRoman": "Times New Roman",
+          "merriweather": "Merriweather",
+          "inter": "Inter",
+          "interFull": "Inter (完整)",
+          "outfit": "Outfit"
+        }
       },
       "visual": {
         "title": "视觉",

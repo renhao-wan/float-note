@@ -98,7 +98,25 @@
         "editorView": "Editor View",
         "previewMode": "Preview Mode",
         "rendered": "rendered",
-        "markdown": "markdown"
+        "markdown": "markdown",
+        "fonts": {
+          "jetbrainsMono": "JetBrains Mono",
+          "firaCode": "Fira Code",
+          "sourceCodePro": "Source Code Pro",
+          "cascadiaCode": "Cascadia Code",
+          "ibmPlexMono": "IBM Plex Mono",
+          "menlo": "Menlo",
+          "consolas": "Consolas",
+          "systemUi": "System UI",
+          "monospace": "Monospace",
+          "sourceSerif": "Source Serif 4",
+          "georgia": "Georgia",
+          "timesNewRoman": "Times New Roman",
+          "merriweather": "Merriweather",
+          "inter": "Inter",
+          "interFull": "Inter (Full)",
+          "outfit": "Outfit"
+        }
       },
       "visual": {
         "title": "Visual",

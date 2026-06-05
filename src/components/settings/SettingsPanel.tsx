@@ -486,15 +486,15 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                   value={localConfig.appearance?.editorFontFamily || 'JetBrains Mono, monospace'}
                   onChange={(value) => handleAppearanceChange({ editorFontFamily: value })}
                   options={[
-                    { value: 'JetBrains Mono, monospace', label: 'JetBrains Mono' },
-                    { value: 'Fira Code, monospace', label: 'Fira Code' },
-                    { value: 'Source Code Pro, monospace', label: 'Source Code Pro' },
-                    { value: 'Cascadia Code, monospace', label: 'Cascadia Code' },
-                    { value: 'IBM Plex Mono, monospace', label: 'IBM Plex Mono' },
-                    { value: 'Menlo, Monaco, monospace', label: 'Menlo' },
-                    { value: 'Consolas, monospace', label: 'Consolas' },
-                    { value: 'system-ui', label: 'System UI' },
-                    { value: 'monospace', label: 'Monospace' },
+                    { value: 'JetBrains Mono, monospace', label: t('settings.appearance.typography.fonts.jetbrainsMono') },
+                    { value: 'Fira Code, monospace', label: t('settings.appearance.typography.fonts.firaCode') },
+                    { value: 'Source Code Pro, monospace', label: t('settings.appearance.typography.fonts.sourceCodePro') },
+                    { value: 'Cascadia Code, monospace', label: t('settings.appearance.typography.fonts.cascadiaCode') },
+                    { value: 'IBM Plex Mono, monospace', label: t('settings.appearance.typography.fonts.ibmPlexMono') },
+                    { value: 'Menlo, Monaco, monospace', label: t('settings.appearance.typography.fonts.menlo') },
+                    { value: 'Consolas, monospace', label: t('settings.appearance.typography.fonts.consolas') },
+                    { value: 'system-ui', label: t('settings.appearance.typography.fonts.systemUi') },
+                    { value: 'monospace', label: t('settings.appearance.typography.fonts.monospace') },
                   ]}
                 />
               </div>
@@ -508,14 +508,14 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                   value={localConfig.appearance?.previewFontFamily || 'Source Serif 4, Georgia, serif'}
                   onChange={(value) => handleAppearanceChange({ previewFontFamily: value })}
                   options={[
-                    { value: 'Source Serif 4, Georgia, serif', label: 'Source Serif 4' },
-                    { value: 'Georgia, serif', label: 'Georgia' },
-                    { value: 'Times New Roman, serif', label: 'Times New Roman' },
-                    { value: 'Merriweather, serif', label: 'Merriweather' },
-                    { value: 'Inter, -apple-system, sans-serif', label: 'Inter' },
-                    { value: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', label: 'Inter (Full)' },
-                    { value: 'system-ui, -apple-system, sans-serif', label: 'System UI' },
-                    { value: 'Outfit, system-ui, sans-serif', label: 'Outfit' },
+                    { value: 'Source Serif 4, Georgia, serif', label: t('settings.appearance.typography.fonts.sourceSerif') },
+                    { value: 'Georgia, serif', label: t('settings.appearance.typography.fonts.georgia') },
+                    { value: 'Times New Roman, serif', label: t('settings.appearance.typography.fonts.timesNewRoman') },
+                    { value: 'Merriweather, serif', label: t('settings.appearance.typography.fonts.merriweather') },
+                    { value: 'Inter, -apple-system, sans-serif', label: t('settings.appearance.typography.fonts.inter') },
+                    { value: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', label: t('settings.appearance.typography.fonts.interFull') },
+                    { value: 'system-ui, -apple-system, sans-serif', label: t('settings.appearance.typography.fonts.systemUi') },
+                    { value: 'Outfit, system-ui, sans-serif', label: t('settings.appearance.typography.fonts.outfit') },
                   ]}
                 />
               </div>
