@@ -253,43 +253,6 @@ pub async fn reorder_notes(
     // Save all notes since multiple positions changed
     save_all_notes_using_file_storage(&notes_lock, &config_lock).await?;
     log_info!("NOTES", "Reordered {} notes", note_ids.len());
-    
-    Ok(())
-}
 
-/// Test database migration (temporary command for testing)
-#[tauri::command]
-pub async fn test_database_migration(
-    config: State<'_, ConfigState>,
-) -> Result<String, String> {
-    use crate::modules::database;
-    
-    let config_lock = config.lock().await;
-    let data_dir = crate::modules::storage::get_configured_notes_directory(&config_lock)?;
-    
-    // Initialize database (will auto-migrate from index.json)
-    match database::initialize_database(&data_dir) {
-        Ok(db) => {
-            // Get all notes from database
-            let notes = db.get_all_notes()
-                .map_err(|e| format!("Failed to get notes from database: {}", e))?;
-            
-            let mut result = format!("✅ Database migration successful!\n");
-            result.push_str(&format!("📊 Found {} notes in database:\n", notes.len()));
-            
-            for note in notes {
-                let id_display = if note.id.len() > 8 { &note.id[..8] } else { &note.id };
-                result.push_str(&format!("  - {} (id: {}, pos: {})\n", 
-                    note.title, 
-                    id_display,
-                    note.position.map_or("None".to_string(), |p| p.to_string())
-                ));
-            }
-            
-            Ok(result)
-        }
-        Err(e) => {
-            Err(format!("❌ Database migration failed: {}", e))
-        }
-    }
+    Ok(())
 }
