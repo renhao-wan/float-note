@@ -15,6 +15,7 @@ import { WindowWrapper } from '../layout/WindowWrapper';
 import { extractTitleFromContent, getWordCount } from '../../lib/utils';
 import { isPrimaryModifier } from '../../lib/platform';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
+import { DetachedWindowOpacitySlider } from './DetachedWindowOpacitySlider';
 
 import { Note } from '../../types';
 
@@ -33,6 +34,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
   const [vimStatus, setVimStatus] = useState<VimStatus>({ mode: 'NORMAL' });
 
   const appWindow = getCurrentWebviewWindow();
+  const windowLabel = appWindow.label;
   const { closeWindow } = useDetachedWindowsStore();
   const saveStatus = useSaveStatus();
   const modifiedState = useModifiedState();
@@ -362,6 +364,16 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     </div>
   );
 
+  // Title bar right content with mode toggle and opacity slider
+  const titleBarRightContent = (
+    <div className="flex items-center gap-2">
+      {modeToggle}
+      <DetachedWindowOpacitySlider
+        windowLabel={windowLabel}
+      />
+    </div>
+  );
+
   // Calculate word count
   const wordCount = getWordCount(content);
 
@@ -383,10 +395,10 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
 
   return (
     <WindowWrapper className="detached-note-window">
-      <CustomTitleBar 
+      <CustomTitleBar
         title={extractTitleFromContent(content)}
         noteId={noteId}
-        rightContent={!isShaded ? modeToggle : undefined}
+        rightContent={!isShaded ? titleBarRightContent : undefined}
         onClose={handleCloseWindow}
         isShaded={isShaded}
         stats={{

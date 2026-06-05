@@ -3,7 +3,6 @@ import { Slider } from '../ui/Slider';
 import { Eye, EyeOff } from '../../lib/lucide';
 import { transparencyManager } from '../../lib/transparency';
 import { TRANSPARENCY_CONFIG } from '../../lib/transparency/constants';
-import { useTranslation } from 'react-i18next';
 
 interface DetachedWindowOpacitySliderProps {
   windowLabel: string;
@@ -16,7 +15,6 @@ export const DetachedWindowOpacitySlider = ({
   initialOpacity = TRANSPARENCY_CONFIG.defaultOpacity,
   onOpacityChange,
 }: DetachedWindowOpacitySliderProps) => {
-  const { t } = useTranslation();
   const [opacity, setOpacity] = useState(initialOpacity);
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
 
