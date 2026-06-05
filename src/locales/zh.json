@@ -17,7 +17,9 @@
     "search": "搜索",
     "settings": "设置",
     "help": "帮助",
-    "about": "关于"
+    "about": "关于",
+    "to": "以",
+    "persist": "持久化"
   },
   "settings": {
     "general": {

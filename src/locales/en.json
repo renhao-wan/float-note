@@ -17,7 +17,9 @@
     "search": "Search",
     "settings": "Settings",
     "help": "Help",
-    "about": "About"
+    "about": "About",
+    "to": "to",
+    "persist": "persist"
   },
   "settings": {
     "general": {
