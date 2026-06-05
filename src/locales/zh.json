@@ -162,10 +162,10 @@
       "paperStyle": {
         "title": "纸张样式",
         "description": "选择背景样式以增强写作体验",
-        "plain": "Plain",
+        "plain": "纯色",
         "plainDescription": "干净背景",
         "dots": "点状",
-        "dotsDescription": "Subtle 点状网格",
+        "dotsDescription": "细腻点状网格",
         "lines": "线条",
         "linesDescription": "笔记本线条",
         "ruled": "横线",

@@ -31,7 +31,7 @@ interface UseNoteManagementReturn {
 interface UseNoteManagementOptions {
   onSaveStart?: () => void;
   onSaveComplete?: () => void;
-  onSaveError?: (error: any) => void;
+  onSaveError?: (error: unknown) => void;
 }
 
 export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteManagementReturn {

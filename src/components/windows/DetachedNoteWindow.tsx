@@ -98,12 +98,25 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     };
   }, [noteId]);
 
+  const titleTimeoutRef = useRef<NodeJS.Timeout>();
+
   useEffect(() => {
-    // Update window title when content changes
+    // Debounce title update to avoid high-frequency IPC calls
     if (note) {
-      const title = extractTitleFromContent(content);
-      appWindow.setTitle(title);
+      if (titleTimeoutRef.current) {
+        clearTimeout(titleTimeoutRef.current);
+      }
+      titleTimeoutRef.current = setTimeout(() => {
+        const title = extractTitleFromContent(content);
+        appWindow.setTitle(title);
+      }, 300);
     }
+
+    return () => {
+      if (titleTimeoutRef.current) {
+        clearTimeout(titleTimeoutRef.current);
+      }
+    };
   }, [content, note, appWindow]);
 
   const loadNote = async () => {
