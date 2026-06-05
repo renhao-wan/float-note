@@ -7,6 +7,7 @@ import { notesApi } from '../../services/tauri-api';
 import { getModifierSymbol, isMac } from '../../lib/platform';
 import { AppConfig } from '../../types/config';
 import { CustomSelect } from '../common/CustomSelect';
+import { hexToHSL } from '../../types/theme';
 
 interface SettingsPanelProps {
   selectedSection: 'general' | 'appearance' | 'shortcuts' | 'editor';
@@ -55,6 +56,26 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       appearance: { ...localConfig.appearance, ...appearanceUpdate }
     };
     setLocalConfig(newConfig);
+
+    // 如果更新了 accentColor，立即应用到 CSS 变量
+    if (appearanceUpdate.accentColor) {
+      const root = document.documentElement;
+      const hsl = hexToHSL(appearanceUpdate.accentColor);
+      root.style.setProperty('--primary', hsl);
+      // 同时更新 ring 颜色（用于焦点状态）
+      root.style.setProperty('--ring', hsl);
+    }
+
+    // 如果更新了字体，立即应用到 CSS 变量
+    if (appearanceUpdate.editorFontFamily) {
+      const root = document.documentElement;
+      root.style.setProperty('--font-editor', appearanceUpdate.editorFontFamily);
+    }
+    if (appearanceUpdate.previewFontFamily) {
+      const root = document.documentElement;
+      root.style.setProperty('--font-preview', appearanceUpdate.previewFontFamily);
+    }
+
     // 立即应用并持久化
     await updateConfig(newConfig);
   };
@@ -453,6 +474,46 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">
                 {localConfig.appearance?.fontSize ?? 15}px
               </span>
+            </div>
+
+            {/* Editor Font */}
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.editorFont')}</label>
+              <div className="flex-1">
+                <CustomSelect
+                  value={localConfig.appearance?.editorFontFamily || 'JetBrains Mono, monospace'}
+                  onChange={(value) => handleAppearanceChange({ editorFontFamily: value })}
+                  options={[
+                    { value: 'JetBrains Mono, monospace', label: 'JetBrains Mono' },
+                    { value: 'Fira Code, monospace', label: 'Fira Code' },
+                    { value: 'Source Code Pro, monospace', label: 'Source Code Pro' },
+                    { value: 'Cascadia Code, monospace', label: 'Cascadia Code' },
+                    { value: 'IBM Plex Mono, monospace', label: 'IBM Plex Mono' },
+                    { value: 'Menlo, Monaco, monospace', label: 'Menlo' },
+                    { value: 'Consolas, monospace', label: 'Consolas' },
+                  ]}
+                />
+              </div>
+            </div>
+
+            {/* Content Font */}
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.contentFont')}</label>
+              <div className="flex-1">
+                <CustomSelect
+                  value={localConfig.appearance?.previewFontFamily || 'Source Serif 4, Georgia, serif'}
+                  onChange={(value) => handleAppearanceChange({ previewFontFamily: value })}
+                  options={[
+                    { value: 'Source Serif 4, Georgia, serif', label: 'Source Serif 4' },
+                    { value: 'Georgia, serif', label: 'Georgia' },
+                    { value: 'Times New Roman, serif', label: 'Times New Roman' },
+                    { value: 'Merriweather, serif', label: 'Merriweather' },
+                    { value: 'Inter, -apple-system, sans-serif', label: 'Inter' },
+                    { value: 'system-ui, -apple-system, sans-serif', label: 'System UI' },
+                    { value: 'Outfit, system-ui, sans-serif', label: 'Outfit' },
+                  ]}
+                />
+              </div>
             </div>
 
             {/* Line Height */}

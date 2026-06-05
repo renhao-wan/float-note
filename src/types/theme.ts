@@ -541,7 +541,7 @@ export const themes: Record<string, ThemePreset> = {
 };
 
 // Helper function to convert hex to HSL for Tailwind
-function hexToHSL(hex: string): string {
+export function hexToHSL(hex: string): string {
   // Remove the # if present
   hex = hex.replace('#', '');
   
