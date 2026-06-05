@@ -83,9 +83,6 @@ export function ThemeSelector() {
               <h4 className="text-[10px] font-medium text-foreground/80 truncate px-1">
                 {t(`settings.appearance.themes.${theme.id}`, theme.name)}
               </h4>
-              {savedThemeId === theme.id && (
-                <div className="w-1.5 h-1.5 bg-primary rounded-full mx-auto"></div>
-              )}
             </div>
           </button>
         ))}
