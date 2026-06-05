@@ -77,7 +77,7 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-card border border-border/30 rounded-lg shadow-elegant overflow-hidden z-50 max-h-48 overflow-y-auto w-max min-w-full">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border/30 rounded-lg shadow-elegant overflow-hidden z-50 max-h-48 overflow-y-auto">
           {options.map((option) => (
             <button
               key={option.value}
@@ -85,7 +85,7 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
                 onChange(option.value);
                 setIsOpen(false);
               }}
-              className={`w-full px-2 py-1.5 text-xs text-left transition-colors whitespace-nowrap ${
+              className={`w-full px-2 py-1.5 text-xs text-left transition-colors truncate ${
                 option.value === value
                   ? 'bg-primary/10 text-primary'
                   : 'text-foreground hover:bg-card/50'
