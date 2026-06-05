@@ -12,8 +12,8 @@ import { noteSyncService, useNoteSync } from '../../services/note-sync';
 import { CustomTitleBar } from '../layout/CustomTitleBar';
 import { WindowWrapper } from '../layout/WindowWrapper';
 import { extractTitleFromContent, getWordCount } from '../../lib/utils';
-import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
 import { isPrimaryModifier } from '../../lib/platform';
+import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
 
 import { Note } from '../../types';
 
@@ -228,8 +228,6 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
 
     // Add event listener with capture phase to ensure we get the event first
     window.addEventListener('keydown', handleKeyDown, true);
-    // Also add to document to ensure we catch it
-    document.addEventListener('keydown', handleKeyDown, true);
     
     // Listen for window close events to clean up state
     const handleWindowClose = async () => {
@@ -247,7 +245,6 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     return () => {
       console.log('[DETACHED-WINDOW] Removing keyboard event listeners for note:', noteId);
       window.removeEventListener('keydown', handleKeyDown, true);
-      document.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('beforeunload', handleWindowClose);
     };
   }, [noteId]);
