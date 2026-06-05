@@ -269,41 +269,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               />
             </div>
           </div>
-          
-          {/* Window Opacity Slider */}
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col w-28">
-              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.windowOpacity')}</span>
-              <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.windowOpacityDescription')}</span>
-            </div>
-            <div className="flex-1 flex items-center gap-3">
-              <span className="text-xs text-muted-foreground/70">🫥</span>
-              <div className="flex-1 relative h-5 slider-container">
-                <div className="slider-track"></div>
-                <div className="slider-ticks">
-                  <div className="slider-tick" style={{ left: '10%' }}></div>
-                  <div className="slider-tick" style={{ left: '30%' }}></div>
-                  <div className="slider-tick" style={{ left: '50%' }}></div>
-                  <div className="slider-tick" style={{ left: '70%' }}></div>
-                  <div className="slider-tick" style={{ left: '90%' }}></div>
-                </div>
-                <input
-                  type="range"
-                  min="0.1"
-                  max="1.0"
-                  step="0.05"
-                  value={localConfig.appearance?.detachedWindowOpacity}
-                  onChange={(e) => handleAppearanceChange({ detachedWindowOpacity: parseFloat(e.target.value) })}
-                  className="slider-input"
-                />
-              </div>
-              <span className="text-xs text-muted-foreground/70">🫧</span>
-            </div>
-            <span className="text-xs text-muted-foreground/70 min-w-[3rem] text-right font-mono">
-              {Math.round((localConfig.appearance?.detachedWindowOpacity ?? 1) * 100)}%
-            </span>
-          </div>
-          
+
         </div>
       </div>
 
