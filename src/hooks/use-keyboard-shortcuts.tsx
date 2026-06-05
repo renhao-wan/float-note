@@ -45,7 +45,7 @@ export function useKeyboardShortcuts({
       }
     }
 
-    // Command/Ctrl key shortcuts
+    // Primary modifier/Ctrl key shortcuts
     if (e.metaKey || e.ctrlKey) {
       switch (e.key) {
         case 'n':
