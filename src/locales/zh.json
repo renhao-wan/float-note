@@ -123,12 +123,7 @@
         "noteBackground": "笔记背景"
       },
       "window": {
-        "title": "窗口",
-        "windowOpacity": "窗口透明度",
         "alwaysOnTop": "始终置顶",
-        "alwaysOnTopDescription": "保持窗口在其他窗口之上",
-        "opacityUnavailable": "窗口透明度控制仅在 macOS 上可用",
-        "opacity": "透明度：",
         "unpin": "取消置顶",
         "pin": "置顶"
       }

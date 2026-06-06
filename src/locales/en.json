@@ -123,12 +123,7 @@
         "noteBackground": "Note Background"
       },
       "window": {
-        "title": "Window",
-        "windowOpacity": "Window Opacity",
         "alwaysOnTop": "Always on Top",
-        "alwaysOnTopDescription": "keep window above others",
-        "opacityUnavailable": "Window opacity control is only available on macOS",
-        "opacity": "Opacity:",
         "unpin": "Unpin",
         "pin": "Pin"
       }

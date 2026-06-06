@@ -532,28 +532,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
           </div>
         </div>
 
-        {/* Window */}
-        <div className="bg-card/20 rounded-2xl p-3 border border-border/10">
-          <h3 className="text-xs font-medium text-foreground/90 mb-2 uppercase tracking-wide">
-            {t('settings.appearance.window.title')}
-          </h3>
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.window.alwaysOnTop')}</label>
-              <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.appearance.window.alwaysOnTopDescription')}</span>
-              <button onClick={async () => {
-                const v = !localConfig.alwaysOnTop;
-                setLocalConfig({ ...localConfig, alwaysOnTop: v });
-                try { await invoke('set_window_always_on_top', { alwaysOnTop: v }); } catch {}
-                await updateConfig({ ...localConfig, alwaysOnTop: v });
-              }}
-                className={`relative w-8 h-4 rounded-full transition-colors ${localConfig.alwaysOnTop ? 'bg-primary' : 'bg-background/40 border border-border/40'}`}>
-                <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform ${localConfig.alwaysOnTop ? 'translate-x-4' : 'translate-x-0'}`} />
-              </button>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   );
