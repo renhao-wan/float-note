@@ -92,6 +92,15 @@ export function MarkdownRenderer({
                 target.parentNode?.insertBefore(errorText, target);
               }}
             />
+          ),
+          input: ({type, checked, ...props}) => (
+            <input
+              type={type}
+              checked={checked}
+              className="mr-2 rounded border-border accent-primary"
+              readOnly
+              {...props}
+            />
           )
         }}
       >
