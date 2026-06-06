@@ -30,6 +30,9 @@ src-tauri/target/
 .claude/
 CLAUDE.md
 
+# Development scripts
+generate_icons.py
+
 # Development process management
 .dev-pids/
 *.pid
