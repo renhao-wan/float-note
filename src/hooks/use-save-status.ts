@@ -10,7 +10,7 @@ export function useSaveStatus(): SaveStatus & {
   startSaving: () => void;
   saveSuccess: () => void;
   setSaveError: (error: string) => void;
-  getRelativeTime: string | null;
+  getRelativeTime: () => string | null;
 } {
   const [status, setStatus] = useState<SaveStatus>({
     isSaving: false,
@@ -69,11 +69,15 @@ export function useSaveStatus(): SaveStatus & {
     };
   }, []);
 
+  const getRelativeTimeValue = () => {
+    return status.lastSaved ? getRelativeTime(status.lastSaved) : null;
+  };
+
   return {
     ...status,
     startSaving,
     saveSuccess,
     setSaveError,
-    getRelativeTime: status.lastSaved ? getRelativeTime(status.lastSaved) : null,
+    getRelativeTime: getRelativeTimeValue,
   };
 }

@@ -424,7 +424,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
         showMinimize={false}
         stats={{
           wordCount,
-          lastSaved: saveStatus.lastSaved ? saveStatus.getRelativeTime || undefined : undefined
+          lastSaved: saveStatus.lastSaved ? saveStatus.getRelativeTime() || undefined : undefined
         }}
       />
 
@@ -469,7 +469,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
                     </>
                   ) : saveStatus.lastSaved ? (
                     <>
-                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.saved')} {saveStatus.getRelativeTime}</span>
+                      <span className="text-xs text-muted-foreground/50" style={{ fontSize: '10px' }}>{t('editor.saved')} {saveStatus.getRelativeTime()}</span>
                       <div className="w-1 h-1 bg-green-500/60 rounded-full"></div>
                     </>
                   ) : (
