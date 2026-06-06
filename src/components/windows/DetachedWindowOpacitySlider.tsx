@@ -45,13 +45,18 @@ export const DetachedWindowOpacitySlider = ({
     }, 100);
   }, [applyOpacity]);
 
-  // 初始化时加载当前透明度
+  // 初始化时加载并应用默认透明度
   useEffect(() => {
-    const loadOpacity = async () => {
-      const currentOpacity = await transparencyManager.getOpacity(windowLabel);
-      setOpacity(currentOpacity);
+    const initOpacity = async () => {
+      try {
+        // 立即应用默认透明度到窗口
+        await transparencyManager.setOpacity(windowLabel, TRANSPARENCY_CONFIG.defaultOpacity);
+        setOpacity(TRANSPARENCY_CONFIG.defaultOpacity);
+      } catch (error) {
+        console.error('[OPACITY_SLIDER] Failed to init opacity:', error);
+      }
     };
-    loadOpacity();
+    initOpacity();
   }, [windowLabel, transparencyManager]);
 
   // 清理防抖定时器
