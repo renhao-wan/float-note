@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { invoke } from '@tauri-apps/api/core';
+import { DetachedWindowsAPI } from '../services/detached-windows-api';
 
 // Debounce intervals - much less frequent as requested
 const POSITION_UPDATE_DELAY = process.env.NODE_ENV === 'production' ? 60000 : 10000; // 60s prod, 10s dev
@@ -38,6 +39,8 @@ export function useWindowTracking(noteId: string) {
               x: lastPositionRef.current.x,
               y: lastPositionRef.current.y,
             });
+            // Persist to disk after updating state
+            await DetachedWindowsAPI.saveState();
           } catch (error) {
             console.error('[WINDOW-TRACKING] Failed to save position:', error);
           }
@@ -65,6 +68,8 @@ export function useWindowTracking(noteId: string) {
               width: lastSizeRef.current.width,
               height: lastSizeRef.current.height,
             });
+            // Persist to disk after updating state
+            await DetachedWindowsAPI.saveState();
           } catch (error) {
             console.error('[WINDOW-TRACKING] Failed to save size:', error);
           }
@@ -96,23 +101,32 @@ export function useWindowTracking(noteId: string) {
       if (sizeTimerRef.current) {
         clearTimeout(sizeTimerRef.current);
       }
-      
+
       // Save final position/size immediately on cleanup
-      if (lastPositionRef.current) {
-        invoke('update_detached_window_position', {
-          windowLabel: appWindow.label,
-          x: lastPositionRef.current.x,
-          y: lastPositionRef.current.y,
-        }).catch(() => {});
-      }
-      if (lastSizeRef.current) {
-        invoke('update_detached_window_size', {
-          windowLabel: appWindow.label,
-          width: lastSizeRef.current.width,
-          height: lastSizeRef.current.height,
-        }).catch(() => {});
-      }
-      
+      const saveFinalState = async () => {
+        try {
+          if (lastPositionRef.current) {
+            await invoke('update_detached_window_position', {
+              windowLabel: appWindow.label,
+              x: lastPositionRef.current.x,
+              y: lastPositionRef.current.y,
+            });
+          }
+          if (lastSizeRef.current) {
+            await invoke('update_detached_window_size', {
+              windowLabel: appWindow.label,
+              width: lastSizeRef.current.width,
+              height: lastSizeRef.current.height,
+            });
+          }
+          // Persist all changes to disk
+          await DetachedWindowsAPI.saveState();
+        } catch (error) {
+          console.error('[WINDOW-TRACKING] Failed to save final state:', error);
+        }
+      };
+      saveFinalState();
+
       // Remove event listeners
       unlistenMove.then(fn => fn());
       unlistenResize.then(fn => fn());

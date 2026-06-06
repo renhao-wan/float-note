@@ -1168,12 +1168,13 @@ pub async fn update_detached_window_position(
     detached_windows: State<'_, DetachedWindowsState>,
 ) -> Result<(), String> {
     let mut windows_lock = detached_windows.lock().await;
-    
+
     if let Some(window) = windows_lock.get_mut(&window_label) {
         window.position = (x, y);
-        save_detached_windows_to_disk(&windows_lock).await?;
+        // Note: No longer saving to disk on every position update.
+        // The frontend uses debouncing and saves on component unmount.
     }
-    
+
     Ok(())
 }
 
@@ -1185,12 +1186,22 @@ pub async fn update_detached_window_size(
     detached_windows: State<'_, DetachedWindowsState>,
 ) -> Result<(), String> {
     let mut windows_lock = detached_windows.lock().await;
-    
+
     if let Some(window) = windows_lock.get_mut(&window_label) {
         window.size = (width, height);
-        save_detached_windows_to_disk(&windows_lock).await?;
+        // Note: No longer saving to disk on every size update.
+        // The frontend uses debouncing and saves on component unmount.
     }
-    
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn save_detached_windows_state(
+    detached_windows: State<'_, DetachedWindowsState>,
+) -> Result<(), String> {
+    let windows_lock = detached_windows.lock().await;
+    save_detached_windows_to_disk(&windows_lock).await?;
     Ok(())
 }
 

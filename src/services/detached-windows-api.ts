@@ -66,4 +66,8 @@ export class DetachedWindowsAPI {
   static async clearAllDetachedWindows(): Promise<number> {
     return await invoke<number>('clear_all_detached_windows');
   }
+
+  static async saveState(): Promise<void> {
+    return await invoke('save_detached_windows_state');
+  }
 }

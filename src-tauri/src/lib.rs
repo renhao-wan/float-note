@@ -148,6 +148,7 @@ pub fn run() {
             get_detached_windows,
             update_detached_window_position,
             update_detached_window_size,
+            save_detached_windows_state,
             toggle_window_shade,
             toggle_main_window_shade,
             restore_detached_windows,
