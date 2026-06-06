@@ -35,16 +35,30 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
 
   const appWindow = getCurrentWebviewWindow();
   const windowLabel = appWindow.label;
-  console.log('[DETACHED_WINDOW] Component rendered, windowLabel:', windowLabel, 'noteId:', noteId);
   const { closeWindow } = useDetachedWindowsStore();
   const saveStatus = useSaveStatus();
   const modifiedState = useModifiedState();
   const isShaded = useWindowShade();
-  console.log('[DETACHED_WINDOW] isShaded:', isShaded);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
-  
+
   // Track window position/size changes with proper debouncing
   useWindowTracking(noteId);
+
+  // Create a unified config object for NoteEditor (must be at top level for hooks rules)
+  const noteEditorConfig: EditorConfig = useMemo(() => ({
+    fontSize: config.appearance?.fontSize || 15,
+    fontFamily: config.appearance?.appFontFamily || 'system-ui',
+    lineHeight: config.appearance?.lineHeight || 1.6,
+    editorFontFamily: config.appearance?.editorFontFamily,
+    previewFontFamily: config.appearance?.previewFontFamily,
+    contentFontSize: config.appearance?.contentFontSize,
+    syntaxHighlighting: config.appearance?.syntaxHighlighting,
+    vimMode: config.appearance?.vimMode,
+    typewriterMode: config.appearance?.typewriterMode,
+    wordWrap: config.appearance?.wordWrap,
+    notePaperStyle: config.appearance?.notePaperStyle,
+    backgroundPattern: config.appearance?.backgroundPattern
+  }), [config.appearance]);
 
   // Real-time sync for this note
   useNoteSync(noteId, (updatedNote) => {
@@ -378,22 +392,6 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
 
   // Calculate word count
   const wordCount = getWordCount(content);
-
-  // Create a unified config object for NoteEditor
-  const noteEditorConfig: EditorConfig = useMemo(() => ({
-    fontSize: config.appearance?.fontSize || 15,
-    fontFamily: config.appearance?.appFontFamily || 'system-ui',
-    lineHeight: config.appearance?.lineHeight || 1.6,
-    editorFontFamily: config.appearance?.editorFontFamily,
-    previewFontFamily: config.appearance?.previewFontFamily,
-    contentFontSize: config.appearance?.contentFontSize,
-    syntaxHighlighting: config.appearance?.syntaxHighlighting,
-    vimMode: config.appearance?.vimMode,
-    typewriterMode: config.appearance?.typewriterMode,
-    wordWrap: config.appearance?.wordWrap,
-    notePaperStyle: config.appearance?.notePaperStyle,
-    backgroundPattern: config.appearance?.backgroundPattern
-  }), [config.appearance]);
 
   return (
     <WindowWrapper className="detached-note-window">

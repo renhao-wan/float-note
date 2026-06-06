@@ -83,7 +83,8 @@
           "identifier": "note-window-capability",
           "description": "Capability for detached note windows",
           "windows": [
-            "note-*"
+            "note-*",
+            "hybrid-drag-*"
           ],
           "permissions": [
             "core:window:allow-start-dragging",
