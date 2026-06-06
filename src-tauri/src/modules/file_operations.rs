@@ -132,7 +132,8 @@ pub async fn export_all_notes_to_directory(
         let file_name = format!("{}.md", note.id);
         let file_path = dir_path.join(&file_name);
         
-        match write_note_to_file(note, file_path.to_str().unwrap()).await {
+        let file_path_str = file_path.to_string_lossy().to_string();
+        match write_note_to_file(note, &file_path_str).await {
             Ok(_) => {
                 exported_files.push(file_name);
                 log_info!("FILE_EXPORT", "Exported note: {}", note.title);
@@ -154,25 +155,37 @@ pub async fn set_notes_directory(
     config: State<'_, ConfigState>,
 ) -> Result<(), String> {
     log_info!("STORAGE", "Setting notes directory to: {}", directory_path);
-    
+
     let path = PathBuf::from(&directory_path);
     if !path.exists() {
         return Err("Directory does not exist".to_string());
     }
-    
+
     if !path.is_dir() {
         return Err("Path is not a directory".to_string());
     }
-    
+
+    // Canonicalize the path to resolve symlinks and prevent path traversal
+    let canonical_path = path.canonicalize()
+        .map_err(|e| format!("Failed to resolve path: {}", e))?;
+
+    // Validate the canonicalized path is still a valid directory
+    if !canonical_path.is_dir() {
+        return Err("Resolved path is not a directory".to_string());
+    }
+
+    let canonical_str = canonical_path.to_string_lossy().to_string();
+    log_info!("STORAGE", "Canonicalized path: {}", canonical_str);
+
     let mut config_lock = config.lock().await;
-    config_lock.storage.notes_directory = Some(directory_path);
+    config_lock.storage.notes_directory = Some(canonical_str);
     config_lock.storage.use_custom_directory = true;
-    
+
     let config_clone = config_lock.clone();
     drop(config_lock);
-    
+
     save_config_to_disk(&config_clone).await?;
-    
+
     log_info!("STORAGE", "Notes directory updated successfully");
     Ok(())
 }
