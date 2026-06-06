@@ -151,6 +151,8 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         notesRef.current = sorted;
         return sorted;
       });
+      // Update ref immediately to prevent race conditions
+      selectedNoteIdRef.current = newNote.id;
       setSelectedNoteId(newNote.id);
       setCurrentContent('');
     } catch (error) {
@@ -161,6 +163,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   // Select a note
   const selectNote = useCallback((noteId: string | null) => {
     if (!noteId) {
+      selectedNoteIdRef.current = null;
       setSelectedNoteId(null);
       setCurrentContent('');
       return;
@@ -175,6 +178,8 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     // Use notesRef to avoid dependency on notes array
     const note = notesRef.current.find(n => n.id === noteId);
     if (note) {
+      // Update ref immediately to prevent race conditions
+      selectedNoteIdRef.current = noteId;
       setSelectedNoteId(noteId);
       setCurrentContent(note.content);
     }
