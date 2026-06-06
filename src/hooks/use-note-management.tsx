@@ -43,10 +43,12 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const selectedNoteIdRef = useRef<string | null>(null);
   const optionsRef = useRef(options);
+  const notesRef = useRef(notes);
 
   // Update refs when values change
   selectedNoteIdRef.current = selectedNoteId;
   optionsRef.current = options;
+  notesRef.current = notes;
 
   const selectedNote = useMemo(
     () => notes.find(note => note.id === selectedNoteId),
@@ -167,12 +169,13 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       saveTimeoutRef.current = null;
     }
 
-    const note = notes.find(n => n.id === noteId);
+    // Use notesRef to avoid dependency on notes array
+    const note = notesRef.current.find(n => n.id === noteId);
     if (note) {
       setSelectedNoteId(noteId);
       setCurrentContent(note.content);
     }
-  }, [notes]);
+  }, []);
 
   // Update note content with debouncing
   const updateNoteContent = useCallback((content: string) => {
