@@ -98,8 +98,9 @@ impl FileStorageManager {
                     true
                 }
                 Some(position) if position_counts.get(&position).unwrap_or(&0) > &1 => {
-                    log_error!("FILE_STORAGE", "🚨 POSITION CONFLICT: Note {} has position {} shared with {} other notes", 
-                        note_id, position, position_counts.get(&position).unwrap() - 1);
+                    let count = position_counts.get(&position).unwrap_or(&0);
+                    log_error!("FILE_STORAGE", "🚨 POSITION CONFLICT: Note {} has position {} shared with {} other notes",
+                        note_id, position, count - 1);
                     true
                 }
                 Some(position) if used_positions.contains(&position) => {

@@ -955,14 +955,17 @@ pub async fn create_detached_window(
     let height = request.height.unwrap_or_else(|| saved_window.as_ref().map(|w| w.size.1).unwrap_or(600.0));
     
     // For position: if provided in request, use it; otherwise use saved position or calculate offset
-    let (mut x, mut y) = if request.x.is_some() && request.y.is_some() {
-        (request.x.unwrap(), request.y.unwrap())
-    } else if let Some(saved) = saved_window.as_ref() {
-        (saved.position.0, saved.position.1)
-    } else {
-        // Calculate position to avoid overlapping with existing windows
-        let offset = windows_lock.len() as f64 * 30.0;
-        (100.0 + offset, 100.0 + offset)
+    let (mut x, mut y) = match (request.x, request.y) {
+        (Some(x_val), Some(y_val)) => (x_val, y_val),
+        _ => {
+            if let Some(saved) = saved_window.as_ref() {
+                (saved.position.0, saved.position.1)
+            } else {
+                // Calculate position to avoid overlapping with existing windows
+                let offset = windows_lock.len() as f64 * 30.0;
+                (100.0 + offset, 100.0 + offset)
+            }
+        }
     };
     
     // Check if the position would overlap with existing windows

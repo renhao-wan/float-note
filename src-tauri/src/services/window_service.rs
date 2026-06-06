@@ -79,10 +79,9 @@ impl WindowService {
         let window_state = WindowState {
             note_id: note_id.to_string(),
             grid_position,
-            custom_position: if x.is_some() && y.is_some() {
-                Some((x.unwrap(), y.unwrap()))
-            } else {
-                None
+            custom_position: match (x, y) {
+                (Some(x_val), Some(y_val)) => Some((x_val, y_val)),
+                _ => None,
             },
             size: (width.unwrap_or(800.0), height.unwrap_or(600.0)),
             last_focused: chrono::Utc::now().to_rfc3339(),
@@ -90,15 +89,18 @@ impl WindowService {
             always_on_top: false,
             opacity: 1.0,
         };
-        
+
         // Create the actual Tauri window
         let window_label = format!("note-{}", note_id);
         let webview_url = format!("/?note={}", note_id);
-        
+
+        let parsed_url = webview_url.parse()
+            .map_err(|e| format!("Failed to parse URL: {}", e))?;
+
         let _window = tauri::WebviewWindowBuilder::new(
             &self.app_handle,
             &window_label,
-            tauri::WebviewUrl::App(webview_url.parse().unwrap()),
+            tauri::WebviewUrl::App(parsed_url),
         )
         .title("FloatNote Note")
         .inner_size(window_state.size.0, window_state.size.1)
