@@ -32,6 +32,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [vimStatus, setVimStatus] = useState<VimStatus>({ mode: 'NORMAL' });
+  const [isPinned, setIsPinned] = useState(false);
 
   const appWindow = getCurrentWebviewWindow();
   const windowLabel = appWindow.label;
@@ -224,6 +225,16 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     }
   };
 
+  const handleTogglePin = async () => {
+    const newPinned = !isPinned;
+    setIsPinned(newPinned);
+    try {
+      await appWindow.setAlwaysOnTop(newPinned);
+    } catch (error) {
+      console.error('[DETACHED-WINDOW] Failed to set always on top:', error);
+    }
+  };
+
   useEffect(() => {
     console.log('[DETACHED-WINDOW] Setting up keyboard event listeners for note:', noteId);
     
@@ -380,13 +391,33 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     </div>
   );
 
-  // Title bar right content with mode toggle and opacity slider
+  // Title bar right content with mode toggle, opacity slider, and pin button
   const titleBarRightContent = (
     <div className="flex items-center gap-2">
       {modeToggle}
       <DetachedWindowOpacitySlider
         windowLabel={windowLabel}
       />
+      {/* Pin button - keep window on top */}
+      <button
+        onClick={handleTogglePin}
+        className={`w-5 h-4 flex items-center justify-center rounded-2xl transition-all duration-200 ${
+          isPinned
+            ? 'bg-primary/20 text-primary shadow-sm'
+            : 'text-muted-foreground/60 hover:text-foreground hover:bg-primary/5'
+        }`}
+        title={isPinned ? t('titlebar.unpin') : t('titlebar.pin')}
+      >
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          {isPinned ? (
+            // Pin icon (filled)
+            <path d="M12 17v5M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7M7 11h10l-1 6H8l-1-6z" />
+          ) : (
+            // Pin icon (outline)
+            <path d="M12 17v5M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7M7 11h10l-1 6H8l-1-6z" />
+          )}
+        </svg>
+      </button>
     </div>
   );
 
