@@ -35,10 +35,12 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
 
   const appWindow = getCurrentWebviewWindow();
   const windowLabel = appWindow.label;
+  console.log('[DETACHED_WINDOW] Component rendered, windowLabel:', windowLabel, 'noteId:', noteId);
   const { closeWindow } = useDetachedWindowsStore();
   const saveStatus = useSaveStatus();
   const modifiedState = useModifiedState();
   const isShaded = useWindowShade();
+  console.log('[DETACHED_WINDOW] isShaded:', isShaded);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   
   // Track window position/size changes with proper debouncing
