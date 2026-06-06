@@ -113,7 +113,16 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
   },
 
   refreshWindows: async (): Promise<void> => {
-    // Disabled to prevent loading loops - will be replaced with simple coordinate system
+    try {
+      // Only load from Tauri in desktop context
+      if (typeof window !== 'undefined' && window.__TAURI__) {
+        const windows = await DetachedWindowsAPI.getDetachedWindows();
+        set({ windows });
+      }
+    } catch (error) {
+      console.error('[DETACHED-WINDOWS-STORE] Failed to refresh windows:', error);
+      // Don't set error state to avoid triggering re-renders
+    }
   },
 
   updateWindowPosition: async (windowLabel: string, x: number, y: number) => {
