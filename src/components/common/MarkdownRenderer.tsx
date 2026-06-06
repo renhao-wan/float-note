@@ -101,7 +101,24 @@ export function MarkdownRenderer({
               readOnly
               {...props}
             />
-          )
+          ),
+          sup: ({children, ...props}) => (
+            <sup className="text-primary font-medium" {...props}>
+              {children}
+            </sup>
+          ),
+          section: ({children, ...props}) => {
+            // 检查是否为脚注部分
+            const isFootnotes = props['data-footnotes'] === '';
+            return isFootnotes ? (
+              <section className="mt-8 pt-4 border-t border-border/30" {...props}>
+                <h2 className="text-sm font-semibold text-muted-foreground mb-2">脚注</h2>
+                {children}
+              </section>
+            ) : (
+              <section {...props}>{children}</section>
+            );
+          }
         }}
       >
         {content || '*Empty note*'}
