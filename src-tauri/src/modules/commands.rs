@@ -89,11 +89,18 @@ pub async fn create_note(
         .unwrap_or(-1);
     
     // Generate a unique slug for the filename based on title
-    // Check existing files to ensure uniqueness
-    let existing_slugs: HashSet<String> = notes_lock.values()
-        .map(|n| crate::utils::generate_slug(&n.title))
-        .collect();
-    let slug = generate_unique_slug(&request.title, &existing_slugs);
+    // Check existing note IDs to ensure uniqueness
+    let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
+    let mut slug = generate_unique_slug(&request.title, &HashSet::new());
+    let mut id = uuid_from_slug(&slug);
+
+    // Ensure the generated ID is unique by appending timestamp if needed
+    let mut counter = 1;
+    while existing_ids.contains(&id) {
+        slug = format!("{}-{}", generate_unique_slug(&request.title, &HashSet::new()), counter);
+        id = uuid_from_slug(&slug);
+        counter += 1;
+    }
     
     // Generate a deterministic UUID from the slug
     // This UUID will change if the slug changes (when title changes)
