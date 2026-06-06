@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 
 interface UsePermissionsReturn {
   // State
   showPermissionPrompt: boolean;
-  
+
   // Actions
   requestPermissions: () => void;
   dismissPermissionPrompt: () => void;
@@ -13,14 +13,30 @@ interface UsePermissionsReturn {
 
 export function usePermissions(): UsePermissionsReturn {
   const [showPermissionPrompt, setShowPermissionPrompt] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   // Request permissions with a delay to let the app settle
   const requestPermissions = useCallback(() => {
     console.log('[FLOATNOTE] Requesting permissions...');
-    
+
+    // Clear any existing timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
     // Show permission prompt after a short delay to let the app settle
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       setShowPermissionPrompt(true);
+      timerRef.current = null;
     }, 2000);
   }, []);
 
