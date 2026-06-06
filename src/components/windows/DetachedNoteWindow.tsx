@@ -141,17 +141,26 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
   const loadNote = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
+      console.log('[DETACHED-WINDOW] Loading note:', noteId);
       const loadedNote = await invoke<Note>('get_note', { id: noteId });
-      
+
       if (loadedNote) {
+        console.log('[DETACHED-WINDOW] Note loaded:', {
+          id: loadedNote.id,
+          title: loadedNote.title,
+          contentLength: loadedNote.content?.length,
+          contentPreview: loadedNote.content?.substring(0, 50)
+        });
         setNote(loadedNote);
         setContent(loadedNote.content);
       } else {
+        console.error('[DETACHED-WINDOW] Note not found:', noteId);
         setError('Note not found');
       }
     } catch (err) {
+      console.error('[DETACHED-WINDOW] Failed to load note:', err);
       setError(err as string);
     } finally {
       setLoading(false);
