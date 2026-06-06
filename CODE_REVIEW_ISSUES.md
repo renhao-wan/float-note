@@ -481,7 +481,7 @@ const requestPermissions = useCallback(() => {
 
 **修复方案:** 引入日志级别控制或在构建时剥离。
 
-**状态:** ☐ 待修复
+**状态:** ✅ 已修复 (commit: e38907c)
 
 ---
 
@@ -498,7 +498,7 @@ const requestPermissions = useCallback(() => {
 
 **修复方案:** 改为 `.ts` 扩展名。
 
-**状态:** ☐ 待修复
+**状态:** ⏭️ 跳过（风险大收益小）
 
 ---
 
@@ -510,7 +510,7 @@ const requestPermissions = useCallback(() => {
 
 **修复方案:** 使用普通对象 `{ [key: string]: WindowPosition }` 或配合 `immer` 中间件。
 
-**状态:** ☐ 待修复
+**状态:** ✅ 已修复 (commit: 6b206d3)
 
 ---
 
@@ -522,7 +522,7 @@ const requestPermissions = useCallback(() => {
 
 **修复方案:** 逐步替换为 `?` 操作符或 `.unwrap_or_default()`。
 
-**状态:** ☐ 待修复
+**状态:** ✅ 已修复 (commit: 8e4c160)
 
 ---
 
@@ -534,7 +534,7 @@ const requestPermissions = useCallback(() => {
 
 **修复方案:** 考虑迁移到活跃维护的 YAML 库（如 `serde_yml`）。
 
-**状态:** ☐ 待修复
+**状态:** ⏭️ 跳过（无已知 CVE）
 
 ---
 
@@ -554,7 +554,7 @@ tokio = { version = "1.0", features = ["full"] }
 tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "time"] }
 ```
 
-**状态:** ☐ 待修复
+**状态:** ✅ 已修复 (commit: bef1967)
 
 ---
 
@@ -566,7 +566,7 @@ tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "tim
 
 **修复方案:** 确认是否使用，如未使用则删除。
 
-**状态:** ☐ 待修复
+**状态:** ✅ 已修复 (commit: e6a0b09)
 
 ---
 
@@ -578,7 +578,7 @@ tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "tim
 
 **修复方案:** 统一类型定义，确保 `getRelativeTime` 始终是函数。
 
-**状态:** ☐ 待修复
+**状态:** ✅ 已修复 (commit: 72e8d0a)
 
 ---
 
@@ -595,7 +595,7 @@ if let Err(e) = window.hide() {
 }
 ```
 
-**状态:** ☐ 待修复
+**状态:** ✅ 已修复 (commit: b5f7d9c)
 
 ---
 
@@ -609,19 +609,19 @@ if let Err(e) = window.hide() {
 
 **修复方案:** 统一到一处，另一处使用 `use` 导入。
 
-**状态:** ☐ 待修复
+**状态:** ⏭️ 跳过（需要较大重构）
 
 ---
 
 ## 修复进度跟踪
 
-| 优先级 | 总数 | 已修复 | 待修复 |
-|--------|------|--------|--------|
-| P0 | 2 | 2 | 0 |
-| P1 | 4 | 4 | 0 |
-| P2 | 9 | 9 | 0 |
-| P3 | 10 | 0 | 10 |
-| **总计** | **25** | **15** | **10** |
+| 优先级 | 总数 | 已修复 | 跳过 | 待修复 |
+|--------|------|--------|------|--------|
+| P0 | 2 | 2 | 0 | 0 |
+| P1 | 4 | 4 | 0 | 0 |
+| P2 | 9 | 9 | 0 | 0 |
+| P3 | 10 | 7 | 3 | 0 |
+| **总计** | **25** | **22** | **3** | **0** |
 
 ---
 
