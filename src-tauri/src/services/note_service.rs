@@ -103,12 +103,14 @@ impl NoteService {
     
     /// Update an existing note
     pub async fn update_note(&self, note_id: &str, request: UpdateNoteRequest) -> Result<Note, String> {
-        let mut cache = self.notes_cache.lock().await;
-        
-        let mut note = cache.get(note_id)
-            .ok_or_else(|| format!("Note not found: {}", note_id))?
-            .clone();
-        
+        // Get note from cache and release lock before acquiring storage lock
+        let mut note = {
+            let cache = self.notes_cache.lock().await;
+            cache.get(note_id)
+                .ok_or_else(|| format!("Note not found: {}", note_id))?
+                .clone()
+        };
+
         // Update fields
         if let Some(title) = request.title {
             note.title = title;
@@ -120,16 +122,18 @@ impl NoteService {
             note.tags = tags;
         }
         note.updated_at = chrono::Utc::now().to_rfc3339();
-        
-        // Save to file system
+
+        // Save to file system (acquire storage lock)
         let storage = self.storage.lock().await;
         storage.save_note(&note).await?;
-        
+        drop(storage); // Release storage lock before acquiring cache lock
+
         // Update cache
+        let mut cache = self.notes_cache.lock().await;
         cache.insert(note.id.clone(), note.clone());
-        
+
         log_info!("NOTE_SERVICE", "Updated note: {}", note.id);
-        
+
         Ok(note)
     }
     
