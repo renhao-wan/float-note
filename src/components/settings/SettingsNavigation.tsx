@@ -18,7 +18,7 @@ export function SettingsNavigation({
 
   return (
     <div className={`h-full overflow-hidden transition-all duration-300 ease-out ${
-      sidebarVisible ? 'w-80' : 'w-0'
+      sidebarVisible ? '' : 'w-0'
     }`}>
       <ResizablePanel defaultWidth={320} minWidth={240} maxWidth={400}>
         <div className="h-full bg-card border-r border-border/30 flex flex-col">
