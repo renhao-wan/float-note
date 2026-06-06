@@ -541,7 +541,15 @@ pub async fn create_hybrid_drag_window(
     hidden: Option<bool>,
 ) -> Result<String, String> {
     let window_label = format!("hybrid-drag-{}", note_id);
-    
+
+    // 先关闭已存在的窗口（如果有的话）
+    if let Some(existing_window) = app.get_webview_window(&window_label) {
+        println!("[DRAG] Closing existing hybrid window: {}", window_label);
+        let _ = existing_window.close();
+        // 等待一小段时间确保窗口完全关闭
+        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+    }
+
     // Create a window that follows the mouse
     let drag_window = WebviewWindowBuilder::new(
         &app,
