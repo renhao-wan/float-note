@@ -1,10 +1,8 @@
 use tauri::{State, AppHandle, Emitter};
 use std::collections::HashSet;
 
-use crate::types::{
-    note::{Note, CreateNoteRequest, UpdateNoteRequest},
-    window::{NotesState, ConfigState},
-};
+use crate::types::note::{Note, CreateNoteRequest, UpdateNoteRequest};
+use crate::{NotesState, ConfigState};
 use crate::modules::file_notes_storage::FileNotesStorage;
 use crate::modules::modified_state_tracker::ModifiedStateTracker;
 use crate::utils::{generate_unique_slug, uuid_from_slug};

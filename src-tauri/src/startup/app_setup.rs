@@ -2,7 +2,7 @@ use crate::error::FloatNoteResult;
 use crate::handlers::{build_app_menu, handle_menu_event, register_global_shortcuts, handle_global_shortcut};
 use crate::handlers::window_handler::apply_initial_window_settings;
 use crate::startup::data_loader::load_application_data;
-use crate::types::window::{DetachedWindowsState, NotesState};
+use crate::{DetachedWindowsState, NotesState};
 use crate::{log_error, log_info};
 use tauri::{App, Manager};
 use tauri_plugin_global_shortcut::ShortcutState;

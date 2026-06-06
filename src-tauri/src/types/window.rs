@@ -1,7 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use tokio::sync::Mutex;
-use super::{config::AppConfig, note::Note};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DetachedWindow {
@@ -26,8 +23,4 @@ pub struct CreateDetachedWindowRequest {
     pub height: Option<f64>,
 }
 
-// State type aliases for cleaner code
-pub type NotesState = Mutex<HashMap<String, Note>>;
-pub type ConfigState = Mutex<AppConfig>;
-pub type DetachedWindowsState = Mutex<HashMap<String, DetachedWindow>>;
-pub type ToggleState = Mutex<bool>;
+// State type aliases are defined in state.rs to avoid duplication

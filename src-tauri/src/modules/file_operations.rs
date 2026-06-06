@@ -3,7 +3,7 @@ use crate::ModifiedStateTrackerState;
 use crate::modules::storage::{get_configured_notes_directory, save_config_to_disk};
 use crate::ConfigState;
 use crate::types::note::Note;
-use crate::types::window::NotesState;
+use crate::NotesState;
 use crate::{log_error, log_info};
 use std::fs;
 use std::path::{Path, PathBuf};

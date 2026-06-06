@@ -1,9 +1,8 @@
 use std::fs;
 use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder, Emitter};
 
-use crate::types::{
-    window::{DetachedWindow, DetachedWindowsState, NotesState, ConfigState, ToggleState, CreateDetachedWindowRequest},
-};
+use crate::types::window::{DetachedWindow, CreateDetachedWindowRequest};
+use crate::{DetachedWindowsState, NotesState, ConfigState, ToggleState};
 use crate::modules::storage::{save_config_to_disk, save_detached_windows_to_disk, get_default_notes_directory};
 use crate::{log_info, log_error, log_debug};
 

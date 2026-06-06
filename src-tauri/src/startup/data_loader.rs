@@ -5,7 +5,7 @@ use crate::modules::storage::{
 };
 use crate::types::config::AppConfig;
 use crate::{ConfigState, ModifiedStateTrackerState};
-use crate::types::window::{DetachedWindowsState, NotesState};
+use crate::{DetachedWindowsState, NotesState};
 use crate::log_info;
 use tauri::{AppHandle, Manager, Emitter};
 

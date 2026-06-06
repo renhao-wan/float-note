@@ -6,8 +6,9 @@ use tauri::State;
 use crate::types::{
     note::Note,
     config::AppConfig,
-    window::{DetachedWindow, ConfigState, DetachedWindowsState},
+    window::DetachedWindow,
 };
+use crate::{ConfigState, DetachedWindowsState};
 use crate::{log_debug, log_info};
 
 /// Save notes to disk as JSON

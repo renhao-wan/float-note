@@ -1,7 +1,7 @@
 use crate::error::{FloatNoteError, FloatNoteResult};
-use crate::types::window::{DetachedWindowsState, ToggleState};
+use crate::{DetachedWindowsState, ToggleState};
 use crate::{log_debug, log_error, log_info};
-use crate::state::NotesState;
+use crate::NotesState;
 use tauri::{AppHandle, Manager, Emitter};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
