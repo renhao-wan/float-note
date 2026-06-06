@@ -118,7 +118,10 @@ export function MarkdownRenderer({
             ) : (
               <section {...props}>{children}</section>
             );
-          }
+          },
+          del: ({children}) => (
+            <del className="line-through text-muted-foreground opacity-70">{children}</del>
+          )
         }}
       >
         {content || '*Empty note*'}
