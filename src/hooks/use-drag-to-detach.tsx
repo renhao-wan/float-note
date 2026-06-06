@@ -262,13 +262,15 @@ export function useDragToDetach({ onDrop: _onDrop, dragThreshold = 5 }: UseDragT
             const { useWindowPositionsStore } = await import('../stores/window-positions-store');
             const store = useWindowPositionsStore.getState();
 
-            const newPositions = new Map(store.windowPositions);
-            newPositions.set(ref.noteId, {
-              position: [ref.lastMousePosition.x - 200, ref.lastMousePosition.y - 20],
-              size: [800, 600],
+            useWindowPositionsStore.setState({
+              windowPositions: {
+                ...store.windowPositions,
+                [ref.noteId]: {
+                  position: [ref.lastMousePosition.x - 200, ref.lastMousePosition.y - 20],
+                  size: [800, 600],
+                }
+              }
             });
-
-            useWindowPositionsStore.setState({ windowPositions: newPositions });
           } catch (error) {
             console.error('[DRAG] Failed to finalize window:', error);
           }
