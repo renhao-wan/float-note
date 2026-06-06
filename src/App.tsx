@@ -106,9 +106,9 @@ function App() {
     onSaveStart: () => {
       saveStatus.startSaving();
     },
-    onSaveComplete: () => {
+    onSaveComplete: (savedContent: string) => {
       saveStatus.saveSuccess();
-      modifiedState.markSaved(currentContent);
+      modifiedState.markSaved(savedContent);
     },
     onSaveError: () => {
       saveStatus.setSaveError('Failed to save note');

@@ -30,7 +30,7 @@ interface UseNoteManagementReturn {
 
 interface UseNoteManagementOptions {
   onSaveStart?: () => void;
-  onSaveComplete?: () => void;
+  onSaveComplete?: (savedContent: string) => void;
   onSaveError?: (error: unknown) => void;
 }
 
@@ -39,12 +39,14 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [currentContent, setCurrentContent] = useState('');
   const [loading, setLoading] = useState(true);
-  
+
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const selectedNoteIdRef = useRef<string | null>(null);
+  const optionsRef = useRef(options);
 
-  // Update ref when selectedNoteId changes
+  // Update refs when values change
   selectedNoteIdRef.current = selectedNoteId;
+  optionsRef.current = options;
 
   const selectedNote = useMemo(
     () => notes.find(note => note.id === selectedNoteId),
@@ -200,7 +202,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     // Set new timeout for saving to backend (debounced)
     saveTimeoutRef.current = setTimeout(async () => {
       // Notify save is starting
-      options?.onSaveStart?.();
+      optionsRef.current?.onSaveStart?.();
 
       try {
         // Update in backend
@@ -214,22 +216,22 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         });
 
         // Notify save completed
-        options?.onSaveComplete?.();
+        optionsRef.current?.onSaveComplete?.(content);
 
         // Notify other windows about the update
         noteSyncService.noteUpdated(updatedNote);
 
       } catch (error) {
         console.error('[FLOATNOTE] Failed to save note:', error);
-        options?.onSaveError?.(error);
+        optionsRef.current?.onSaveError?.(error);
         // Note: We don't revert local changes here since the user may have continued typing
       }
     }, 3000); // 3 second save interval
-  }, [selectedNoteId, options]);
+  }, [selectedNoteId]);
 
   // Save note immediately (for Cmd+S)
   const saveNoteImmediately = useCallback(async () => {
-    if (!selectedNoteId || currentContent === undefined) return;
+    if (!selectedNoteIdRef.current || currentContent === undefined) return;
 
     // Clear any pending debounced save
     if (saveTimeoutRef.current) {
@@ -238,14 +240,14 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     }
 
     // Notify save is starting
-    options?.onSaveStart?.();
+    optionsRef.current?.onSaveStart?.();
 
     try {
       const title = extractTitleFromContent(currentContent);
 
       // Update in backend
       const updatedNote = await invoke<Note>('update_note', {
-        id: selectedNoteId,
+        id: selectedNoteIdRef.current,
         request: {
           title,
           content: currentContent,
@@ -255,26 +257,26 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
       // Update local state to reflect saved state
       setNotes(prev => {
-        const updated = prev.map(note => 
-          note.id === selectedNoteId 
+        const updated = prev.map(note =>
+          note.id === selectedNoteIdRef.current
             ? { ...note, title, content: currentContent, updated_at: updatedNote.updated_at }
             : note
         );
         // Don't re-sort here - preserve the original order from the backend
         return updated;
       });
-      
+
       // Notify save completed
-      options?.onSaveComplete?.();
-      
+      optionsRef.current?.onSaveComplete?.(currentContent);
+
       // Notify other windows about the update
       noteSyncService.noteUpdated(updatedNote);
-      
+
     } catch (error) {
       console.error('[FLOATNOTE] Failed to save note immediately:', error);
-      options?.onSaveError?.(error);
+      optionsRef.current?.onSaveError?.(error);
     }
-  }, [selectedNoteId, currentContent, options]);
+  }, [currentContent]);
 
   // Delete a note
   const deleteNote = useCallback(async (noteId: string) => {
