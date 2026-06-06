@@ -36,7 +36,6 @@ import {
   useWindowShade,
   useNoteManagement,
   useCommandPalette,
-  useKeyboardShortcuts,
   useContextMenu,
   useChordShortcuts,
   useWindowManager,
@@ -49,11 +48,11 @@ import { getCenterPosition, getGridPosition } from './utils/window-positioning';
 
 function App() {
   const { t, i18n } = useTranslation();
-  const { config, updateConfig } = useConfigStore();
+  const { config } = useConfigStore();
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isPreviewMode, setIsPreviewMode] = useState(false); // Start in edit mode
   const [currentView, setCurrentView] = useState<'notes' | 'settings'>('notes');
-  const [selectedSettingsSection, setSelectedSettingsSection] = useState<'general' | 'appearance' | 'shortcuts' | 'editor'>('appearance');
+  const [selectedSettingsSection, setSelectedSettingsSection] = useState<'general' | 'appearance' | 'editor'>('appearance');
 
   // 同步语言设置
   useEffect(() => {
@@ -124,7 +123,6 @@ function App() {
 
   // Command palette hook
   const {
-    showCommandPalette,
     openCommandPalette,
   } = useCommandPalette({
     notes,
@@ -150,30 +148,6 @@ function App() {
       const { x, y } = getCenterPosition();
       await createWindow(noteId, x, y);
     },
-  });
-
-  // Keyboard shortcuts hook
-  useKeyboardShortcuts({
-    onNewNote: createNewNote,
-    onToggleCommandPalette: openCommandPalette,
-    onTogglePreview: () => setIsPreviewMode(!isPreviewMode),
-    onOpenSettings: () => {
-      setCurrentView('settings');
-      setSidebarVisible(true);
-    },
-    onToggleFocus: () => {
-      const newConfig = {
-        ...config,
-        appearance: {
-          ...config?.appearance,
-          focusMode: !config?.appearance?.focusMode
-        }
-      };
-      updateConfig(newConfig);
-    },
-    isCommandPaletteOpen: showCommandPalette,
-    notes: notes,
-    onSelectNote: selectNote,
   });
 
   // Chord shortcuts hook for advanced keyboard combinations

@@ -1,24 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useConfigStore } from '../../stores/config-store';
-import { invoke } from '@tauri-apps/api/core';
 import { ThemeSelector } from './ThemeSelector';
 import { notesApi } from '../../services/tauri-api';
-import { getModifierSymbol, isMac } from '../../lib/platform';
 import { AppConfig } from '../../types/config';
 import { CustomSelect } from '../common/CustomSelect';
 import { toast } from '../../stores/toast-store';
 
 interface SettingsPanelProps {
-  selectedSection: 'general' | 'appearance' | 'shortcuts' | 'editor';
+  selectedSection: 'general' | 'appearance' | 'editor';
 }
 
 export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
   const { t, i18n } = useTranslation();
   const { config, updateConfig, isLoading } = useConfigStore();
   const [localConfig, setLocalConfig] = useState(config);
-  const [shortcutStatus, setShortcutStatus] = useState<'idle' | 'registering' | 'success' | 'error'>('idle');
-  const [shortcutMessage, setShortcutMessage] = useState<string>('');
   const [currentNotesDirectory, setCurrentNotesDirectory] = useState<string>('');
   const [directoryInputValue, setDirectoryInputValue] = useState<string>('');
 
@@ -394,249 +390,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
     </div>
   );
 
-  const renderShortcutsSection = () => (
-    <div data-section="shortcuts" className="space-y-4">
-      {/* Section Header - Standardized spacing */}
-      <div className="h-[40px] flex flex-col justify-center">
-        <h2 className="text-sm font-medium text-foreground mb-1 flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/70">
-            <rect x="2" y="7" width="20" height="10" rx="1"/>
-            <path d="M7 21c0-2.5 2-2.5 2-5M15 21c0-2.5 2-2.5 2-5M9 7v-4M15 7v-4"/>
-          </svg>
-          {t('settings.shortcuts.title')}
-        </h2>
-        <p className="text-xs text-muted-foreground/60">{t('settings.shortcuts.description')}</p>
-      </div>
-
-      <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
-        <h3 className="text-xs font-medium text-foreground/90 mb-3 flex items-center gap-2 uppercase tracking-wide">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-            <rect x="2" y="7" width="20" height="10" rx="1"/>
-            <path d="M7 21c0-2.5 2-2.5 2-5M15 21c0-2.5 2-2.5 2-5M9 7v-4M15 7v-4"/>
-          </svg>
-          {t('settings.shortcuts.globalShortcuts.title')}
-        </h3>
-        <div className="space-y-4">
-          <div className="text-xs text-muted-foreground/70 mb-4">
-            {t('settings.shortcuts.globalShortcuts.description')}
-          </div>
-          
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-foreground/80 font-mono w-32">{t('settings.shortcuts.globalShortcuts.createNewNote')}</span>
-              <div className="flex-1 flex items-center gap-2">
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{isMac() ? '⌃' : 'Ctrl'}</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{isMac() ? '⌥' : 'Alt'}</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⇧</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">N</kbd>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-foreground/80 font-mono w-32">{t('settings.shortcuts.globalShortcuts.toggleHoverMode')}</span>
-              <div className="flex-1 flex items-center gap-2">
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{isMac() ? '⌃' : 'Ctrl'}</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{isMac() ? '⌥' : 'Alt'}</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⇧</kbd>
-                <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">H</kbd>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-4 pt-4 border-t border-border/20">
-            <div className="flex gap-2">
-              <button
-                onClick={async () => {
-                  setShortcutStatus('registering');
-                  setShortcutMessage('');
-                  try {
-                    const result = await invoke<string>('reregister_global_shortcuts');
-                    setShortcutStatus('success');
-                    setShortcutMessage(result);
-                    setTimeout(() => {
-                      setShortcutStatus('idle');
-                      setShortcutMessage('');
-                    }, 5000);
-                  } catch (error: any) {
-                    setShortcutStatus('error');
-                    setShortcutMessage(error.toString());
-                    setTimeout(() => {
-                      setShortcutStatus('idle');
-                      setShortcutMessage('');
-                    }, 10000);
-                  }
-                }}
-                disabled={shortcutStatus === 'registering'}
-                className="px-3 py-1.5 text-xs bg-primary/80 text-primary-foreground hover:bg-primary/90 rounded transition-all disabled:opacity-50 font-mono"
-              >
-                {shortcutStatus === 'registering' ? t('settings.shortcuts.actions.registering') : t('settings.shortcuts.actions.reRegisterShortcuts')}
-              </button>
-
-              <button
-                onClick={async () => {
-                  console.log('[FLOATNOTE] [SETTINGS] Testing hover toggle...');
-                  try {
-                    const hoverState = await invoke<boolean>('toggle_all_windows_hover');
-                    console.log('[FLOATNOTE] [SETTINGS] Hover state:', hoverState);
-                    setShortcutMessage(`Hover mode ${hoverState ? 'enabled' : 'disabled'} for all windows`);
-                    setShortcutStatus('success');
-                    setTimeout(() => {
-                      setShortcutStatus('idle');
-                      setShortcutMessage('');
-                    }, 3000);
-                  } catch (error: any) {
-                    console.error('[FLOATNOTE] [SETTINGS] Hover toggle failed:', error);
-                    setShortcutMessage('Hover toggle failed: ' + error.toString());
-                    setShortcutStatus('error');
-                  }
-                }}
-                className="px-3 py-1.5 text-xs bg-background/40 border border-border/40 hover:bg-background/60 rounded transition-all font-mono"
-              >
-                {t('settings.shortcuts.actions.testHover')}
-              </button>
-              
-              <button
-                onClick={async () => {
-                  console.log('[FLOATNOTE] [SETTINGS] Forcing main window visible...');
-                  try {
-                    await invoke('force_main_window_visible');
-                    console.log('[FLOATNOTE] [SETTINGS] Main window forced visible');
-                    setShortcutMessage('Main window forced visible and centered');
-                    setShortcutStatus('success');
-                    setTimeout(() => {
-                      setShortcutStatus('idle');
-                      setShortcutMessage('');
-                    }, 3000);
-                  } catch (error: any) {
-                    console.error('[FLOATNOTE] [SETTINGS] Force visible failed:', error);
-                    setShortcutMessage('Force visible failed: ' + error.toString());
-                    setShortcutStatus('error');
-                  }
-                }}
-                className="px-3 py-1.5 text-xs bg-red-500/20 border border-red-500/40 hover:bg-red-500/30 rounded transition-all font-mono text-red-400"
-              >
-                {t('settings.shortcuts.actions.forceVisible')}
-              </button>
-            </div>
-            
-            {shortcutMessage && (
-              <div className={`mt-3 text-xs font-mono ${
-                shortcutStatus === 'success' ? 'text-green-400' : 'text-red-400'
-              }`}>
-                {shortcutMessage}
-              </div>
-            )}
-          </div>
-          
-          <div className="mt-4 pt-4 border-t border-border/20">
-            <div className="text-xs text-muted-foreground/60 space-y-3">
-              <p className="font-medium text-foreground/80">{t('settings.shortcuts.permissions.title')}:</p>
-              
-              <div className="bg-background/20 border border-border/20 rounded-2xl p-3 space-y-2">
-                <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 bg-primary/60 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <div>
-                    <p className="font-medium text-foreground/90 mb-1">{t('settings.shortcuts.permissions.accessibilityAccess')}</p>
-                    <p className="text-muted-foreground/70 leading-relaxed">
-                      {t('settings.shortcuts.permissions.accessibilityAccessDescription')}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 bg-primary/60 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <div>
-                    <p className="font-medium text-foreground/90 mb-1">{t('settings.shortcuts.permissions.inputMonitoring')}</p>
-                    <p className="text-muted-foreground/70 leading-relaxed">
-                      {t('settings.shortcuts.permissions.inputMonitoringDescription')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3">
-                <p className="font-medium text-amber-400/90 mb-1 flex items-center gap-2">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
-                  </svg>
-                  {t('settings.shortcuts.permissions.setupSteps')}
-                </p>
-                <ol className="text-amber-300/80 leading-relaxed space-y-1 ml-4 list-decimal">
-                  <li>{t('settings.shortcuts.permissions.step1')}</li>
-                  <li>{t('settings.shortcuts.permissions.step2')}</li>
-                  <li>{t('settings.shortcuts.permissions.step3')}</li>
-                  <li>{t('settings.shortcuts.permissions.step4')}</li>
-                </ol>
-              </div>
-              
-              <div className="text-muted-foreground/50 text-[11px] leading-relaxed">
-                <p className="font-medium mb-1">{t('settings.shortcuts.permissions.warning')}</p>
-                <p>{t('settings.shortcuts.permissions.warningDescription')}</p>
-              </div>
-              
-              <button
-                onClick={() => invoke('open_system_settings')}
-                className="mt-3 text-xs text-primary/80 hover:text-primary underline font-mono"
-              >
-                {t('settings.shortcuts.permissions.openAccessibilitySettings')}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
-        <h3 className="text-xs font-medium text-foreground/90 mb-3 flex items-center gap-2 uppercase tracking-wide">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-            <rect x="2" y="7" width="20" height="10" rx="1"/>
-            <path d="M5 12h14M7 12l2-2M7 12l2 2"/>
-          </svg>
-          {t('settings.shortcuts.inAppShortcuts.title')}
-        </h3>
-        <div className="space-y-3 text-xs">
-          <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.commandPalette')}</span>
-            <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">K</kbd>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.newNote')}</span>
-            <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">N</kbd>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.togglePreview')}</span>
-            <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">⇧</kbd>
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">P</kbd>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.openSettings')}</span>
-            <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">,</kbd>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-foreground/80 font-mono">{t('settings.shortcuts.inAppShortcuts.focusMode')}</span>
-            <div className="flex items-center gap-1">
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">{getModifierSymbol()}</kbd>
-              <kbd className="px-2 py-1 text-xs bg-background/40 border border-border/30 rounded-xl font-mono">.</kbd>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
 
   const renderEditorSection = () => (
     <div data-section="editor" className="space-y-6">
@@ -930,8 +683,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
         return renderGeneralSection();
       case 'appearance':
         return renderAppearanceSection();
-      case 'shortcuts':
-        return renderShortcutsSection();
       case 'editor':
         return renderEditorSection();
       default:

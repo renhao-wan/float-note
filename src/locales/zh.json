@@ -143,19 +143,8 @@
         "focusMode": "专注模式"
       },
       "permissions": {
-        "title": "所需权限",
-        "accessibilityAccess": "辅助功能权限",
-        "accessibilityAccessDescription": "全局快捷键需要系统级支持。",
-        "inputMonitoring": "输入监控",
-        "inputMonitoringDescription": "启用键盘事件检测以支持全局快捷键。",
-        "setupSteps": "设置步骤",
-        "step1": "点击下方「打开系统设置」",
-        "step2": "找到「FloatNote」并授予权限",
-        "step3": "完全退出并重启 FloatNote",
-        "step4": "使用上方按钮测试快捷键",
-        "warning": "为什么需要这些权限？",
-        "warningDescription": "全局快捷键允许您从系统任何位置即时创建笔记。",
-        "openAccessibilitySettings": "打开系统设置 →"
+        "required": "需要辅助功能权限才能使用全局快捷键",
+        "openSettings": "打开系统设置"
       },
       "actions": {
         "reRegisterShortcuts": "重新注册快捷键",

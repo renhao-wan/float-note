@@ -4,7 +4,6 @@ export { useCommandPalette } from './use-command-palette';
 export { useContextMenu } from './use-context-menu';
 export { useDragToDetach } from './use-drag-to-detach';
 export { useGlobalEventListeners } from './use-global-event-listeners';
-export { useKeyboardShortcuts } from './use-keyboard-shortcuts';
 export { useNoteManagement } from './use-note-management';
 export { useNotes } from './use-notes';
 export { usePermissions } from './use-permissions';
