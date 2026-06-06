@@ -14,6 +14,9 @@ export function useAppInitialization({ isDetachedWindow }: AppInitializationProp
 
   // Load config and windows on startup
   useEffect(() => {
+    let cleanup: (() => void) | undefined;
+    let cancelled = false;
+
     const initializeApp = async () => {
       // Just request the data - backend will load it asynchronously
       Promise.all([
@@ -27,18 +30,18 @@ export function useAppInitialization({ isDetachedWindow }: AppInitializationProp
         loadWindows();
       });
 
-      // Clean up listener on unmount
-      return () => {
+      // If component already unmounted, clean up immediately
+      if (cancelled) {
         unlisten();
-      };
+      } else {
+        cleanup = () => unlisten();
+      }
     };
 
-    let cleanup: (() => void) | undefined;
-    initializeApp().then(cleanupFn => {
-      cleanup = cleanupFn;
-    });
+    initializeApp();
 
     return () => {
+      cancelled = true;
       if (cleanup) cleanup();
     };
   }, [isDetachedWindow, loadWindows, loadConfig]);
