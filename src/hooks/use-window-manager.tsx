@@ -20,13 +20,20 @@ export function useWindowManager(): WindowDetectionResult {
     const noteParam = urlParams.get('note');
     const ghostParam = urlParams.get('ghost');
     const titleParam = urlParams.get('title');
-    
+
+    console.log('[WINDOW_MANAGER] URL params:', { noteParam, ghostParam, titleParam });
+    console.log('[WINDOW_MANAGER] Full URL:', window.location.href);
+
     if (noteParam) {
+      console.log('[WINDOW_MANAGER] Detected detached window for note:', noteParam);
       setIsDetachedWindow(true);
       setDetachedNoteId(noteParam);
     } else if (ghostParam === 'true' && titleParam) {
+      console.log('[WINDOW_MANAGER] Detected drag ghost window');
       setIsDragGhost(true);
       setDragGhostTitle(decodeURIComponent(titleParam));
+    } else {
+      console.log('[WINDOW_MANAGER] No special window detected');
     }
   }, []);
 
