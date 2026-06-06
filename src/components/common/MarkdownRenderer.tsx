@@ -15,7 +15,7 @@ export function MarkdownRenderer({
   content,
   syntaxHighlighting = true,
   style,
-  className = "w-full h-full overflow-y-auto prose prose-invert max-w-none",
+  className = "w-full h-full overflow-y-auto prose prose-invert max-w-none prose-table:border-collapse prose-th:border prose-th:border-border/30 prose-th:bg-muted/30 prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-semibold prose-td:border prose-td:border-border/30 prose-td:px-3 prose-td:py-2",
   onDoubleClick,
   title,
 }: MarkdownRendererProps) {
