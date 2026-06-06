@@ -10,7 +10,6 @@ interface ConfigStore {
 
   // Actions
   loadConfig: () => Promise<void>;
-  updateDetachedWindowOpacity: (opacity: number) => Promise<void>;
   updateAlwaysOnTop: (alwaysOnTop: boolean) => Promise<void>;
   updateConfig: (config: Partial<AppConfig>) => Promise<void>;
   updateAppearance: (appearance: Partial<AppConfig['appearance']>) => Promise<void>;

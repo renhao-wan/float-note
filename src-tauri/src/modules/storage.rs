@@ -121,21 +121,12 @@ pub fn get_notes_directory() -> Result<PathBuf, String> {
 
 /// Get the default notes directory path
 pub fn get_default_notes_directory() -> Result<PathBuf, String> {
-    // Always use app data directory to avoid restart loops in development
-    let data_dir = if cfg!(debug_assertions) {
-        // Development: use app data directory with dev suffix
-        dirs::data_dir()
-            .ok_or_else(|| "Failed to get data directory".to_string())?
-            .join("com.float-note.dev")
-            .join("data")
-    } else {
-        // Production: use app data directory
-        dirs::data_dir()
-            .ok_or_else(|| "Failed to get data directory".to_string())?
-            .join("com.float-note.dev")
-            .join("data")
-    };
-    
+    // Use AppData/Roaming/floatNote/data as default directory
+    let data_dir = dirs::data_dir()
+        .ok_or_else(|| "Failed to get data directory".to_string())?
+        .join("floatNote")
+        .join("data");
+
     log_debug!("STORAGE", "Default data directory path: {:?}", data_dir);
     Ok(data_dir)
 }

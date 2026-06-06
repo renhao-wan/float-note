@@ -72,45 +72,48 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
   const handleImportFile = async () => {
     try {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.md,.txt';
-      input.onchange = async (e) => {
-        const file = (e.target as HTMLInputElement).files?.[0];
-        if (file) {
-          try {
-            const text = await file.text();
-            // 从文件名提取标题（去掉扩展名）
-            const title = file.name.replace(/\.(md|txt)$/i, '');
-            // 调用 Tauri 命令创建笔记
-            await invoke('create_note', { request: { title, content: text, tags: [] } });
-            // 触发笔记列表刷新事件
-            window.dispatchEvent(new Event('notes-updated'));
-          } catch (error) {
-            console.error('Failed to import file:', error);
-            alert('Failed to import file');
-          }
-        }
-      };
-      input.click();
+      // Use Tauri's native file picker
+      const selectedFile = await notesApi.pickFileDialog();
+      if (selectedFile) {
+        // Use the importSingleFile API to import the file
+        const importedNote = await notesApi.importSingleFile(selectedFile);
+        // Trigger notes list refresh
+        window.dispatchEvent(new Event('notes-updated'));
+        alert(`Successfully imported note: ${importedNote.title}`);
+      }
     } catch (error) {
       console.error('Failed to import file:', error);
-      alert('Failed to import file');
+      alert('Failed to import file: ' + String(error));
     }
   };
 
   const handleImportDirectory = async () => {
-    // This will be implemented once we have proper directory picker
-    alert('Directory import functionality coming soon! For now, use the Import File button for individual markdown files.');
+    try {
+      // Use Tauri's native directory picker
+      const selectedDir = await notesApi.openDirectoryDialog();
+      if (selectedDir) {
+        const importedNotes = await notesApi.importNotesFromDirectory(selectedDir);
+        // Trigger notes list refresh
+        window.dispatchEvent(new Event('notes-updated'));
+        alert(`Successfully imported ${importedNotes.length} notes from the directory!`);
+      }
+    } catch (error) {
+      console.error('Failed to import directory:', error);
+      alert('Failed to import directory: ' + String(error));
+    }
   };
 
   const handleExportAll = async () => {
     try {
-      // For now, let's just show a message about the feature
-      alert('Export functionality coming soon! This will save all your notes as markdown files with frontmatter.');
+      // Use Tauri's native directory picker
+      const selectedDir = await notesApi.openDirectoryDialog();
+      if (selectedDir) {
+        const exportedFiles = await notesApi.exportAllNotesToDirectory(selectedDir);
+        alert(`Successfully exported ${exportedFiles.length} notes to the directory!`);
+      }
     } catch (error) {
       console.error('Failed to export notes:', error);
-      alert('Failed to export notes');
+      alert('Failed to export notes: ' + String(error));
     }
   };
 
@@ -154,8 +157,8 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
   const handleBrowseDirectory = async () => {
     try {
-      // Use Tauri's directory dialog
-      const result = await invoke<string | null>('open_directory_dialog');
+      // Use Tauri's native directory picker with current directory as initial
+      const result = await notesApi.openDirectoryDialog(currentNotesDirectory || directoryInputValue);
       if (result) {
         setDirectoryInputValue(result);
       }

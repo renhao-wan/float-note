@@ -180,6 +180,7 @@ pub fn run() {
             open_system_settings,
             open_directory_in_finder,
             open_directory_dialog,
+            pick_file_dialog,
 
             // Menu and shortcuts
             update_app_menu,
