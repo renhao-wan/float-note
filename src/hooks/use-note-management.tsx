@@ -284,9 +284,10 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   // Delete a note
   const deleteNote = useCallback(async (noteId: string) => {
     try {
-      // 计算下一个要选中的笔记（在调用 API 之前）
-      const currentIndex = notes.findIndex(note => note.id === noteId);
-      const remainingNotes = notes.filter(note => note.id !== noteId);
+      // Use notesRef to avoid dependency on notes array
+      const currentNotes = notesRef.current;
+      const currentIndex = currentNotes.findIndex(note => note.id === noteId);
+      const remainingNotes = currentNotes.filter(note => note.id !== noteId);
       const nextNote = remainingNotes.length > 0
         ? remainingNotes[Math.min(currentIndex, remainingNotes.length - 1)]
         : null;
@@ -303,7 +304,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     } catch (error) {
       console.error('[FLOATNOTE] Failed to delete note:', error);
     }
-  }, [notes, selectNote]);
+  }, [selectNote]);
 
   // Load notes on mount and listen for data-loaded event
   useEffect(() => {
