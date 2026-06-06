@@ -15,9 +15,11 @@ export const DetachedWindowOpacitySlider = ({
   initialOpacity = TRANSPARENCY_CONFIG.defaultOpacity,
   onOpacityChange,
 }: DetachedWindowOpacitySliderProps) => {
+  console.log('[OPACITY_SLIDER] Component rendered with windowLabel:', windowLabel);
   const [opacity, setOpacity] = useState(initialOpacity);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const transparencyManager = getTransparencyManager();
+  console.log('[OPACITY_SLIDER] TransparencyManager created:', transparencyManager);
 
   // 应用透明度到窗口
   const applyOpacity = useCallback(async (value: number) => {
