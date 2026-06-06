@@ -8,8 +8,8 @@ interface WindowPosition {
 
 interface WindowPositionsState {
   // Core state - just a map of noteId -> position/size
-  windowPositions: Map<string, WindowPosition>;
-  
+  windowPositions: Record<string, WindowPosition>;
+
   // Simple operations
   openWindow: (noteId: string, x?: number, y?: number, width?: number, height?: number) => Promise<boolean>;
   closeWindow: (noteId: string) => Promise<void>;
@@ -18,29 +18,29 @@ interface WindowPositionsState {
   isOpen: (noteId: string) => boolean;
   getPosition: (noteId: string) => WindowPosition | undefined;
   focusWindow: (noteId: string) => Promise<boolean>;
-  
+
   // Initialization
   loadPositions: () => Promise<void>;
 }
 
 export const useWindowPositionsStore = create<WindowPositionsState>((set, get) => ({
-  windowPositions: new Map(),
+  windowPositions: {},
 
   loadPositions: async () => {
     try {
       // Load existing window positions from backend on startup
       const windows = await invoke<{[key: string]: any}>('get_detached_windows');
-      const positions = new Map<string, WindowPosition>();
-      
+      const positions: Record<string, WindowPosition> = {};
+
       Object.values(windows).forEach((window: any) => {
         if (window.note_id && window.position && window.size) {
-          positions.set(window.note_id, {
+          positions[window.note_id] = {
             position: window.position,
             size: window.size
-          });
+          };
         }
       });
-      
+
       set({ windowPositions: positions });
     } catch (error) {
       console.error('[WINDOW-POSITIONS] Failed to load positions:', error);
@@ -53,16 +53,15 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
       await invoke('create_detached_window', {
         request: { note_id: noteId, x, y, width, height }
       });
-      
+
       // Add to our position map
       const { windowPositions } = get();
-      const newPositions = new Map(windowPositions);
-      newPositions.set(noteId, { 
-        position: [x, y], 
-        size: [width, height] 
+      set({
+        windowPositions: {
+          ...windowPositions,
+          [noteId]: { position: [x, y], size: [width, height] }
+        }
       });
-      
-      set({ windowPositions: newPositions });
       return true;
     } catch (error) {
       console.error('[WINDOW-POSITIONS] Failed to open window:', error);
@@ -74,35 +73,28 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
     try {
       // Close the actual window via backend
       await invoke('close_detached_window', { noteId });
-      
-      // Remove from our position map
-      const { windowPositions } = get();
-      const newPositions = new Map(windowPositions);
-      newPositions.delete(noteId);
-      
-      set({ windowPositions: newPositions });
     } catch (error) {
       console.error('[WINDOW-POSITIONS] Failed to close window:', error);
-      // Remove from local state anyway
-      const { windowPositions } = get();
-      const newPositions = new Map(windowPositions);
-      newPositions.delete(noteId);
-      set({ windowPositions: newPositions });
     }
+
+    // Remove from local state regardless of API result
+    const { windowPositions } = get();
+    const { [noteId]: _, ...rest } = windowPositions;
+    set({ windowPositions: rest });
   },
 
   moveWindow: (noteId: string, x: number, y: number): void => {
     const { windowPositions } = get();
-    const current = windowPositions.get(noteId);
-    
+    const current = windowPositions[noteId];
+
     if (current) {
-      const newPositions = new Map(windowPositions);
-      newPositions.set(noteId, {
-        ...current,
-        position: [x, y]
+      set({
+        windowPositions: {
+          ...windowPositions,
+          [noteId]: { ...current, position: [x, y] }
+        }
       });
-      set({ windowPositions: newPositions });
-      
+
       // Update backend position (fire and forget)
       invoke('update_detached_window_position', {
         windowLabel: `note-${noteId}`,
@@ -114,16 +106,16 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
 
   resizeWindow: (noteId: string, width: number, height: number): void => {
     const { windowPositions } = get();
-    const current = windowPositions.get(noteId);
-    
+    const current = windowPositions[noteId];
+
     if (current) {
-      const newPositions = new Map(windowPositions);
-      newPositions.set(noteId, {
-        ...current,
-        size: [width, height]
+      set({
+        windowPositions: {
+          ...windowPositions,
+          [noteId]: { ...current, size: [width, height] }
+        }
       });
-      set({ windowPositions: newPositions });
-      
+
       // Update backend size (fire and forget)
       invoke('update_detached_window_size', {
         windowLabel: `note-${noteId}`,
@@ -134,11 +126,11 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
   },
 
   isOpen: (noteId: string): boolean => {
-    return get().windowPositions.has(noteId);
+    return noteId in get().windowPositions;
   },
 
   getPosition: (noteId: string): WindowPosition | undefined => {
-    return get().windowPositions.get(noteId);
+    return get().windowPositions[noteId];
   },
 
   focusWindow: async (noteId: string): Promise<boolean> => {
