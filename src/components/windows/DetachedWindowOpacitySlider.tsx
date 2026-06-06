@@ -15,11 +15,9 @@ export const DetachedWindowOpacitySlider = ({
   initialOpacity = TRANSPARENCY_CONFIG.defaultOpacity,
   onOpacityChange,
 }: DetachedWindowOpacitySliderProps) => {
-  console.log('[OPACITY_SLIDER] Component rendered with windowLabel:', windowLabel);
   const [opacity, setOpacity] = useState(initialOpacity);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const transparencyManager = getTransparencyManager();
-  console.log('[OPACITY_SLIDER] TransparencyManager created:', transparencyManager);
 
   // 应用透明度到窗口
   const applyOpacity = useCallback(async (value: number) => {
@@ -51,12 +49,8 @@ export const DetachedWindowOpacitySlider = ({
   useEffect(() => {
     const initOpacity = async () => {
       try {
-        console.log('[OPACITY_SLIDER] Initializing opacity for window:', windowLabel);
-        console.log('[OPACITY_SLIDER] Default opacity:', TRANSPARENCY_CONFIG.defaultOpacity);
-        // 立即应用默认透明度到窗口
         await transparencyManager.setOpacity(windowLabel, TRANSPARENCY_CONFIG.defaultOpacity);
         setOpacity(TRANSPARENCY_CONFIG.defaultOpacity);
-        console.log('[OPACITY_SLIDER] Opacity initialized successfully');
       } catch (error) {
         console.error('[OPACITY_SLIDER] Failed to init opacity:', error);
       }
