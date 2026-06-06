@@ -119,7 +119,6 @@
       "visual": {
         "title": "Visual",
         "theme": "Theme",
-        "accentColor": "Accent Color",
         "noteBackground": "Note Background"
       },
       "window": {

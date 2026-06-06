@@ -7,7 +7,6 @@ import { notesApi } from '../../services/tauri-api';
 import { getModifierSymbol, isMac } from '../../lib/platform';
 import { AppConfig } from '../../types/config';
 import { CustomSelect } from '../common/CustomSelect';
-import { hexToHSL } from '../../types/theme';
 
 interface SettingsPanelProps {
   selectedSection: 'general' | 'appearance' | 'shortcuts' | 'editor';
@@ -56,15 +55,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       appearance: { ...localConfig.appearance, ...appearanceUpdate }
     };
     setLocalConfig(newConfig);
-
-    // 如果更新了 accentColor，立即应用到 CSS 变量
-    if (appearanceUpdate.accentColor) {
-      const root = document.documentElement;
-      const hsl = hexToHSL(appearanceUpdate.accentColor);
-      root.style.setProperty('--primary', hsl);
-      // 同时更新 ring 颜色（用于焦点状态）
-      root.style.setProperty('--ring', hsl);
-    }
 
     // 如果更新了字体，立即应用到 CSS 变量
     if (appearanceUpdate.editorFontFamily) {
@@ -509,25 +499,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">
                 {(localConfig.appearance?.lineHeight ?? 1.6).toFixed(1)}
               </span>
-            </div>
-          </div>
-        </div>
-              
-        {/* Accent Color + Window */}
-        <div className="bg-card/20 rounded-2xl p-3 border border-border/10">
-          <h3 className="text-xs font-medium text-foreground/90 mb-2 uppercase tracking-wide">
-            {t('settings.appearance.visual.title')}
-          </h3>
-          <div className="flex items-center gap-3">
-            <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.visual.accentColor')}</label>
-            <div className="flex gap-1.5 flex-1">
-              {['#d4a053', '#5a9e96', '#d45858', '#7c9a6e', '#9e8a6e', '#8b7ec8'].map(color => (
-                <button key={color}
-                  onClick={() => handleAppearanceChange({ accentColor: color })}
-                  className={`w-7 h-7 rounded-lg border-2 transition-all ${localConfig.appearance?.accentColor === color ? 'border-primary scale-110 shadow-glow' : 'border-transparent hover:border-primary/30 hover:scale-105'}`}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
             </div>
           </div>
         </div>

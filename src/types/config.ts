@@ -32,7 +32,6 @@ export interface AppConfig {
     editorFontFamily: string;
     previewFontFamily?: string;
     lineHeight: number;
-    accentColor: string;
     backgroundPattern?: 'none' | 'paper' | 'canvas' | 'grid' | 'dots';
     notePaperStyle?: 'none' | 'dotted-grid' | 'lines' | 'ruled';
     syntaxHighlighting?: boolean;
@@ -75,7 +74,6 @@ export const defaultConfig: AppConfig = {
     editorFontFamily: 'JetBrains Mono, monospace',
     previewFontFamily: 'Source Serif 4, Georgia, serif',
     lineHeight: 1.6,
-    accentColor: '#d4a053',
     backgroundPattern: 'none',
     notePaperStyle: 'none',
     syntaxHighlighting: true,
