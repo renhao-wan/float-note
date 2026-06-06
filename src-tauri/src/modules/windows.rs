@@ -448,13 +448,13 @@ pub async fn create_drag_ghost(
         }
     }
     
-    // Small delay to ensure cleanup
-    std::thread::sleep(std::time::Duration::from_millis(100));
+    // Small delay to ensure cleanup (use async sleep to avoid blocking Tokio runtime)
+    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
 
     // Create a temporary drag ghost window with unique label
     let ghost_label = format!("drag-ghost-{}", std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
+        .unwrap_or_default()
         .as_millis());
     
     let ghost_window = WebviewWindowBuilder::new(
