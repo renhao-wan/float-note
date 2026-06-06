@@ -16,23 +16,20 @@ export function useWindowTracking(noteId: string) {
   
   useEffect(() => {
     const appWindow = getCurrentWebviewWindow();
-    
-    console.log('[WINDOW-TRACKING] Setting up debounced position/size tracking for note:', noteId);
-    
+
     // Debounced position update function
     const debouncedPositionUpdate = (position: { x: number; y: number }) => {
       // Clear existing timer
       if (positionTimerRef.current) {
         clearTimeout(positionTimerRef.current);
       }
-      
+
       // Store the latest position
       lastPositionRef.current = position;
-      
+
       // Set new timer
       positionTimerRef.current = setTimeout(async () => {
         if (lastPositionRef.current) {
-          console.log('[WINDOW-TRACKING] Saving window position (debounced):', lastPositionRef.current);
           try {
             await invoke('update_detached_window_position', {
               windowLabel: appWindow.label,
@@ -61,7 +58,6 @@ export function useWindowTracking(noteId: string) {
       // Set new timer
       sizeTimerRef.current = setTimeout(async () => {
         if (lastSizeRef.current) {
-          console.log('[WINDOW-TRACKING] Saving window size (debounced):', lastSizeRef.current);
           try {
             await invoke('update_detached_window_size', {
               windowLabel: appWindow.label,
@@ -79,16 +75,11 @@ export function useWindowTracking(noteId: string) {
     
     // Listen for window move events
     const unlistenMove = appWindow.onMoved(({ payload: position }) => {
-      // Only log occasionally to avoid spam
-      if (Math.random() < 0.1) { // Log ~10% of moves
-        console.log('[WINDOW-TRACKING] Window move detected (debouncing):', position);
-      }
       debouncedPositionUpdate(position);
     });
-    
+
     // Listen for window resize events
     const unlistenResize = appWindow.onResized(({ payload: size }) => {
-      console.log('[WINDOW-TRACKING] Window resize detected (debouncing):', size);
       debouncedSizeUpdate(size);
     });
     

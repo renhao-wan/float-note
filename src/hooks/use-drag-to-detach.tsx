@@ -239,17 +239,6 @@ export function useDragToDetach({ onDrop: _onDrop, dragThreshold = 5 }: UseDragT
           // Only update state when value changes (avoids redundant re-renders)
           if (outside !== ref.isOutsideSidebar) {
             setIsOutsideSidebar(outside);
-
-            if (outside && !ref.wasOutsideSidebar) {
-              console.log('[DRAG] Cursor left sidebar boundary:', {
-                mouseX: e.clientX,
-                mouseY: e.clientY,
-                exitDirection:
-                  e.clientX < rect.left ? 'left' :
-                  e.clientX > rect.right ? 'right' :
-                  e.clientY < rect.top ? 'top' : 'bottom'
-              });
-            }
           }
 
           ref.wasOutsideSidebar = outside;

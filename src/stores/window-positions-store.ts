@@ -42,7 +42,6 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
       });
       
       set({ windowPositions: positions });
-      console.log('[WINDOW-POSITIONS] Loaded', positions.size, 'window positions');
     } catch (error) {
       console.error('[WINDOW-POSITIONS] Failed to load positions:', error);
     }
@@ -64,7 +63,6 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
       });
       
       set({ windowPositions: newPositions });
-      console.log('[WINDOW-POSITIONS] Window opened for note:', noteId, { x, y, width, height });
       return true;
     } catch (error) {
       console.error('[WINDOW-POSITIONS] Failed to open window:', error);
@@ -83,7 +81,6 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
       newPositions.delete(noteId);
       
       set({ windowPositions: newPositions });
-      console.log('[WINDOW-POSITIONS] Window closed for note:', noteId);
     } catch (error) {
       console.error('[WINDOW-POSITIONS] Failed to close window:', error);
       // Remove from local state anyway
