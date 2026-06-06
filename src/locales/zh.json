@@ -57,7 +57,8 @@
         "markdownFormat": "Markdown 格式",
         "markdownFormatDescription": "笔记以 .md 文件存储，包含 YAML frontmatter 元数据（标题、标签、日期）。",
         "directoryMode": "目录模式",
-        "directoryModeDescription": "设置自定义目录以直接将笔记加载/保存为文件，适合与 git、Dropbox 或其他工具同步。"
+        "directoryModeDescription": "设置自定义目录以直接将笔记加载/保存为文件，适合与 git、Dropbox 或其他工具同步。",
+        "lightweightTip": "本应用为轻量快速笔记记录，不宜存放过多或过大的文件。所有文件夹不会递归处理子目录。"
       }
     },
     "appearance": {
@@ -316,5 +317,18 @@
     "noteMode": "笔记模式",
     "windowMode": "窗口模式",
     "availableNotes": "可用笔记"
+  },
+  "toast": {
+    "importFileSuccess": "成功导入笔记：{{title}}",
+    "importFileFailed": "导入文件失败：{{error}}",
+    "importDirectorySuccess": "成功导入 {{count}} 条笔记",
+    "importDirectoryFailed": "导入目录失败：{{error}}",
+    "exportSuccess": "成功导出 {{count}} 条笔记",
+    "exportFailed": "导出笔记失败：{{error}}",
+    "setDirectorySuccess": "笔记目录已更新！成功加载 {{count}} 条笔记",
+    "setDirectoryFailed": "设置笔记目录失败：{{error}}",
+    "reloadNotesSuccess": "成功加载 {{count}} 条笔记",
+    "reloadNotesFailed": "重新加载笔记失败：{{error}}",
+    "openDirectoryFailed": "打开目录失败：{{error}}"
   }
 }

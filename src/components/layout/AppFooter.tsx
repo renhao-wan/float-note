@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Palette, Eye, Focus, Keyboard, Pin, Folder, FolderOpen } from '../../lib/lucide';
 import { useState, useEffect } from 'react';
 import { notesApi } from '../../services/tauri-api';
+import { toast } from '../../stores/toast-store';
 
 interface Theme {
   name: string;
@@ -67,9 +68,9 @@ export function AppFooter({ theme, themeId, config }: AppFooterProps) {
       console.log(`[AppFooter] Successfully opened notes directory in Finder: ${currentPath}`);
     } catch (error) {
       console.error('[AppFooter] Failed to open directory in Finder:', error);
-      // Only show alert for actual errors, not for non-Tauri context
+      // Only show toast for actual errors, not for non-Tauri context
       if (error && error.toString().includes('Failed to open')) {
-        alert('Failed to open directory in Finder: ' + error);
+        toast.error(t('toast.openDirectoryFailed', { error: String(error) }));
       }
     } finally {
       setIsLoading(false);

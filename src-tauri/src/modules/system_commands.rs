@@ -142,7 +142,7 @@ pub async fn pick_file_dialog(app: AppHandle) -> Result<Option<String>, String> 
     app.dialog()
         .file()
         .set_title("Select Markdown File")
-        .add_filter("Markdown", &["md", "txt"])
+        .add_filter("Markdown", &["md"])
         .pick_file(move |file_path| {
             // Convert FilePath to string, using simplified() to remove Windows UNC prefix
             let result = file_path.map(|path| {

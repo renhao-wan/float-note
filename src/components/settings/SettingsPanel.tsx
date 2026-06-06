@@ -7,6 +7,7 @@ import { notesApi } from '../../services/tauri-api';
 import { getModifierSymbol, isMac } from '../../lib/platform';
 import { AppConfig } from '../../types/config';
 import { CustomSelect } from '../common/CustomSelect';
+import { toast } from '../../stores/toast-store';
 
 interface SettingsPanelProps {
   selectedSection: 'general' | 'appearance' | 'shortcuts' | 'editor';
@@ -79,11 +80,11 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
         const importedNote = await notesApi.importSingleFile(selectedFile);
         // Trigger notes list refresh
         window.dispatchEvent(new Event('notes-updated'));
-        alert(`Successfully imported note: ${importedNote.title}`);
+        toast.success(t('toast.importFileSuccess', { title: importedNote.title }));
       }
     } catch (error) {
       console.error('Failed to import file:', error);
-      alert('Failed to import file: ' + String(error));
+      toast.error(t('toast.importFileFailed', { error: String(error) }));
     }
   };
 
@@ -95,11 +96,11 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
         const importedNotes = await notesApi.importNotesFromDirectory(selectedDir);
         // Trigger notes list refresh
         window.dispatchEvent(new Event('notes-updated'));
-        alert(`Successfully imported ${importedNotes.length} notes from the directory!`);
+        toast.success(t('toast.importDirectorySuccess', { count: importedNotes.length }));
       }
     } catch (error) {
       console.error('Failed to import directory:', error);
-      alert('Failed to import directory: ' + String(error));
+      toast.error(t('toast.importDirectoryFailed', { error: String(error) }));
     }
   };
 
@@ -109,11 +110,11 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       const selectedDir = await notesApi.openDirectoryDialog();
       if (selectedDir) {
         const exportedFiles = await notesApi.exportAllNotesToDirectory(selectedDir);
-        alert(`Successfully exported ${exportedFiles.length} notes to the directory!`);
+        toast.success(t('toast.exportSuccess', { count: exportedFiles.length }));
       }
     } catch (error) {
       console.error('Failed to export notes:', error);
-      alert('Failed to export notes: ' + String(error));
+      toast.error(t('toast.exportFailed', { error: String(error) }));
     }
   };
 
@@ -122,7 +123,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       if (directoryInputValue.trim()) {
         await notesApi.setNotesDirectory(directoryInputValue.trim());
         setCurrentNotesDirectory(directoryInputValue.trim());
-        
+
         // Update the config store with the new directory
         const updatedConfig = {
           ...localConfig,
@@ -134,24 +135,24 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
         };
         setLocalConfig(updatedConfig);
         await updateConfig(updatedConfig);
-        
+
         // Automatically reload notes from the new directory
         const notes = await notesApi.reloadNotesFromDirectory();
-        alert(`Notes directory updated! Successfully loaded ${notes.length} notes from the new directory.`);
+        toast.success(t('toast.setDirectorySuccess', { count: notes.length }));
       }
     } catch (error) {
       console.error('Failed to set notes directory:', error);
-      alert('Failed to set notes directory: ' + String(error));
+      toast.error(t('toast.setDirectoryFailed', { error: String(error) }));
     }
   };
 
   const handleReloadNotes = async () => {
     try {
       const notes = await notesApi.reloadNotesFromDirectory();
-      alert(`Successfully loaded ${notes.length} notes from the configured directory!`);
+      toast.success(t('toast.reloadNotesSuccess', { count: notes.length }));
     } catch (error) {
       console.error('Failed to reload notes:', error);
-      alert('Failed to reload notes: ' + error);
+      toast.error(t('toast.reloadNotesFailed', { error: String(error) }));
     }
   };
 
@@ -371,7 +372,21 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               </div>
             </div>
           </div>
-          
+
+          {/* Lightweight Tip */}
+          <div className="bg-primary/5 rounded-2xl p-3 border border-primary/10">
+            <div className="flex items-start gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/70 mt-0.5 flex-shrink-0">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <span className="text-xs text-muted-foreground/80 leading-relaxed">
+                {t('settings.general.fileOperations.lightweightTip')}
+              </span>
+            </div>
+          </div>
+
         </div>
       </div>
 

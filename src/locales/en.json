@@ -57,7 +57,8 @@
         "markdownFormat": "Markdown Format",
         "markdownFormatDescription": "Notes are stored as .md files with YAML frontmatter containing metadata (title, tags, dates).",
         "directoryMode": "Directory Mode",
-        "directoryModeDescription": "Set a custom directory to load/save notes directly as files, perfect for syncing with git, Dropbox, or other tools."
+        "directoryModeDescription": "Set a custom directory to load/save notes directly as files, perfect for syncing with git, Dropbox, or other tools.",
+        "lightweightTip": "This app is designed for lightweight, fast note-taking. Avoid storing too many or overly large files. No folders are processed recursively."
       }
     },
     "appearance": {
@@ -316,5 +317,18 @@
     "noteMode": "Note Mode",
     "windowMode": "Window Mode",
     "availableNotes": "Available notes"
+  },
+  "toast": {
+    "importFileSuccess": "Successfully imported note: {{title}}",
+    "importFileFailed": "Failed to import file: {{error}}",
+    "importDirectorySuccess": "Successfully imported {{count}} notes",
+    "importDirectoryFailed": "Failed to import directory: {{error}}",
+    "exportSuccess": "Successfully exported {{count}} notes",
+    "exportFailed": "Failed to export notes: {{error}}",
+    "setDirectorySuccess": "Notes directory updated! Successfully loaded {{count}} notes",
+    "setDirectoryFailed": "Failed to set notes directory: {{error}}",
+    "reloadNotesSuccess": "Successfully loaded {{count}} notes",
+    "reloadNotesFailed": "Failed to reload notes: {{error}}",
+    "openDirectoryFailed": "Failed to open directory: {{error}}"
   }
 }

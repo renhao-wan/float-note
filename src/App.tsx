@@ -1,30 +1,31 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  DetachedNoteWindow, 
-  DragGhost 
+import {
+  DetachedNoteWindow,
+  DragGhost
 } from './components/windows';
-import { 
-  SettingsPanel, 
-  SettingsNavigation 
+import {
+  SettingsPanel,
+  SettingsNavigation
 } from './components/settings';
 import { DevToolbar } from './components/dev/DevToolbar';
-import { 
-  CustomTitleBar, 
-  WindowWrapper, 
-  NavigationSidebar, 
-  AppFooter 
+import {
+  CustomTitleBar,
+  WindowWrapper,
+  NavigationSidebar,
+  AppFooter
 } from './components/layout';
-import { 
-  NotesPanel, 
-  EditorArea 
+import {
+  NotesPanel,
+  EditorArea
 } from './components/notes';
-import { 
-  ChordHint 
+import {
+  ChordHint
 } from './components/common';
-import { 
+import { ToastContainer } from './components/ui/Toast';
+import {
   useDetachedWindowsStore,
-  useConfigStore 
+  useConfigStore
 } from './stores';
 import {
   useAppInitialization,
@@ -373,14 +374,17 @@ function App() {
       </div>
 
       {/* Chord shortcuts hint overlay */}
-      <ChordHint 
+      <ChordHint
         mode={chordMode}
         visible={showChordHint}
         notes={notes.map(note => ({ id: note.id, title: note.title }))}
       />
-      
+
       {/* Dev toolbar - only show in development */}
       {process.env.NODE_ENV === 'development' && !isDetachedWindow && <DevToolbar />}
+
+      {/* Toast notifications */}
+      <ToastContainer />
     </WindowWrapper>
   );
 }
