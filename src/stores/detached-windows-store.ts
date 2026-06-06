@@ -37,7 +37,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
       }
     } catch (error) {
       console.error('[DETACHED-WINDOWS-STORE] Failed to load detached windows:', error);
-      set({ error: error as string, loading: false });
+      set({ error: error instanceof Error ? error.message : String(error), loading: false });
     }
   },
 
@@ -67,7 +67,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
       return newWindow;
     } catch (error) {
       console.error('[DETACHED-WINDOWS] Failed to create detached window:', error);
-      set({ error: error as string, loading: false });
+      set({ error: error instanceof Error ? error.message : String(error), loading: false });
       return null;
     }
   },
@@ -91,7 +91,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
       return success;
     } catch (error) {
       console.error('Failed to close detached window:', error);
-      set({ error: error as string, loading: false });
+      set({ error: error instanceof Error ? error.message : String(error), loading: false });
       return false;
     }
   },
@@ -132,7 +132,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
       });
     } catch (error) {
       console.error('Failed to update window position:', error);
-      set({ error: error as string });
+      set({ error: error instanceof Error ? error.message : String(error) });
     }
   },
 
@@ -152,7 +152,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
       });
     } catch (error) {
       console.error('Failed to update window size:', error);
-      set({ error: error as string });
+      set({ error: error instanceof Error ? error.message : String(error) });
     }
   },
 
