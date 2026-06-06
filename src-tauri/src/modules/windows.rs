@@ -160,7 +160,7 @@ pub async fn recreate_missing_windows(
         .visible(true)
         .resizable(true)
         .decorations(false)
-        .transparent(false)
+        .transparent(cfg!(target_os = "macos") || cfg!(target_os = "linux"))
         .shadow(true)
         .min_inner_size(400.0, 300.0)
         .build() {
@@ -555,6 +555,12 @@ pub async fn create_hybrid_drag_window(
     println!("[DRAG] Creating hybrid drag window with URL: {}", window_url);
     println!("[DRAG] Window label: {}", window_label);
 
+    // Windows 上 transparent=true 会导致 webview 不渲染，macOS/Linux 正常
+    #[cfg(target_os = "windows")]
+    let transparent = false;
+    #[cfg(not(target_os = "windows"))]
+    let transparent = true;
+
     let drag_window = WebviewWindowBuilder::new(
         &app,
         &window_label,
@@ -564,7 +570,7 @@ pub async fn create_hybrid_drag_window(
     .inner_size(400.0, 300.0)  // Match HTML preview size
     .position(x, y)
     .resizable(false)
-    .transparent(false)  // Windows 上 transparent=true 会导致 webview 不渲染
+    .transparent(transparent)
     .decorations(false)
     .always_on_top(true)
     .skip_taskbar(true)
@@ -998,7 +1004,7 @@ pub async fn create_detached_window(
     .visible(true)
     .resizable(true)     // Enable window resizing
     .decorations(false)  // Disable native decorations for custom title bar
-    .transparent(false)  // Windows 上 transparent=true 会导致 webview 不渲染
+    .transparent(cfg!(target_os = "macos") || cfg!(target_os = "linux"))  // Windows 上 transparent=true 会导致 webview 不渲染
     .shadow(true)        // Enable window shadow
     .min_inner_size(400.0, 300.0)  // Minimum size for proper display
     .build()
