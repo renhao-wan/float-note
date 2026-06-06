@@ -635,7 +635,7 @@
 
 .cm-content {
   color: hsl(var(--foreground));
-  caret-color: var(--cursor-insert) !important; /* Default to insert mode color */
+  caret-color: #5a9e96 !important; /* Teal cursor for visibility */
 }
 
 /* Dynamic caret color based on vim mode - VERY HIGH SPECIFICITY */

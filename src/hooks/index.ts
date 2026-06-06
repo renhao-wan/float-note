@@ -1,6 +1,4 @@
 export { useAppInitialization } from './use-app-initialization';
-export { useChordShortcuts } from './use-chord-shortcuts';
-export { useCommandPalette } from './use-command-palette';
 export { useContextMenu } from './use-context-menu';
 export { useDragToDetach } from './use-drag-to-detach';
 export { useGlobalEventListeners } from './use-global-event-listeners';

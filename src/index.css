@@ -81,6 +81,15 @@
     background: transparent;
   }
 
+  /* ─── Buttons — pointer cursor ─── */
+  button, [role="button"], a[href] {
+    cursor: pointer;
+  }
+
+  button:disabled, [disabled] {
+    cursor: not-allowed;
+  }
+
   /* ─── Content typography — the reading experience ─── */
   .content-font {
     font-family: var(--font-preview);

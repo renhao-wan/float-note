@@ -19,9 +19,6 @@ import {
   NotesPanel,
   EditorArea
 } from './components/notes';
-import {
-  ChordHint
-} from './components/common';
 import { ToastContainer } from './components/ui/Toast';
 import {
   useDetachedWindowsStore,
@@ -35,15 +32,13 @@ import {
   useDragToDetach,
   useWindowShade,
   useNoteManagement,
-  useCommandPalette,
   useContextMenu,
-  useChordShortcuts,
   useWindowManager,
   useGlobalEventListeners
 } from './hooks';
 import { getThemeById } from './types';
 import { getWordCount } from './lib/utils';
-import { getCenterPosition, getGridPosition } from './utils/window-positioning';
+import { getCenterPosition } from './utils/window-positioning';
 
 
 function App() {
@@ -67,11 +62,10 @@ function App() {
   // App initialization
   useAppInitialization({ isDetachedWindow });
 
-  // Detached windows store  
-  const { 
-    createWindow, 
-    isWindowOpen, 
-    focusWindow
+  // Detached windows store
+  const {
+    createWindow,
+    isWindowOpen,
   } = useDetachedWindowsStore();
 
   // Drag-to-detach functionality - stable callback to prevent re-renders
@@ -121,24 +115,6 @@ function App() {
     }
   });
 
-  // Command palette hook
-  const {
-    openCommandPalette,
-  } = useCommandPalette({
-    notes,
-    selectedNoteId,
-    isPreviewMode,
-    sidebarVisible,
-    onCreateNewNote: createNewNote,
-    onSelectNote: selectNote,
-    onToggleSidebar: () => setSidebarVisible(!sidebarVisible),
-    onTogglePreview: () => setIsPreviewMode(!isPreviewMode),
-    onOpenSettings: () => {
-      setCurrentView('settings');
-      setSidebarVisible(true);
-    },
-  });
-
   // Context menu hook
   const {
     showContextMenu,
@@ -150,52 +126,10 @@ function App() {
     },
   });
 
-  // Chord shortcuts hook for advanced keyboard combinations
-  const { chordMode, showChordHint, startWindowMode } = useChordShortcuts({
-    notes: notes.map(note => ({ id: note.id, title: note.title })),
-    onSelectNote: selectNote,
-    onCreateNewNote: createNewNote,
-    onToggleCommandPalette: openCommandPalette,
-    onCreateDetachedWindow: async (noteId: string) => {
-      const { x, y } = getCenterPosition();
-      await createWindow(noteId, x, y);
-    },
-    onFocusWindow: async (noteId: string) => {
-      console.log('[CHORD] onFocusWindow called with noteId:', noteId);
-      
-      // Check if window already exists
-      if (isWindowOpen(noteId)) {
-        console.log('[CHORD] ✅ Window exists, attempting to focus');
-        const focused = await focusWindow(noteId);
-        if (focused) {
-          console.log('[CHORD] ✅ Focus successful');
-          return;
-        }
-      }
-      
-      console.log('[CHORD] Creating new window');
-      // Determine position based on note index for first 9 notes
-      const noteIndex = notes.findIndex(note => note.id === noteId);
-      let position;
-      
-      if (noteIndex >= 0 && noteIndex < 9) {
-        const slotNumber = noteIndex + 1;
-        position = getGridPosition(slotNumber);
-        console.log('[CHORD] Using grid position for slot', slotNumber, ':', position);
-      } else {
-        position = getCenterPosition();
-        console.log('[CHORD] Using center position');
-      }
-      
-      await createWindow(noteId, position.x, position.y, position.width, position.height);
-    },
-  });
-  
   // Global event listeners
   useGlobalEventListeners({
     notes,
     onCreateNewNote: createNewNote,
-    onStartWindowMode: startWindowMode,
   });
   
   // Debug logging
@@ -346,13 +280,6 @@ function App() {
           config={config} 
         />
       </div>
-
-      {/* Chord shortcuts hint overlay */}
-      <ChordHint
-        mode={chordMode}
-        visible={showChordHint}
-        notes={notes.map(note => ({ id: note.id, title: note.title }))}
-      />
 
       {/* Dev toolbar - only show in development */}
       {process.env.NODE_ENV === 'development' && !isDetachedWindow && <DevToolbar />}

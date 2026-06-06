@@ -8,23 +8,19 @@ import { Note } from '../types';
 interface GlobalEventListenersProps {
   notes: Note[];
   onCreateNewNote: () => void;
-  onStartWindowMode: () => void;
 }
 
 export function useGlobalEventListeners({
   notes,
   onCreateNewNote,
-  onStartWindowMode,
 }: GlobalEventListenersProps) {
   // Keep stable references to current values for event listeners
   const notesRef = useRef(notes);
   const onCreateNewNoteRef = useRef(onCreateNewNote);
-  const onStartWindowModeRef = useRef(onStartWindowMode);
-  
+
   // Update refs when props change
   notesRef.current = notes;
   onCreateNewNoteRef.current = onCreateNewNote;
-  onStartWindowModeRef.current = onStartWindowMode;
 
   useEffect(() => {
     const setupListeners = async () => {
@@ -36,12 +32,6 @@ export function useGlobalEventListeners({
           onCreateNewNoteRef.current();
         });
         unlisteners.push(unlistenNewNote);
-
-        // Listen for chord window mode event
-        const unlistenChordWindow = await listen('chord-window-mode', async () => {
-          onStartWindowModeRef.current();
-        });
-        unlisteners.push(unlistenChordWindow);
 
         // Listen for direct note deployment events
         const unlistenDeployWindow = await listen('deploy-note-window', async (event) => {

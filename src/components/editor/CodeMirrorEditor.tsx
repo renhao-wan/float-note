@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { EditorView, keymap, ViewUpdate, placeholder, drawSelection } from '@codemirror/view';
+import { EditorView, keymap, ViewUpdate, placeholder } from '@codemirror/view';
 import { EditorState, Extension, Compartment } from '@codemirror/state';
 import { markdown } from '@codemirror/lang-markdown';
 import { defaultKeymap, indentWithTab, history, historyKeymap } from '@codemirror/commands';
@@ -57,7 +57,7 @@ export function CodeMirrorEditor({
       '.cm-content': {
         padding: '20px',
         lineHeight: `${lineHeight}`,
-        caretColor: 'var(--cursor-insert)', // Green for insert mode by default
+        caretColor: '#5a9e96 !important',
         backgroundColor: 'transparent',
       },
       '.cm-focused': {
@@ -68,18 +68,19 @@ export function CodeMirrorEditor({
         outline: 'none',
         backgroundColor: 'hsl(var(--card) / 0.3)',
         borderRadius: '0',
-        '--editor-font-size': `${fontSize}px`,
-        '--editor-line-height': `${lineHeight}`,
+        caretColor: '#5a9e96 !important',
       },
       '.cm-editor.cm-focused': {
         outline: 'none',
         backgroundColor: 'hsl(var(--card) / 0.4)',
+        caretColor: '#5a9e96 !important',
       },
       '.cm-scroller': {
         fontFamily: fontFamily,
         fontSize: `${fontSize}px`,
         lineHeight: `${lineHeight}`,
         backgroundColor: 'transparent',
+        caretColor: '#5a9e96 !important',
       },
       '.cm-placeholder': {
         color: 'var(--muted-foreground)',
@@ -101,9 +102,11 @@ export function CodeMirrorEditor({
       '.cm-focused .cm-selectionBackground': {
         backgroundColor: 'var(--primary)' + '40',
       },
-      // Cursor styling handled by CSS - ensure base visibility
+      // Cursor styling - ensure visibility
       '.cm-cursor, .cm-cursor-primary': {
         visibility: 'visible !important',
+        borderLeft: '2px solid #5a9e96 !important',
+        caretColor: '#5a9e96 !important',
       },
       // Search highlights
       '.cm-searchMatch': {
@@ -122,7 +125,6 @@ export function CodeMirrorEditor({
       configCompartment.current.of(createTheme()),
       markdown(),
       history(), // Add history support for undo/redo
-      drawSelection(), // Add explicit selection drawing
       keymap.of([
         ...defaultKeymap,
         ...historyKeymap, // Add history keybindings (Cmd-Z, Cmd-Shift-Z)
