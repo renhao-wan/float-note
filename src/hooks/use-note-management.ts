@@ -138,7 +138,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       setNotes(prev => {
         const updated = [...prev, newNote];
         // Sort by position (backend-assigned), with None values at the end
-        const sorted = updated.sort((a, b) => {
+        return updated.sort((a, b) => {
           if (a.position !== undefined && b.position !== undefined) {
             return a.position - b.position;
           }
@@ -147,9 +147,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
           // Both have no position - maintain original order (don't sort by updated_at)
           return 0;
         });
-        // Update notesRef immediately so selectNote can find the new note
-        notesRef.current = sorted;
-        return sorted;
       });
       setSelectedNoteId(newNote.id);
       setCurrentContent('');
@@ -177,25 +174,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     if (note) {
       setSelectedNoteId(noteId);
       setCurrentContent(note.content);
-    } else {
-      // If note not found in notesRef, try to find it by fetching from backend
-      console.warn(`[FLOATNOTE] Note ${noteId} not found in notesRef, attempting to fetch...`);
-      invoke<Note>('get_note', { id: noteId }).then(fetchedNote => {
-        if (fetchedNote) {
-          // Add the note to the list if it's missing
-          setNotes(prev => {
-            const exists = prev.some(n => n.id === fetchedNote.id);
-            if (exists) return prev;
-            const updated = [...prev, fetchedNote];
-            notesRef.current = updated;
-            return updated;
-          });
-          setSelectedNoteId(noteId);
-          setCurrentContent(fetchedNote.content);
-        }
-      }).catch(err => {
-        console.error('[FLOATNOTE] Failed to fetch note:', err);
-      });
     }
   }, []);
 
@@ -215,8 +193,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
           ? { ...note, title, content, updated_at: new Date().toISOString() }
           : note
       );
-      // Update notesRef immediately so selectNote can find updated content
-      notesRef.current = updated;
       // Don't re-sort here - preserve the original order from the backend
       return updated;
     });
@@ -320,8 +296,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
       // 更新笔记列表
       setNotes(remainingNotes);
-      // Update notesRef immediately
-      notesRef.current = remainingNotes;
 
       // 如果删除的是当前选中的笔记，选择下一个
       if (selectedNoteIdRef.current === noteId) {
