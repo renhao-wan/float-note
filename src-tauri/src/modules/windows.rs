@@ -160,7 +160,7 @@ pub async fn recreate_missing_windows(
         .visible(true)
         .resizable(true)
         .decorations(false)
-        .transparent(true)
+        .transparent(false)
         .shadow(true)
         .min_inner_size(400.0, 300.0)
         .build() {
@@ -564,7 +564,7 @@ pub async fn create_hybrid_drag_window(
     .inner_size(400.0, 300.0)  // Match HTML preview size
     .position(x, y)
     .resizable(false)
-    .transparent(true)
+    .transparent(false)  // Windows 上 transparent=true 会导致 webview 不渲染
     .decorations(false)
     .always_on_top(true)
     .skip_taskbar(true)
@@ -998,7 +998,7 @@ pub async fn create_detached_window(
     .visible(true)
     .resizable(true)     // Enable window resizing
     .decorations(false)  // Disable native decorations for custom title bar
-    .transparent(true)   // Enable transparency for custom window styling
+    .transparent(false)  // Windows 上 transparent=true 会导致 webview 不渲染
     .shadow(true)        // Enable window shadow
     .min_inner_size(400.0, 300.0)  // Minimum size for proper display
     .build()
