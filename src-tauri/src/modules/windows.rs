@@ -551,10 +551,13 @@ pub async fn create_hybrid_drag_window(
     }
 
     // Create a window that follows the mouse
+    let window_url = format!("index.html?note={}", note_id);
+    println!("[DRAG] Creating hybrid drag window with URL: {}", window_url);
+
     let drag_window = WebviewWindowBuilder::new(
         &app,
         &window_label,
-        WebviewUrl::App(format!("index.html?note={}", note_id).into()),
+        WebviewUrl::App(window_url.into()),
     )
     .title("Dragging...")
     .inner_size(400.0, 300.0)  // Match HTML preview size
