@@ -182,7 +182,9 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   // Update note content with debouncing
   const updateNoteContent = useCallback((content: string) => {
-    if (!selectedNoteId) return;
+    // Use ref to get the latest selectedNoteId
+    const currentNoteId = selectedNoteIdRef.current;
+    if (!currentNoteId) return;
 
     // Update local state immediately for responsiveness
     setCurrentContent(content);
@@ -192,7 +194,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     setNotes(prev => {
       // Update the note without re-sorting to preserve order
       const updated = prev.map(note =>
-        note.id === selectedNoteId
+        note.id === currentNoteId
           ? { ...note, title, content, updated_at: new Date().toISOString() }
           : note
       );
@@ -215,7 +217,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       try {
         // Update in backend
         const updatedNote = await invoke<Note>('update_note', {
-          id: selectedNoteIdRef.current,
+          id: currentNoteId,
           request: {
             title,
             content,
@@ -235,7 +237,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         // Note: We don't revert local changes here since the user may have continued typing
       }
     }, 3000); // 3 second save interval
-  }, [selectedNoteId]);
+  }, []); // No dependencies - uses refs for all dynamic values
 
   // Save note immediately (for Cmd+S)
   const saveNoteImmediately = useCallback(async () => {
