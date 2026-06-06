@@ -379,7 +379,9 @@ pub async fn toggle_all_windows_hover(
             let windows_lock = detached_windows.lock().await;
             for (window_label, _) in windows_lock.iter() {
                 if let Some(window) = app.get_webview_window(window_label) {
-                    let _ = window.hide();
+                    if let Err(e) = window.hide() {
+                        log_error!("WINDOW", "Failed to hide window {}: {}", window_label, e);
+                    }
                 }
             }
             Ok(false)
@@ -398,7 +400,9 @@ pub async fn toggle_all_windows_hover(
                 // Check if window exists
                 if let Some(window) = app.get_webview_window(&window_data.window_label) {
                     // Window exists, just show it
-                    let _ = window.show();
+                    if let Err(e) = window.show() {
+                        log_error!("WINDOW", "Failed to show window {}: {}", window_data.window_label, e);
+                    }
                 } else {
                     // Window doesn't exist, recreate it
                     log_info!("HOVER", "Restoring window for note: {}", window_data.note_id);
@@ -834,8 +838,10 @@ pub async fn clear_all_detached_windows(
     // Close all actual Tauri windows
     for (window_label, _) in windows_lock.iter() {
         if let Some(window) = app.get_webview_window(window_label) {
-            println!("[CLEAR_WINDOWS] Closing window: {}", window_label);
-            let _ = window.close();
+            log_info!("WINDOW", "Closing window: {}", window_label);
+            if let Err(e) = window.close() {
+                log_error!("WINDOW", "Failed to close window {}: {}", window_label, e);
+            }
         }
     }
     
