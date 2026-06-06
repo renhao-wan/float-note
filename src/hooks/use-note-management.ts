@@ -42,11 +42,13 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const selectedNoteIdRef = useRef<string | null>(null);
+  const currentContentRef = useRef<string>(currentContent);
   const optionsRef = useRef(options);
   const notesRef = useRef(notes);
 
   // Update refs when values change
   selectedNoteIdRef.current = selectedNoteId;
+  currentContentRef.current = currentContent;
   optionsRef.current = options;
   notesRef.current = notes;
 
@@ -258,7 +260,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   // Save note immediately (for Cmd+S)
   const saveNoteImmediately = useCallback(async () => {
-    if (!selectedNoteIdRef.current || currentContent === undefined) return;
+    if (!selectedNoteIdRef.current) return;
 
     // Clear any pending debounced save
     if (saveTimeoutRef.current) {
@@ -270,14 +272,16 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     optionsRef.current?.onSaveStart?.();
 
     try {
-      const title = extractTitleFromContent(currentContent);
+      // Use ref to get the latest content
+      const content = currentContentRef.current;
+      const title = extractTitleFromContent(content);
 
       // Update in backend
       const updatedNote = await invoke<Note>('update_note', {
         id: selectedNoteIdRef.current,
         request: {
           title,
-          content: currentContent,
+          content,
           tags: undefined // Keep existing tags
         }
       });
@@ -286,7 +290,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       setNotes(prev => {
         const updated = prev.map(note =>
           note.id === selectedNoteIdRef.current
-            ? { ...note, title, content: currentContent, updated_at: updatedNote.updated_at }
+            ? { ...note, title, content, updated_at: updatedNote.updated_at }
             : note
         );
         // Don't re-sort here - preserve the original order from the backend
@@ -294,7 +298,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       });
 
       // Notify save completed
-      optionsRef.current?.onSaveComplete?.(currentContent);
+      optionsRef.current?.onSaveComplete?.(content);
 
       // Notify other windows about the update
       noteSyncService.noteUpdated(updatedNote);
@@ -303,7 +307,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       console.error('[FLOATNOTE] Failed to save note immediately:', error);
       optionsRef.current?.onSaveError?.(error);
     }
-  }, [currentContent]);
+  }, []); // No dependencies - uses refs for all dynamic values
 
   // Delete a note
   const deleteNote = useCallback(async (noteId: string) => {
