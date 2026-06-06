@@ -39,11 +39,15 @@ export function MarkdownRenderer({
               {children}
             </blockquote>
           ),
-          code: ({inline, children}: {inline?: boolean, children?: React.ReactNode}) => (
-            inline ?
-              <code className="bg-muted px-1.5 py-0.5 rounded-xl text-sm font-mono">{children}</code> :
-              <code className="block">{children}</code>
-          ),
+          code: ({node, children, ...props}: {node?: any, children?: React.ReactNode, className?: string}) => {
+            // 判断是否为内联代码：检查父元素是否为 pre
+            const isInline = !props.className || !props.className.includes('hljs');
+            return isInline ? (
+              <code className="bg-muted px-1.5 py-0.5 rounded-xl text-sm font-mono" {...props}>{children}</code>
+            ) : (
+              <code className="block" {...props}>{children}</code>
+            );
+          },
           pre: ({children}) => (
             <pre className="bg-muted/50 border border-border/30 rounded-2xl p-4 overflow-x-auto my-4">
               {children}
