@@ -49,9 +49,12 @@ export const DetachedWindowOpacitySlider = ({
   useEffect(() => {
     const initOpacity = async () => {
       try {
+        console.log('[OPACITY_SLIDER] Initializing opacity for window:', windowLabel);
+        console.log('[OPACITY_SLIDER] Default opacity:', TRANSPARENCY_CONFIG.defaultOpacity);
         // 立即应用默认透明度到窗口
         await transparencyManager.setOpacity(windowLabel, TRANSPARENCY_CONFIG.defaultOpacity);
         setOpacity(TRANSPARENCY_CONFIG.defaultOpacity);
+        console.log('[OPACITY_SLIDER] Opacity initialized successfully');
       } catch (error) {
         console.error('[OPACITY_SLIDER] Failed to init opacity:', error);
       }

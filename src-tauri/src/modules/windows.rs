@@ -1429,6 +1429,8 @@ pub async fn set_detached_window_opacity_windows(
     window_label: String,
     opacity: f64,
 ) -> Result<(), String> {
+    println!("[OPACITY] Setting opacity for window: {} to {}", window_label, opacity);
+
     let window = app.get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
@@ -1443,12 +1445,15 @@ pub async fn set_detached_window_opacity_windows(
         // 获取窗口句柄
         let hwnd = window.hwnd().map_err(|e| e.to_string())?;
         let hwnd = HWND(hwnd.0 as _);
+        println!("[OPACITY] Window HWND: {:?}", hwnd);
 
         // 获取当前扩展样式
         let ex_style = unsafe { GetWindowLongW(hwnd, GWL_EXSTYLE) };
+        println!("[OPACITY] Current ex_style: {}", ex_style);
 
         // 添加 WS_EX_LAYERED 样式（如果还没有）
         if (ex_style & WS_EX_LAYERED.0 as i32) == 0 {
+            println!("[OPACITY] Adding WS_EX_LAYERED style");
             unsafe {
                 SetWindowLongW(hwnd, GWL_EXSTYLE, ex_style | WS_EX_LAYERED.0 as i32);
             }
@@ -1456,12 +1461,19 @@ pub async fn set_detached_window_opacity_windows(
 
         // 设置透明度（0-255）
         let alpha = (opacity * 255.0) as u8;
+        println!("[OPACITY] Setting alpha to: {}", alpha);
         unsafe {
-            SetLayeredWindowAttributes(hwnd, COLORREF(0), alpha, LWA_ALPHA)
-                .map_err(|e| format!("Failed to set opacity: {}", e))?;
+            match SetLayeredWindowAttributes(hwnd, COLORREF(0), alpha, LWA_ALPHA) {
+                Ok(_) => {
+                    println!("[OPACITY] Successfully set opacity");
+                    Ok(())
+                },
+                Err(e) => {
+                    println!("[OPACITY] Failed to set opacity: {}", e);
+                    Err(format!("Failed to set opacity: {}", e))
+                }
+            }
         }
-
-        Ok(())
     }
 
     #[cfg(not(target_os = "windows"))]
