@@ -247,23 +247,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             </div>
           </div>
 
-          {/* Show Note Previews Toggle */}
-          <div className="flex justify-between items-center gap-3">
-            <div className="flex flex-col">
-              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.notePreviews')}</span>
-              <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.notePreviewsDescription')}</span>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="note-previews"
-                checked={localConfig.appearance?.showNotePreviews ?? false}
-                onChange={(e) => handleAppearanceChange({ showNotePreviews: e.target.checked })}
-                className="w-4 h-4 text-primary bg-background border border-border/30 rounded-xl focus:ring-primary/50 focus:ring-2 cursor-pointer"
-              />
-            </div>
-          </div>
-
         </div>
       </div>
 
@@ -361,18 +344,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             </button>
           </div>
           
-          {/* File Format Info */}
-          <div className="bg-muted/10 rounded-2xl p-3 border border-border/10">
-            <div className="text-xs text-muted-foreground/80 leading-relaxed space-y-2">
-              <div>
-                <strong className="text-foreground/90">{t('settings.general.fileOperations.markdownFormat')}:</strong> {t('settings.general.fileOperations.markdownFormatDescription')}
-              </div>
-              <div>
-                <strong className="text-foreground/90">{t('settings.general.fileOperations.directoryMode')}:</strong> {t('settings.general.fileOperations.directoryModeDescription')}
-              </div>
-            </div>
-          </div>
-
           {/* Lightweight Tip */}
           <div className="bg-primary/5 rounded-2xl p-3 border border-primary/10">
             <div className="flex items-start gap-2">
@@ -417,108 +388,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             {t('settings.appearance.themes.title')}
           </h3>
           <ThemeSelector />
-        </div>
-
-        {/* Typography - Compact */}
-        <div className="bg-card/20 rounded-2xl p-3 border border-border/10">
-          <h3 className="text-xs font-medium text-foreground/90 mb-2 flex items-center gap-2 uppercase tracking-wide">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-              <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
-            </svg>
-            {t('settings.appearance.typography.title')}
-          </h3>
-          <div className="space-y-2">
-            {/* Font Size */}
-            <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.editorFontSize')}</label>
-              <div className="flex-1 flex items-center gap-2">
-                <span className="text-xs text-muted-foreground/70" style={{ fontSize: '11px' }}>A</span>
-                <div className="flex-1 relative h-5 slider-container">
-                  <div className="slider-track"></div>
-                  <input
-                    type="range"
-                    min="10"
-                    max="24"
-                    step="1"
-                    value={localConfig.appearance?.fontSize ?? 15}
-                    onChange={(e) => handleAppearanceChange({ fontSize: parseInt(e.target.value) })}
-                    className="slider-input"
-                  />
-                </div>
-                <span className="text-muted-foreground/70" style={{ fontSize: '18px' }}>A</span>
-              </div>
-              <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">
-                {localConfig.appearance?.fontSize ?? 15}px
-              </span>
-            </div>
-
-            {/* Editor Font */}
-            <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.editorFont')}</label>
-              <div className="flex-1 max-w-[200px]">
-                <CustomSelect
-                  value={localConfig.appearance?.editorFontFamily || 'JetBrains Mono, monospace'}
-                  onChange={(value) => handleAppearanceChange({ editorFontFamily: value })}
-                  options={[
-                    { value: 'JetBrains Mono, monospace', label: t('settings.appearance.typography.fonts.jetbrainsMono') },
-                    { value: 'Fira Code, monospace', label: t('settings.appearance.typography.fonts.firaCode') },
-                    { value: 'Source Code Pro, monospace', label: t('settings.appearance.typography.fonts.sourceCodePro') },
-                    { value: 'Cascadia Code, monospace', label: t('settings.appearance.typography.fonts.cascadiaCode') },
-                    { value: 'IBM Plex Mono, monospace', label: t('settings.appearance.typography.fonts.ibmPlexMono') },
-                    { value: 'Menlo, Monaco, monospace', label: t('settings.appearance.typography.fonts.menlo') },
-                    { value: 'Consolas, monospace', label: t('settings.appearance.typography.fonts.consolas') },
-                    { value: 'system-ui', label: t('settings.appearance.typography.fonts.systemUi') },
-                    { value: 'monospace', label: t('settings.appearance.typography.fonts.monospace') },
-                  ]}
-                />
-              </div>
-            </div>
-
-            {/* Content Font */}
-            <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.contentFont')}</label>
-              <div className="flex-1 max-w-[200px]">
-                <CustomSelect
-                  value={localConfig.appearance?.previewFontFamily || 'Source Serif 4, Georgia, serif'}
-                  onChange={(value) => handleAppearanceChange({ previewFontFamily: value })}
-                  options={[
-                    { value: 'Source Serif 4, Georgia, serif', label: t('settings.appearance.typography.fonts.sourceSerif') },
-                    { value: 'Georgia, serif', label: t('settings.appearance.typography.fonts.georgia') },
-                    { value: 'Times New Roman, serif', label: t('settings.appearance.typography.fonts.timesNewRoman') },
-                    { value: 'Merriweather, serif', label: t('settings.appearance.typography.fonts.merriweather') },
-                    { value: 'Inter, -apple-system, sans-serif', label: t('settings.appearance.typography.fonts.inter') },
-                    { value: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', label: t('settings.appearance.typography.fonts.interFull') },
-                    { value: 'system-ui, -apple-system, sans-serif', label: t('settings.appearance.typography.fonts.systemUi') },
-                    { value: 'Outfit, system-ui, sans-serif', label: t('settings.appearance.typography.fonts.outfit') },
-                  ]}
-                />
-              </div>
-            </div>
-
-            {/* Line Height */}
-            <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.lineHeight')}</label>
-              <div className="flex-1 flex items-center gap-2">
-                <span className="text-xs text-muted-foreground/70">1.2</span>
-                <div className="flex-1 relative h-5 slider-container">
-                  <div className="slider-track"></div>
-                  <input
-                    type="range"
-                    min="1.2"
-                    max="2.0"
-                    step="0.1"
-                    value={localConfig.appearance?.lineHeight ?? 1.6}
-                    onChange={(e) => handleAppearanceChange({ lineHeight: parseFloat(e.target.value) })}
-                    className="slider-input"
-                  />
-                </div>
-                <span className="text-xs text-muted-foreground/70">2.0</span>
-              </div>
-              <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">
-                {(localConfig.appearance?.lineHeight ?? 1.6).toFixed(1)}
-              </span>
-            </div>
-          </div>
         </div>
 
       </div>
@@ -783,31 +652,109 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       </div>
       
       <div className="space-y-4">
-        {/* Note: Font size is configured in Appearance section */}
-        
-        <div>
-          <label className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground">{t('settings.editor.lineHeight')}</span>
-            <input
-              type="range"
-              min="1"
-              max="3"
-              step="0.1"
-              value={localConfig.editor?.lineHeight || 1.6}
-              onChange={(e) => handleConfigChange({
-                editor: {
-                  ...localConfig.editor,
-                  lineHeight: parseFloat(e.target.value)
-                }
-              })}
-              className="w-32 h-2 bg-gray-200 rounded-2xl appearance-none cursor-pointer"
-            />
-            <span className="text-sm text-muted-foreground w-8 text-right">
-              {localConfig.editor?.lineHeight || 1.6}
-            </span>
-          </label>
+        {/* Typography */}
+        <div className="bg-card/20 rounded-2xl p-3 border border-border/10">
+          <h3 className="text-xs font-medium text-foreground/90 mb-2 flex items-center gap-2 uppercase tracking-wide">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
+              <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+            </svg>
+            {t('settings.appearance.typography.title')}
+          </h3>
+          <div className="space-y-2">
+            {/* Font Size */}
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.editorFontSize')}</label>
+              <div className="flex-1 flex items-center gap-2">
+                <span className="text-xs text-muted-foreground/70" style={{ fontSize: '11px' }}>A</span>
+                <div className="flex-1 relative h-5 slider-container">
+                  <div className="slider-track"></div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="24"
+                    step="1"
+                    value={localConfig.appearance?.fontSize ?? 15}
+                    onChange={(e) => handleAppearanceChange({ fontSize: parseInt(e.target.value) })}
+                    className="slider-input"
+                  />
+                </div>
+                <span className="text-muted-foreground/70" style={{ fontSize: '18px' }}>A</span>
+              </div>
+              <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">
+                {localConfig.appearance?.fontSize ?? 15}px
+              </span>
+            </div>
+
+            {/* Editor Font */}
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.editorFont')}</label>
+              <div className="flex-1 max-w-[200px]">
+                <CustomSelect
+                  value={localConfig.appearance?.editorFontFamily || 'JetBrains Mono, monospace'}
+                  onChange={(value) => handleAppearanceChange({ editorFontFamily: value })}
+                  options={[
+                    { value: 'JetBrains Mono, monospace', label: t('settings.appearance.typography.fonts.jetbrainsMono') },
+                    { value: 'Fira Code, monospace', label: t('settings.appearance.typography.fonts.firaCode') },
+                    { value: 'Source Code Pro, monospace', label: t('settings.appearance.typography.fonts.sourceCodePro') },
+                    { value: 'Cascadia Code, monospace', label: t('settings.appearance.typography.fonts.cascadiaCode') },
+                    { value: 'IBM Plex Mono, monospace', label: t('settings.appearance.typography.fonts.ibmPlexMono') },
+                    { value: 'Menlo, Monaco, monospace', label: t('settings.appearance.typography.fonts.menlo') },
+                    { value: 'Consolas, monospace', label: t('settings.appearance.typography.fonts.consolas') },
+                    { value: 'system-ui', label: t('settings.appearance.typography.fonts.systemUi') },
+                    { value: 'monospace', label: t('settings.appearance.typography.fonts.monospace') },
+                  ]}
+                />
+              </div>
+            </div>
+
+            {/* Content Font */}
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.contentFont')}</label>
+              <div className="flex-1 max-w-[200px]">
+                <CustomSelect
+                  value={localConfig.appearance?.previewFontFamily || 'Source Serif 4, Georgia, serif'}
+                  onChange={(value) => handleAppearanceChange({ previewFontFamily: value })}
+                  options={[
+                    { value: 'Source Serif 4, Georgia, serif', label: t('settings.appearance.typography.fonts.sourceSerif') },
+                    { value: 'Georgia, serif', label: t('settings.appearance.typography.fonts.georgia') },
+                    { value: 'Times New Roman, serif', label: t('settings.appearance.typography.fonts.timesNewRoman') },
+                    { value: 'Merriweather, serif', label: t('settings.appearance.typography.fonts.merriweather') },
+                    { value: 'Inter, -apple-system, sans-serif', label: t('settings.appearance.typography.fonts.inter') },
+                    { value: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', label: t('settings.appearance.typography.fonts.interFull') },
+                    { value: 'system-ui, -apple-system, sans-serif', label: t('settings.appearance.typography.fonts.systemUi') },
+                    { value: 'Outfit, system-ui, sans-serif', label: t('settings.appearance.typography.fonts.outfit') },
+                  ]}
+                />
+              </div>
+            </div>
+
+            {/* Line Height */}
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.lineHeight')}</label>
+              <div className="flex-1 flex items-center gap-2">
+                <span className="text-xs text-muted-foreground/70">1.2</span>
+                <div className="flex-1 relative h-5 slider-container">
+                  <div className="slider-track"></div>
+                  <input
+                    type="range"
+                    min="1.2"
+                    max="2.0"
+                    step="0.1"
+                    value={localConfig.appearance?.lineHeight ?? 1.6}
+                    onChange={(e) => handleAppearanceChange({ lineHeight: parseFloat(e.target.value) })}
+                    className="slider-input"
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground/70">2.0</span>
+              </div>
+              <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">
+                {(localConfig.appearance?.lineHeight ?? 1.6).toFixed(1)}
+              </span>
+            </div>
+          </div>
         </div>
-        
+
+        {/* Paper Style */}
         <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
           <h3 className="text-xs font-medium text-foreground/90 mb-3 flex items-center gap-2 uppercase tracking-wide">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
@@ -941,15 +888,31 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               <div className="flex items-center gap-3 flex-1">
                 <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.wordWrapDescription')}</span>
                 <button
-                  onClick={() => handleAppearanceChange({
-                    wordWrap: localConfig.appearance?.wordWrap === false ? true : !localConfig.appearance?.wordWrap
-                  })}
+                  onClick={() => handleAppearanceChange({ wordWrap: localConfig.appearance?.wordWrap === false ? true : false })}
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
                     localConfig.appearance?.wordWrap !== false ? 'bg-primary' : 'bg-background/40 border border-border/40'
                   }`}
                 >
                   <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
                     localConfig.appearance?.wordWrap !== false ? 'translate-x-3.5' : 'translate-x-0'
+                  }`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Note Previews */}
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.general.interface.notePreviews')}</label>
+              <div className="flex items-center gap-3 flex-1">
+                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.general.interface.notePreviewsDescription')}</span>
+                <button
+                  onClick={() => handleAppearanceChange({ showNotePreviews: !localConfig.appearance?.showNotePreviews })}
+                  className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
+                    localConfig.appearance?.showNotePreviews ? 'bg-primary' : 'bg-background/40 border border-border/40'
+                  }`}
+                >
+                  <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
+                    localConfig.appearance?.showNotePreviews ? 'translate-x-3.5' : 'translate-x-0'
                   }`} />
                 </button>
               </div>

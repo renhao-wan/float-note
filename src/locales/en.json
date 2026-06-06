@@ -54,10 +54,6 @@
         "exportNotes": "Export Notes",
         "exportNotesDescription": "Save all notes as markdown files",
         "exportAll": "Export All",
-        "markdownFormat": "Markdown Format",
-        "markdownFormatDescription": "Notes are stored as .md files with YAML frontmatter containing metadata (title, tags, dates).",
-        "directoryMode": "Directory Mode",
-        "directoryModeDescription": "Set a custom directory to load/save notes directly as files, perfect for syncing with git, Dropbox, or other tools.",
         "lightweightTip": "This app is designed for lightweight, fast note-taking. Avoid storing too many or overly large files. No folders are processed recursively."
       }
     },
@@ -174,7 +170,6 @@
       "title": "Editor",
       "description": "Customize your writing experience",
       "navDescription": "Writing and editing preferences",
-      "lineHeight": "Line Height",
       "paperStyle": {
         "title": "Paper Style",
         "description": "Choose a background style to enhance your writing experience",

@@ -42,10 +42,6 @@ export interface AppConfig {
     showNotePreviews?: boolean;
     appFontFamily: string;
   };
-  editor?: {
-    fontSize?: number;
-    lineHeight?: number;
-  };
   advanced?: {
     developerMode?: boolean;
     autoUpdate?: boolean;
@@ -83,10 +79,6 @@ export const defaultConfig: AppConfig = {
     wordWrap: true, // 自动换行
     showNotePreviews: false,
     appFontFamily: 'Outfit, system-ui, sans-serif',
-  },
-  editor: {
-    fontSize: 16,
-    lineHeight: 1.6,
   },
   advanced: {
     developerMode: false,

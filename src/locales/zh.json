@@ -54,10 +54,6 @@
         "exportNotes": "导出笔记",
         "exportNotesDescription": "将所有笔记保存为 Markdown 文件",
         "exportAll": "导出全部",
-        "markdownFormat": "Markdown 格式",
-        "markdownFormatDescription": "笔记以 .md 文件存储，包含 YAML frontmatter 元数据（标题、标签、日期）。",
-        "directoryMode": "目录模式",
-        "directoryModeDescription": "设置自定义目录以直接将笔记加载/保存为文件，适合与 git、Dropbox 或其他工具同步。",
         "lightweightTip": "本应用为轻量快速笔记记录，不宜存放过多或过大的文件。所有文件夹不会递归处理子目录。"
       }
     },
@@ -174,7 +170,6 @@
       "title": "编辑器",
       "description": "自定义您的写作体验",
       "navDescription": "写作和编辑偏好",
-      "lineHeight": "行高",
       "paperStyle": {
         "title": "纸张样式",
         "description": "选择背景样式以增强写作体验",
