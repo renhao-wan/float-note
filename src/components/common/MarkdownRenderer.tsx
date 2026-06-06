@@ -76,6 +76,22 @@ export function MarkdownRenderer({
           ),
           td: ({children}) => (
             <td className="border border-border/30 px-3 py-2">{children}</td>
+          ),
+          img: ({src, alt}) => (
+            <img
+              src={src}
+              alt={alt || ''}
+              className="max-w-full h-auto rounded-lg my-4 shadow-lg"
+              loading="lazy"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = 'none';
+                const errorText = document.createElement('span');
+                errorText.className = 'text-muted-foreground text-sm italic';
+                errorText.textContent = `图片加载失败: ${alt || src}`;
+                target.parentNode?.insertBefore(errorText, target);
+              }}
+            />
           )
         }}
       >
