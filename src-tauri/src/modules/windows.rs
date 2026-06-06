@@ -553,6 +553,7 @@ pub async fn create_hybrid_drag_window(
     // Create a window that follows the mouse
     let window_url = format!("index.html?note={}", note_id);
     println!("[DRAG] Creating hybrid drag window with URL: {}", window_url);
+    println!("[DRAG] Window label: {}", window_label);
 
     let drag_window = WebviewWindowBuilder::new(
         &app,
@@ -570,7 +571,10 @@ pub async fn create_hybrid_drag_window(
     .visible(!hidden.unwrap_or(false))  // Set initial visibility based on hidden parameter
     .shadow(true)
     .build()
-    .map_err(|e| format!("Failed to create hybrid drag window: {}", e))?;
+    .map_err(|e| {
+        println!("[DRAG] Failed to create window: {:?}", e);
+        format!("Failed to create hybrid drag window: {}", e)
+    })?;
     
     log_info!("DRAG", "Created hybrid drag window '{}' for note '{}' at ({}, {}), hidden={:?}", 
         window_label, note_id, x, y, hidden);
