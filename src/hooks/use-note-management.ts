@@ -126,9 +126,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   // Create new note
   const createNewNote = useCallback(async () => {
     try {
-      const oldNoteId = selectedNoteIdRef.current;
-      console.log('[FLOATNOTE] createNewNote: Before creation, selectedNoteId:', oldNoteId);
-
       const newNote = await invoke<Note>('create_note', {
         request: {
           title: 'Untitled',
@@ -136,7 +133,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
           tags: []
         }
       });
-      console.log('[FLOATNOTE] createNewNote: Created new note:', newNote.id);
 
       // Add the new note to the list - backend already handles positioning
       setNotes(prev => {
@@ -166,11 +162,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
   // Select a note
   const selectNote = useCallback((noteId: string | null) => {
-    console.log('[FLOATNOTE] selectNote called:', {
-      noteId,
-      currentSelectedId: selectedNoteIdRef.current
-    });
-
     if (!noteId) {
       selectedNoteIdRef.current = null;
       setSelectedNoteId(null);
@@ -186,12 +177,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
     // Use notesRef to avoid dependency on notes array
     const note = notesRef.current.find(n => n.id === noteId);
-    console.log('[FLOATNOTE] selectNote: Found note:', {
-      found: !!note,
-      noteId: note?.id,
-      contentLength: note?.content?.length
-    });
-
     if (note) {
       // Update ref immediately to prevent race conditions
       selectedNoteIdRef.current = noteId;
@@ -204,28 +189,13 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   const updateNoteContent = useCallback((content: string) => {
     // Use ref to get the latest selectedNoteId
     const currentNoteId = selectedNoteIdRef.current;
-    console.log('[FLOATNOTE] updateNoteContent called:', {
-      currentNoteId,
-      contentLength: content.length,
-      contentPreview: content.substring(0, 50),
-      timestamp: Date.now()
-    });
-    if (!currentNoteId) {
-      console.log('[FLOATNOTE] updateNoteContent: No selectedNoteId, returning');
-      return;
-    }
+    if (!currentNoteId) return;
 
     // Update local state immediately for responsiveness
     setCurrentContent(content);
 
     // Extract title and update the note in local state immediately
     const title = extractTitleFromContent(content);
-    console.log('[FLOATNOTE] updateNoteContent: Updating note:', {
-      currentNoteId,
-      title,
-      contentLength: content.length
-    });
-
     setNotes(prev => {
       // Update the note without re-sorting to preserve order
       const updated = prev.map(note =>
@@ -233,17 +203,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
           ? { ...note, title, content, updated_at: new Date().toISOString() }
           : note
       );
-
-      // Log which notes were updated
-      const updatedNotes = updated.filter((note, index) =>
-        note.id === currentNoteId && note.content !== prev[index].content
-      );
-      console.log('[FLOATNOTE] updateNoteContent: Notes updated:', updatedNotes.map(n => ({
-        id: n.id,
-        title: n.title,
-        contentLength: n.content.length
-      })));
-
       // Update notesRef immediately so selectNote can find updated content
       notesRef.current = updated;
       // Don't re-sort here - preserve the original order from the backend
