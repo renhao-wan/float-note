@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Note } from '../../types';
 import { extractTitleFromContent } from '../../lib/utils';
 import { useConfigStore } from '../../stores/config-store';
-import { getModifierSymbol } from '../../lib/platform';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
 
 interface SaveStatus {
@@ -80,28 +79,16 @@ export function EditorArea({
       )}
       
       {/* Mode toggle */}
-      <div className="relative flex items-center gap-1 bg-card/50 border border-border/30 rounded-xl">
-        {/* Sliding pill background - positioned absolutely but same z-level as buttons */}
-        <div 
-          className="absolute bg-primary/20 rounded-xl shadow-sm transition-all duration-200 ease-out pointer-events-none"
-          style={{
-            width: isPreviewMode ? '56%' : '44%',
-            height: 'calc(100% + 4px)',
-            top: '-2px',
-            transform: isPreviewMode ? 'translateX(calc(100% - 14px))' : 'translateX(0)'
-          }}
-        />
-        
+      <div className="flex items-center bg-card/30 border border-border/20 rounded-lg p-0.5">
         <button
           onClick={() => onPreviewToggle()}
-          className={`relative px-2 py-1 flex items-center gap-1.5 rounded-xl transition-all duration-200 text-xs font-medium ${
-            !isPreviewMode 
-              ? 'text-primary' 
-              : 'text-muted-foreground/60 hover:text-foreground hover:bg-white/5'
+          className={`px-2.5 py-1 flex items-center gap-1.5 rounded-md transition-all duration-150 text-xs font-medium ${
+            !isPreviewMode
+              ? 'bg-primary/15 text-primary shadow-sm'
+              : 'text-muted-foreground/50 hover:text-foreground/70'
           }`}
-          title={`Edit mode (${getModifierSymbol()}⇧P)`}
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
             <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
           </svg>
@@ -109,14 +96,13 @@ export function EditorArea({
         </button>
         <button
           onClick={() => onPreviewToggle()}
-          className={`relative px-2 py-1 flex items-center gap-1.5 rounded-xl transition-all duration-200 text-xs font-medium ${
-            isPreviewMode 
-              ? 'text-primary' 
-              : 'text-muted-foreground/60 hover:text-foreground hover:bg-white/5'
+          className={`px-2.5 py-1 flex items-center gap-1.5 rounded-md transition-all duration-150 text-xs font-medium ${
+            isPreviewMode
+              ? 'bg-primary/15 text-primary shadow-sm'
+              : 'text-muted-foreground/50 hover:text-foreground/70'
           }`}
-          title={`Preview mode (${getModifierSymbol()}⇧P)`}
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
             <circle cx="12" cy="12" r="3"/>
           </svg>

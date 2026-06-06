@@ -26,18 +26,18 @@ dist-ssr
 # Tauri
 src-tauri/target/
 
-# Local data directory
-data/.claude/
+# Claude Code
+.claude/
+CLAUDE.md
 
-# Claude local settings
-.claude/settings.local.json
+# Development scripts
+scripts/debug-*.sh
+generate_icons.py
 
 # Development process management
 .dev-pids/
 *.pid
 *.dev.log
-
-CLAUDE.md
 
 # Backup files
 *.backup
@@ -56,3 +56,4 @@ DEBUG*.md
 DEBUGGING.md
 manual-test-*.md
 test-*.md
+docs/superpowers/
