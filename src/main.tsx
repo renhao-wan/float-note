@@ -5,6 +5,9 @@ import App from './App';
 import './index.css';
 import './locales'; // 初始化 i18next
 
+console.log('[MAIN] FloatNote main.tsx loaded');
+console.log('[MAIN] Current URL:', window.location.href);
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
