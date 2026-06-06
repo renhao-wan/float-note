@@ -391,32 +391,21 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     </div>
   );
 
-  // Title bar right content with mode toggle, opacity slider, and pin button
+  // Title bar right content with mode toggle and pin button
   const titleBarRightContent = (
     <div className="flex items-center gap-2">
       {modeToggle}
-      <DetachedWindowOpacitySlider
-        windowLabel={windowLabel}
-      />
       {/* Pin button - keep window on top */}
       <button
         onClick={handleTogglePin}
-        className={`w-5 h-4 flex items-center justify-center rounded-2xl transition-all duration-200 ${
+        className={`flex items-center justify-center px-1.5 py-0.5 rounded text-[10px] font-mono transition-all duration-200 ${
           isPinned
-            ? 'bg-primary/20 text-primary shadow-sm'
+            ? 'bg-primary/20 text-primary'
             : 'text-muted-foreground/60 hover:text-foreground hover:bg-primary/5'
         }`}
         title={isPinned ? t('titlebar.unpin') : t('titlebar.pin')}
       >
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          {isPinned ? (
-            // Pin icon (filled)
-            <path d="M12 17v5M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7M7 11h10l-1 6H8l-1-6z" />
-          ) : (
-            // Pin icon (outline)
-            <path d="M12 17v5M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7M7 11h10l-1 6H8l-1-6z" />
-          )}
-        </svg>
+        {isPinned ? '📌' : '📍'}
       </button>
     </div>
   );
@@ -432,6 +421,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
         rightContent={!isShaded ? titleBarRightContent : undefined}
         onClose={handleCloseWindow}
         isShaded={isShaded}
+        showMinimize={false}
         stats={{
           wordCount,
           lastSaved: saveStatus.lastSaved ? saveStatus.getRelativeTime || undefined : undefined
@@ -459,7 +449,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
                 {config?.appearance?.vimMode && !isPreviewMode && (
                   <VimModeIndicator vimStatus={vimStatus} />
                 )}
-                
+
                 {/* Save status */}
                 <div className="flex items-center gap-1.5">
                   {saveStatus.isSaving ? (
@@ -490,12 +480,18 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
                   )}
                 </div>
               </div>
-              
-              {content && (
-                <span className="text-xs text-muted-foreground/40 font-light" style={{ fontSize: '10px' }}>
-                  {getWordCount(content)} {t('editor.words')}
-                </span>
-              )}
+
+              <div className="flex items-center gap-3">
+                {/* Opacity slider */}
+                <DetachedWindowOpacitySlider windowLabel={windowLabel} />
+
+                {/* Word count */}
+                {content && (
+                  <span className="text-xs text-muted-foreground/40 font-light" style={{ fontSize: '10px' }}>
+                    {getWordCount(content)} {t('editor.words')}
+                  </span>
+                )}
+              </div>
             </div>
           )}
         />

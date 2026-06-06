@@ -8,6 +8,7 @@ interface CustomTitleBarProps {
   isMainWindow?: boolean;
   noteId?: string;
   showTrafficLights?: boolean;
+  showMinimize?: boolean;
   rightContent?: React.ReactNode;
   onClose?: () => Promise<void>;
   isShaded?: boolean;
@@ -22,6 +23,7 @@ export function CustomTitleBar({
   isMainWindow = false,
   noteId,
   showTrafficLights = true,
+  showMinimize = true,
   rightContent,
   onClose,
   isShaded = false,
@@ -169,15 +171,17 @@ export function CustomTitleBar({
       {/* Window controls */}
       {showTrafficLights && (
         <div className="flex items-center gap-0.5 ml-2">
-          <button
-            onClick={handleMinimize}
-            className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground/80 hover:bg-foreground/5 transition-all duration-150"
-            title={t('titlebar.minimize')}
-          >
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-              <line x1="1.5" y1="5" x2="8.5" y2="5" />
-            </svg>
-          </button>
+          {showMinimize && (
+            <button
+              onClick={handleMinimize}
+              className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground/80 hover:bg-foreground/5 transition-all duration-150"
+              title={t('titlebar.minimize')}
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <line x1="1.5" y1="5" x2="8.5" y2="5" />
+              </svg>
+            </button>
+          )}
 
           <button
             onClick={handleMaximize}
