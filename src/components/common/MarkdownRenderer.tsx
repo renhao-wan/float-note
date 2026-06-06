@@ -109,7 +109,7 @@ export function MarkdownRenderer({
           ),
           section: ({children, ...props}) => {
             // 检查是否为脚注部分
-            const isFootnotes = props['data-footnotes'] === '';
+            const isFootnotes = (props as any)['data-footnotes'] === '';
             return isFootnotes ? (
               <section className="mt-8 pt-4 border-t border-border/30" {...props}>
                 <h2 className="text-sm font-semibold text-muted-foreground mb-2">脚注</h2>
