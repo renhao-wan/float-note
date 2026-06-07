@@ -60,7 +60,8 @@
 - [ ] **#12** `CodeMirrorEditor` 多个 `useEffect` 互相冲突地重建编辑器状态
   - 文件: `src/components/editor/CodeMirrorEditor.tsx` 第 385-443 行
   - 详情: `vimMode` 和 `typewriterMode` 变化时都调用 `view.setState()` 重建状态，同时变化会产生竞态
-  - **推迟原因**: 需要重构为统一的编辑器状态管理，涉及 CodeMirror 扩展系统的设计决策
+  - **重构计划**: 使用 Compartment 机制统一管理配置变更，避免 view.setState() 全量重建
+  - **状态**: 待实现
 
 - [x] **#13** `Vim.defineEx` 全局注册，多窗口实例互相覆盖 `onSave`
   - 文件: `src/components/editor/CodeMirrorEditor.tsx` 第 298-309 行
@@ -85,7 +86,12 @@
 - [ ] **#18** `detached-windows-store` 和 `window-positions-store` 严重职责重叠
   - 文件: `src/stores/detached-windows-store.ts` 和 `src/stores/window-positions-store.ts`
   - 详情: 两个 store 都调用相同的 Tauri 后端命令，维护独立状态，建议合并
-  - **推迟原因**: 重大架构重构，需要仔细规划迁移路径，避免破坏现有功能
+  - **重构计划**:
+    1. 将 `WindowPosition` 类型合并到 `DetachedWindow` 类型中
+    2. 在 `detached-windows-store` 中添加 `moveWindow` 和 `resizeWindow` 方法
+    3. 删除 `window-positions-store`，迁移所有调用点
+    4. 使用 `WINDOW_LABEL_PREFIX` 常量统一 label 管理
+  - **状态**: 待实现
 
 - [x] **#19** `config-store` 的 `loadConfig` 异常时 error 被置为 null
   - 文件: `src/stores/config-store.ts` 第 52-56 行
@@ -113,7 +119,12 @@
 - [ ] **#24** 多函数同时持有 `notes` 和 `config` 两个锁，锁顺序脆弱
   - 文件: `src-tauri/src/modules/commands.rs`
   - 详情: 目前获取顺序一致（先 notes 后 config），但未来修改可能引入死锁
-  - **推迟原因**: 需要重构为统一的应用状态结构体，涉及整个后端架构
+  - **重构计划**:
+    1. 将 `NotesState` 和 `ConfigState` 合并为 `AppState` 结构体（已在 state.rs 中定义）
+    2. 使用 `Arc<RwLock<AppState>>` 替代两个独立的 `Mutex`
+    3. 读多写少场景使用 `RwLock` 提升并发性能
+    4. 在 `lib.rs` 中初始化合并后的状态
+  - **状态**: 待实现
 
 - [x] **#25** `generate_unique_title` 理论上可能无限循环
   - 文件: `src-tauri/src/modules/commands.rs` 第 74-87 行
@@ -139,7 +150,12 @@
 - [ ] **#30** `error.rs` 定义了完善的错误类型但几乎未被使用
   - 文件: `src-tauri/src/error.rs`
   - 详情: 所有 Tauri command 都返回 `Result<T, String>`，错误信息丢失上下文
-  - **推迟原因**: 需要全面修改所有 Tauri command 的返回类型，影响面广
+  - **重构计划**:
+    1. 已添加 `to_string_error!` 辅助宏用于统一错误转换
+    2. 逐步将 Tauri command 返回类型改为 `Result<T, FloatNoteError>`
+    3. 在 `lib.rs` 中实现 `Into<tauri::InvokeError> for FloatNoteError`
+    4. 优先迁移 `commands.rs` 中的核心命令
+  - **状态**: 部分完成（已添加辅助宏）
 
 ---
 
