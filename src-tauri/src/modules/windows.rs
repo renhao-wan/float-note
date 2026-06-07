@@ -215,6 +215,7 @@ pub async fn recreate_missing_windows(
             detached_windows_lock.remove(&label);
             result.push_str(&format!("  ✓ Removed hybrid window: {}\n", label));
         }
+        save_detached_windows_to_disk(&detached_windows_lock).await?;
     }
     
     result.push_str("=== RECREATION COMPLETE ===\n");
