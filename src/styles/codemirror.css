@@ -9,24 +9,32 @@
 /* Scrollbar - same as global scrollbar */
 .cm-scroller {
   overflow-x: auto !important;
+  scrollbar-width: auto !important;
+  scrollbar-color: hsl(var(--primary) / 0.12) transparent !important;
 }
 
 .cm-scroller::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 5px !important;
+  height: 5px !important;
+  display: block !important;
 }
 
 .cm-scroller::-webkit-scrollbar-track {
-  background: transparent;
+  background: transparent !important;
 }
 
 .cm-scroller::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.12);
-  border-radius: 3px;
+  background: hsl(var(--primary) / 0.12) !important;
+  border-radius: 3px !important;
 }
 
 .cm-scroller::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.25);
+  background: hsl(var(--primary) / 0.25) !important;
+}
+
+/* Ensure scrollbar is not hidden */
+.cm-scroller::-webkit-scrollbar:vertical {
+  display: block !important;
 }
 
 /* Paper styles for CodeMirror */
