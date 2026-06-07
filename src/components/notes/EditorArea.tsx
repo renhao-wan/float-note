@@ -52,7 +52,6 @@ export function EditorArea({
   const { t } = useTranslation();
   const { config } = useConfigStore();
   const [vimStatus, setVimStatus] = useState<VimStatus>({ mode: 'NORMAL' });
-  const [titleError, setTitleError] = useState<string | null>(null);
 
   // Create a unified config object for NoteEditor
   const noteEditorConfig: EditorConfig = useMemo(() => ({
@@ -72,30 +71,19 @@ export function EditorArea({
   // Handle title change
   const handleTitleChange = async (newTitle: string) => {
     if (!onTitleChange) return;
-    setTitleError(null);
-    const success = await onTitleChange(newTitle);
-    if (!success) {
-      setTitleError('A note with this title already exists');
-      // Clear error after 3 seconds
-      setTimeout(() => setTitleError(null), 3000);
-    }
+    await onTitleChange(newTitle);
   };
 
   // Header component with mode toggle
   const renderHeader = () => (
     <div className="flex items-center justify-between px-5 py-3 border-b border-border/15 relative">
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 mr-4">
         <TitleEditor
           title={selectedNote?.title || ''}
           onTitleChange={handleTitleChange}
           placeholder="Untitled"
-          className="text-lg font-medium text-foreground/85"
+          className="text-lg font-medium text-foreground/85 truncate"
         />
-        {titleError && (
-          <div className="text-xs text-red-400 mt-1 animate-fade-in">
-            {titleError}
-          </div>
-        )}
       </div>
 
       {/* Note ID display - developer mode only */}
@@ -106,7 +94,7 @@ export function EditorArea({
       )}
 
       {/* Mode toggle */}
-      <div className="flex items-center bg-card/30 border border-border/20 rounded-lg p-0.5 ml-4">
+      <div className="flex items-center bg-card/30 border border-border/20 rounded-lg p-0.5 flex-shrink-0">
         <button
           onClick={() => onPreviewToggle()}
           className={`px-2.5 py-1 flex items-center gap-1.5 rounded-md transition-all duration-150 text-xs font-medium ${
