@@ -20,9 +20,9 @@ export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
 
   addToast: (message, type = 'info', duration = 3000) => {
-    const id = `toast-${++toastCounter}`;
+    const id = `toast-${Date.now()}-${++toastCounter}`;
     set((state) => ({
-      toasts: [...state.toasts, { id, message, type, duration }],
+      toasts: [...state.toasts.slice(-49), { id, message, type, duration }],
     }));
   },
 

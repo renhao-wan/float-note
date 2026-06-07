@@ -1,8 +1,7 @@
 use uuid::{Uuid, uuid};
 
-// Define a namespace UUID for FloatNote notes
-// This is a random UUID v4 that we use as our namespace
-const FLOATNOTE_NAMESPACE: Uuid = uuid!("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+// FloatNote 专属 namespace UUID v4（避免与其他使用 RFC 4122 DNS namespace 的系统冲突）
+const FLOATNOTE_NAMESPACE: Uuid = uuid!("4d90eaf3-f299-4bb4-a150-900c6b820a54");
 
 /// Generate a deterministic UUID v5 from a slug
 /// The same slug will always produce the same UUID

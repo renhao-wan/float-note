@@ -273,7 +273,7 @@ pub fn handle_menu_event(app: &AppHandle, menu_id: &str) {
                 log_error!("MENU", "❌ Main window not found");
             }
         }
-        "59" | "paste" => {
+        "paste" => {
             log_info!("MENU", "Paste menu item selected - triggering paste");
             match app.emit("menu-paste", ()) {
                 Ok(_) => log_info!("MENU", "✅ Paste event emitted"),

@@ -28,10 +28,8 @@ const showDragCancelEffect = (x: number, y: number) => {
 };
 
 export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold = 5 }: UseDragToDetachOptions) {
-  // Only isDragging and noteId are exposed to consumers; positions stay in refs
+  // Only isDragging is exposed to consumers; all other state stays in refs
   const [isDragging, setIsDragging] = useState(false);
-  const [isOutsideSidebar, setIsOutsideSidebar] = useState(false);
-  const [realWindowCreated, setRealWindowCreated] = useState(false);
 
   // Store beforeDetach in ref to avoid stale closure
   const beforeDetachRef = useRef(beforeDetach);
@@ -58,13 +56,6 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
     pendingPosition: null as { x: number; y: number } | null,
   });
 
-  // Merge all ref-sync into a single useEffect
-  useEffect(() => {
-    dragRef.current.isOutsideSidebar = isOutsideSidebar;
-    dragRef.current.realWindowCreated = realWindowCreated;
-    dragRef.current.isDragging = isDragging;
-  }, [isOutsideSidebar, realWindowCreated, isDragging]);
-
   // Cleanup helper: reset all drag state
   const cleanupDrag = useCallback(() => {
     document.body.style.cursor = '';
@@ -89,8 +80,8 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
     ref.pendingPosition = null;
 
     setIsDragging(false);
-    setIsOutsideSidebar(false);
-    setRealWindowCreated(false);
+    ref.isOutsideSidebar = false;
+    ref.realWindowCreated = false;
   }, []);
 
   // Start drag operation
@@ -117,8 +108,8 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
 
     // Reset visual state
     setIsDragging(false);
-    setIsOutsideSidebar(false);
-    setRealWindowCreated(false);
+    ref.isOutsideSidebar = false;
+    ref.realWindowCreated = false;
 
     // Clean up any existing hybrid drag window for this note first
     if (ref.realWindowLabel) {
@@ -220,7 +211,7 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
             x: screenX,
             y: screenY,
           }).then(() => {
-            setRealWindowCreated(true);
+            ref.realWindowCreated = true;
           }).catch(err => {
             console.error('[DRAG] Error showing window:', err);
           });
@@ -241,10 +232,8 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
             e.clientY < rect.top ||
             e.clientY > rect.bottom;
 
-          // Only update state when value changes (avoids redundant re-renders)
-          if (outside !== ref.isOutsideSidebar) {
-            setIsOutsideSidebar(outside);
-          }
+          // Update ref directly (no state needed, not returned to consumers)
+          ref.isOutsideSidebar = outside;
 
           ref.wasOutsideSidebar = outside;
         }

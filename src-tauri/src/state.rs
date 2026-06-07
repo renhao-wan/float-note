@@ -7,6 +7,8 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 /// Consolidated application state using RwLock for better concurrent access
+/// TODO: 迁移到此结构体以替代下方的 type aliases（当前未使用）
+#[allow(dead_code)]
 pub struct AppState {
     pub notes: Arc<RwLock<HashMap<String, Note>>>,
     pub config: Arc<RwLock<AppConfig>>,

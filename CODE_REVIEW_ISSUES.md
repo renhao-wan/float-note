@@ -73,7 +73,7 @@
   - 文件: `src/components/layout/CustomTitleBar.tsx` 第 34 行
   - 详情: 应用 `useMemo(() => getCurrentWebviewWindow(), [])` 稳定化
 
-- [ ] **#16** `ResizablePanel` 的 `mousemove` 无节流调用 `onResize`（60+次/秒）
+- [x] **#16** `ResizablePanel` 的 `mousemove` 无节流调用 `onResize`（60+次/秒）
   - 文件: `src/components/windows/ResizablePanel.tsx` 第 26-31 行
   - 详情: 每次鼠标移动都调用 `onResize`，父组件执行重操作时会导致性能问题
 
@@ -144,7 +144,7 @@
 - [ ] **#31** `App.tsx` 大量内联回调传给子组件，导致不必要的重渲染链
   - 文件: `src/App.tsx` 第 96-266 行
 
-- [ ] **#32** `use-drag-to-detach` 中 `isOutsideSidebar`/`realWindowCreated` 不必要的 state
+- [x] **#32** `use-drag-to-detach` 中 `isOutsideSidebar`/`realWindowCreated` 不必要的 state
   - 文件: `src/hooks/use-drag-to-detach.tsx` 第 33-34 行
   - 详情: 从未返回给消费者，仅通过 ref 使用，应移除 state 改用 ref
 
@@ -156,11 +156,11 @@
   - 文件: `src/hooks/use-app-initialization.ts` 第 22-25 行
   - 详情: 未处理的 Promise rejection 风险，`data-loaded` 事件可能触发重复加载
 
-- [ ] **#35** `use-window-tracking` 生产环境 60 秒 debounce 过于激进
+- [x] **#35** `use-window-tracking` 生产环境 60 秒 debounce 过于激进
   - 文件: `src/hooks/use-window-tracking.ts` 第 7-8 行
   - 详情: 应用崩溃时可能丢失最多 60 秒的窗口位置变更
 
-- [ ] **#36** `platform.ts` 使用已废弃的 `navigator.platform`
+- [x] **#36** `platform.ts` 使用已废弃的 `navigator.platform`
   - 文件: `src/lib/platform.ts` 第 7 行
   - 详情: 应复用 `strategy-manager.ts` 中的 `userAgent` 方案
 
@@ -168,7 +168,7 @@
   - 文件: `src/lib/transparency/strategy-manager.ts` 第 100-108 行
   - 详情: 缓存丢失时所有窗口透明度被错误报告为默认值
 
-- [ ] **#38** `formatDate` 未处理无效日期字符串
+- [x] **#38** `formatDate` 未处理无效日期字符串
   - 文件: `src/lib/utils.ts` 第 7-22 行
   - 详情: `Invalid Date` 会静默通过所有条件判断
 
@@ -176,7 +176,7 @@
   - 文件: `src/components/common/MarkdownRenderer.tsx` 第 86-93 行
   - 详情: 组件卸载时手动创建的 DOM 节点不会被 React 清理
 
-- [ ] **#40** `toast-store` 的 `toastCounter` 全局变量在 HMR 下不重置
+- [x] **#40** `toast-store` 的 `toastCounter` 全局变量在 HMR 下不重置
   - 文件: `src/stores/toast-store.ts` 第 17 行
   - 详情: 应使用 `crypto.randomUUID()` 或 `Date.now()` + 随机数
 
@@ -198,11 +198,11 @@
 
 ### 后端
 
-- [ ] **#45** `AppState` struct 定义了但从未使用
+- [x] **#45** `AppState` struct 定义了但从未使用
   - 文件: `src-tauri/src/state.rs` 第 10-44 行
   - 详情: 实际使用的是 `Mutex` type alias，两套并行状态定义容易混淆
 
-- [ ] **#46** `storage.rs` 中 `save_notes_to_disk`/`load_notes_from_disk` 是 dead code
+- [x] **#46** `storage.rs` 中 `save_notes_to_disk`/`load_notes_from_disk` 是 dead code
   - 文件: `src-tauri/src/modules/storage.rs` 第 14-47 行
   - 详情: 旧 JSON 存储方式的残留，已被 `FileNotesStorage` 替代
 
@@ -214,11 +214,11 @@
   - 文件: `src-tauri/src/modules/windows.rs` 第 1364-1372 行
   - 详情: TODO 占位符，函数体只是 `Ok(())`
 
-- [ ] **#49** `uuid_from_slug.rs` 使用 RFC 4122 DNS namespace UUID 而非自定义
+- [x] **#49** `uuid_from_slug.rs` 使用 RFC 4122 DNS namespace UUID 而非自定义
   - 文件: `src-tauri/src/utils/uuid_from_slug.rs` 第 5 行
   - 详情: 应生成随机 UUID v4 作为专属 namespace
 
-- [ ] **#50** `menu_handler.rs` 中 `"59"` 菜单 ID 疑似调试残留
+- [x] **#50** `menu_handler.rs` 中 `"59"` 菜单 ID 疑似调试残留
   - 文件: `src-tauri/src/handlers/menu_handler.rs` 第 276 行
   - 详情: 需要加注释说明或删除
 

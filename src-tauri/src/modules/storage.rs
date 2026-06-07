@@ -11,41 +11,6 @@ use crate::types::{
 use crate::{ConfigState, DetachedWindowsState};
 use crate::{log_debug, log_error, log_info};
 
-/// Save notes to disk as JSON
-#[allow(dead_code)]
-pub async fn save_notes_to_disk(notes: &HashMap<String, Note>) -> Result<(), String> {
-    let notes_dir = get_notes_directory()?;
-    fs::create_dir_all(&notes_dir).map_err(|e| format!("Failed to create notes directory: {}", e))?;
-    
-    let notes_file = notes_dir.join("notes.json");
-    let notes_json = serde_json::to_string_pretty(notes)
-        .map_err(|e| format!("Failed to serialize notes: {}", e))?;
-    
-    fs::write(notes_file, notes_json)
-        .map_err(|e| format!("Failed to write notes to disk: {}", e))?;
-    
-    Ok(())
-}
-
-/// Load notes from disk
-#[allow(dead_code)]
-pub async fn load_notes_from_disk() -> Result<HashMap<String, Note>, String> {
-    let notes_dir = get_notes_directory()?;
-    let notes_file = notes_dir.join("notes.json");
-    
-    if !notes_file.exists() {
-        return Ok(HashMap::new());
-    }
-    
-    let notes_json = fs::read_to_string(notes_file)
-        .map_err(|e| format!("Failed to read notes from disk: {}", e))?;
-    
-    let notes: HashMap<String, Note> = serde_json::from_str(&notes_json)
-        .map_err(|e| format!("Failed to parse notes JSON: {}", e))?;
-    
-    Ok(notes)
-}
-
 /// Save app configuration to disk
 pub async fn save_config_to_disk(config: &AppConfig) -> Result<(), String> {
     let notes_dir = get_notes_directory()?;

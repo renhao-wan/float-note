@@ -3,9 +3,9 @@ import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { invoke } from '@tauri-apps/api/core';
 import { DetachedWindowsAPI } from '../services/detached-windows-api';
 
-// Debounce intervals - much less frequent as requested
-const POSITION_UPDATE_DELAY = process.env.NODE_ENV === 'production' ? 60000 : 10000; // 60s prod, 10s dev
-const SIZE_UPDATE_DELAY = process.env.NODE_ENV === 'production' ? 60000 : 10000; // 60s prod, 10s dev
+// Debounce intervals
+const POSITION_UPDATE_DELAY = process.env.NODE_ENV === 'production' ? 5000 : 10000; // 5s prod, 10s dev
+const SIZE_UPDATE_DELAY = process.env.NODE_ENV === 'production' ? 5000 : 10000; // 5s prod, 10s dev
 
 export function useWindowTracking(noteId: string) {
   // Refs to store debounce timers and last known values

@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
   const now = new Date();
   const diffInMs = now.getTime() - date.getTime();
   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));

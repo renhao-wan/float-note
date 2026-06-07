@@ -2,9 +2,12 @@
 
 /**
  * 检测当前平台是否为 macOS
+ * 使用 userAgent 替代已废弃的 navigator.platform
  */
 export const isMac = (): boolean => {
-  return navigator.platform.includes('Mac');
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent.toLowerCase();
+  return ua.includes('mac') || ua.includes('darwin');
 };
 
 /**

@@ -22,16 +22,27 @@ export function ResizablePanel({
   const panelRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
+    let rafId: number | null = null;
+
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing) return;
-      
-      const newWidth = e.clientX;
-      const clampedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
-      setWidth(clampedWidth);
-      onResize?.(clampedWidth);
+
+      // Throttle using requestAnimationFrame (~60fps)
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const newWidth = e.clientX;
+        const clampedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+        setWidth(clampedWidth);
+        onResize?.(clampedWidth);
+      });
     };
     
     const handleMouseUp = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
       setIsResizing(false);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
