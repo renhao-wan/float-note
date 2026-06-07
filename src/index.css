@@ -134,14 +134,8 @@
   h2 { font-size: 1.125rem; }
   h3 { font-size: 1rem; }
 
-  /* ─── Scrollbar — minimal warm accent (thin, show on hover) ─── */
+  /* ─── Scrollbar — minimal warm accent ─── */
   ::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    transition: width 0.3s ease;
-  }
-
-  *:hover::-webkit-scrollbar {
     width: 5px;
     height: 5px;
   }
@@ -151,15 +145,12 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: transparent;
-  }
-
-  *:hover::-webkit-scrollbar-thumb {
     background: hsl(var(--primary) / 0.12);
     border-radius: 3px;
+    transition: background 0.3s ease;
   }
 
-  *:hover::-webkit-scrollbar-thumb:hover {
+  ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--primary) / 0.25);
   }
 
