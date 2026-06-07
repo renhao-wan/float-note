@@ -207,14 +207,11 @@ pub async fn rename_note(
         .ok_or_else(|| format!("Note not found: {}", id))?
         .clone();
 
-    // Generate new slug from new title
-    let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
+    // Generate new slug from new title, excluding current note from existing IDs
+    // This allows the note to keep its current slug if only the title display changes
+    let mut existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
+    existing_ids.remove(&id); // Remove current note to allow same slug
     let new_id = generate_unique_slug(&new_title, &existing_ids);
-
-    // Check if new ID conflicts with existing notes (excluding current note)
-    if new_id != id && existing_ids.contains(&new_id) {
-        return Err(format!("A note with the title '{}' already exists", new_title));
-    }
 
     // If ID changed, need to rename file and update state
     if new_id != id {
