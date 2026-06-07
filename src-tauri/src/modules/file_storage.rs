@@ -269,6 +269,26 @@ impl FileStorageManager {
 
         Ok(())
     }
+
+    /// Rename a note file
+    pub async fn rename_note_file(&self, old_id: &str, new_id: &str) -> Result<(), String> {
+        let old_path = self.notes_dir.join(format!("{}.md", old_id));
+        let new_path = self.notes_dir.join(format!("{}.md", new_id));
+
+        if old_path.exists() {
+            // Check if new path already exists
+            if new_path.exists() {
+                return Err(format!("A note file already exists: {}", new_id));
+            }
+
+            fs::rename(&old_path, &new_path)
+                .map_err(|e| format!("Failed to rename note file: {}", e))?;
+
+            log_info!("FILE_STORAGE", "Renamed note file: {:?} -> {:?}", old_path, new_path);
+        }
+
+        Ok(())
+    }
     
     /// Load workspace state
     pub async fn load_workspace_state(&self) -> Result<WorkspaceState, String> {

@@ -101,6 +101,7 @@ function App() {
     updateNoteContent,
     saveNoteImmediately,
     deleteNote,
+    renameNote,
     setCurrentContent,
   } = useNoteManagement({
     onSaveStart: () => {
@@ -226,6 +227,7 @@ function App() {
 
               <EditorArea
                 selectedNote={selectedNote || null}
+                selectedNoteId={selectedNoteId}
                 currentContent={currentContent}
                 isPreviewMode={isPreviewMode}
                 saveStatus={{
@@ -251,6 +253,12 @@ function App() {
                   if (selectedNote && content !== selectedNote.content) {
                     modifiedState.markModified();
                   }
+                }}
+                onTitleChange={async (newTitle) => {
+                  if (selectedNoteId) {
+                    return await renameNote(selectedNoteId, newTitle);
+                  }
+                  return false;
                 }}
                 onSave={saveNoteImmediately}
                 onPreviewToggle={() => setIsPreviewMode(!isPreviewMode)}

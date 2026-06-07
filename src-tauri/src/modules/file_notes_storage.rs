@@ -62,6 +62,11 @@ impl FileNotesStorage {
 
         Ok(())
     }
+
+    /// Rename a note file on disk
+    pub async fn rename_note(&self, old_id: &str, new_id: &str) -> Result<(), String> {
+        self.storage.rename_note_file(old_id, new_id).await
+    }
     
     /// Get all notes from cache
     pub async fn get_all_notes(&self) -> HashMap<String, Note> {

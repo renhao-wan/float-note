@@ -20,6 +20,7 @@ interface UseNoteManagementReturn {
   updateNoteContent: (content: string) => void;
   saveNoteImmediately: () => Promise<void>;
   deleteNote: (noteId: string) => Promise<void>;
+  renameNote: (noteId: string, newTitle: string) => Promise<boolean>;
   extractTitleFromContent: (content: string) => string;
 
   // Setters for external control
@@ -194,13 +195,12 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     // Update local state immediately for responsiveness
     setCurrentContent(content);
 
-    // Extract title and update the note in local state immediately
-    const title = extractTitleFromContent(content);
+    // Update the note content in local state (title is now independent)
     setNotes(prev => {
       // Update the note without re-sorting to preserve order
       const updated = prev.map(note =>
         note.id === currentNoteId
-          ? { ...note, title, content, updated_at: new Date().toISOString() }
+          ? { ...note, content, updated_at: new Date().toISOString() }
           : note
       );
       // Update notesRef immediately so selectNote can find updated content
@@ -220,11 +220,10 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       optionsRef.current?.onSaveStart?.();
 
       try {
-        // Update in backend
+        // Update in backend - only content, title is managed separately
         const updatedNote = await invoke<Note>('update_note', {
           id: currentNoteId,
           request: {
-            title,
             content,
             tags: undefined // Keep existing tags
           }
@@ -258,13 +257,10 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     optionsRef.current?.onSaveStart?.();
 
     try {
-      const title = extractTitleFromContent(currentContent);
-
-      // Update in backend
+      // Update in backend - only content, title is managed separately
       const updatedNote = await invoke<Note>('update_note', {
         id: selectedNoteIdRef.current,
         request: {
-          title,
           content: currentContent,
           tags: undefined // Keep existing tags
         }
@@ -274,7 +270,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       setNotes(prev => {
         const updated = prev.map(note =>
           note.id === selectedNoteIdRef.current
-            ? { ...note, title, content: currentContent, updated_at: updatedNote.updated_at }
+            ? { ...note, content: currentContent, updated_at: updatedNote.updated_at }
             : note
         );
         // Don't re-sort here - preserve the original order from the backend
@@ -292,6 +288,43 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       optionsRef.current?.onSaveError?.(error);
     }
   }, [currentContent]);
+
+  // Rename a note (change title)
+  const renameNote = useCallback(async (noteId: string, newTitle: string): Promise<boolean> => {
+    try {
+      const updatedNote = await invoke<Note>('rename_note', {
+        id: noteId,
+        newTitle
+      });
+
+      // Update local state
+      setNotes(prev => {
+        // Remove old note if ID changed
+        const filtered = prev.filter(n => n.id !== noteId);
+        const updated = [...filtered, updatedNote].sort((a, b) => {
+          if (a.position !== undefined && b.position !== undefined) {
+            return a.position - b.position;
+          }
+          if (a.position !== undefined) return -1;
+          if (b.position !== undefined) return 1;
+          return 0;
+        });
+        notesRef.current = updated;
+        return updated;
+      });
+
+      // If the renamed note was selected, update selectedNoteId
+      if (selectedNoteIdRef.current === noteId && updatedNote.id !== noteId) {
+        selectedNoteIdRef.current = updatedNote.id;
+        setSelectedNoteId(updatedNote.id);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('[FLOATNOTE] Failed to rename note:', error);
+      return false;
+    }
+  }, []);
 
   // Delete a note
   const deleteNote = useCallback(async (noteId: string) => {
@@ -368,6 +401,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     updateNoteContent,
     saveNoteImmediately,
     deleteNote,
+    renameNote,
     extractTitleFromContent,
 
     // Setters for external control

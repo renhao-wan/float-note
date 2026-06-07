@@ -5,7 +5,7 @@ use crate::types::note::{Note, CreateNoteRequest, UpdateNoteRequest};
 use crate::{NotesState, ConfigState};
 use crate::modules::file_notes_storage::FileNotesStorage;
 use crate::modules::modified_state_tracker::ModifiedStateTracker;
-use crate::utils::{generate_unique_slug, uuid_from_slug};
+use crate::utils::generate_unique_slug;
 use crate::{log_info, log_error, log_debug};
 
 /// Helper function to save all notes using FileNotesStorage
@@ -81,31 +81,17 @@ pub async fn create_note(
 ) -> Result<Note, String> {
     let mut notes_lock = notes.lock().await;
     let config_lock = config.lock().await;
-    
+
     // Find the highest position to place new note at the end
     let max_position = notes_lock.values()
         .filter_map(|n| n.position)
         .max()
         .unwrap_or(-1);
-    
-    // Generate a unique slug for the filename based on title
-    // Check existing note IDs to ensure uniqueness
-    let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
-    let mut slug = generate_unique_slug(&request.title, &HashSet::new());
-    let mut id = uuid_from_slug(&slug);
 
-    // Ensure the generated ID is unique by appending timestamp if needed
-    let mut counter = 1;
-    while existing_ids.contains(&id) {
-        slug = format!("{}-{}", generate_unique_slug(&request.title, &HashSet::new()), counter);
-        id = uuid_from_slug(&slug);
-        counter += 1;
-    }
-    
-    // Generate a deterministic UUID from the slug
-    // This UUID will change if the slug changes (when title changes)
-    let id = uuid_from_slug(&slug);
-    
+    // Generate a unique slug as the note ID (also used as filename)
+    let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
+    let id = generate_unique_slug(&request.title, &existing_ids);
+
     let now = chrono::Utc::now().to_rfc3339();
     let note = Note {
         id: id.clone(),
@@ -116,22 +102,22 @@ pub async fn create_note(
         tags: request.tags,
         position: Some(max_position + 1),
     };
-    
+
     notes_lock.insert(note.id.clone(), note.clone());
-    
+
     // Save only the new note
     save_note_using_file_storage(&note, &config_lock).await?;
-    
+
     // Initialize tracking for the new note
     modified_tracker.initialize_note(&note).await;
-    
+
     log_info!("NOTES", "Created note: {} ({})", note.title, note.id);
-    
+
     // Emit event to all windows for synchronization
     app.emit("note-created", &note).unwrap_or_else(|e| {
         log_error!("NOTES", "Failed to emit note-created event: {}", e);
     });
-    
+
     Ok(note)
 }
 
@@ -201,6 +187,87 @@ pub async fn update_note(
     } else {
         log_error!("NOTES", "Attempted to update non-existent note: {}", id);
         Ok(None)
+    }
+}
+
+/// Rename a note (change title and filename)
+#[tauri::command]
+pub async fn rename_note(
+    app: AppHandle,
+    id: String,
+    new_title: String,
+    notes: State<'_, NotesState>,
+    config: State<'_, ConfigState>,
+) -> Result<Note, String> {
+    let mut notes_lock = notes.lock().await;
+    let config_lock = config.lock().await;
+
+    // Check if the note exists
+    let old_note = notes_lock.get(&id)
+        .ok_or_else(|| format!("Note not found: {}", id))?
+        .clone();
+
+    // Generate new slug from new title
+    let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
+    let new_id = generate_unique_slug(&new_title, &existing_ids);
+
+    // Check if new ID conflicts with existing notes (excluding current note)
+    if new_id != id && existing_ids.contains(&new_id) {
+        return Err(format!("A note with the title '{}' already exists", new_title));
+    }
+
+    // If ID changed, need to rename file and update state
+    if new_id != id {
+        // Remove old entry from state
+        notes_lock.remove(&id);
+
+        // Rename file on disk
+        let file_storage = FileNotesStorage::new(&config_lock)?;
+        file_storage.rename_note(&id, &new_id).await?;
+
+        // Create updated note with new ID
+        let updated_note = Note {
+            id: new_id.clone(),
+            title: new_title,
+            content: old_note.content,
+            created_at: old_note.created_at,
+            updated_at: chrono::Utc::now().to_rfc3339(),
+            tags: old_note.tags,
+            position: old_note.position,
+        };
+
+        // Insert into state with new ID
+        notes_lock.insert(new_id.clone(), updated_note.clone());
+
+        log_info!("NOTES", "Renamed note: {} -> {}", id, new_id);
+
+        // Emit events for synchronization
+        app.emit("note-deleted", &id).unwrap_or_else(|e| {
+            log_error!("NOTES", "Failed to emit note-deleted event: {}", e);
+        });
+        app.emit("note-created", &updated_note).unwrap_or_else(|e| {
+            log_error!("NOTES", "Failed to emit note-created event: {}", e);
+        });
+
+        Ok(updated_note)
+    } else {
+        // Title didn't change enough to affect the slug, just update title
+        drop(old_note);
+        if let Some(note) = notes_lock.get_mut(&id) {
+            note.title = new_title;
+            note.updated_at = chrono::Utc::now().to_rfc3339();
+            let updated_note = note.clone();
+
+            save_note_using_file_storage(&updated_note, &config_lock).await?;
+
+            app.emit("note-updated", &updated_note).unwrap_or_else(|e| {
+                log_error!("NOTES", "Failed to emit note-updated event: {}", e);
+            });
+
+            Ok(updated_note)
+        } else {
+            Err(format!("Note not found: {}", id))
+        }
     }
 }
 

@@ -2,16 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 
 interface TitleEditorProps {
   title: string;
-  onTitleChange: (title: string) => void;
+  onTitleChange: (title: string) => void | Promise<void>;
   className?: string;
   placeholder?: string;
   autoFocus?: boolean;
 }
 
-export function TitleEditor({ 
-  title, 
-  onTitleChange, 
-  className = "", 
+export function TitleEditor({
+  title,
+  onTitleChange,
+  className = "",
   placeholder = "Untitled",
   autoFocus = false
 }: TitleEditorProps) {
@@ -35,9 +35,9 @@ export function TitleEditor({
     setEditValue(title);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     const finalTitle = editValue.trim() || placeholder;
-    onTitleChange(finalTitle);
+    await onTitleChange(finalTitle);
     setIsEditing(false);
   };
 

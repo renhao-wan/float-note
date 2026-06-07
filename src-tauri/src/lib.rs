@@ -117,6 +117,7 @@ pub fn run() {
             get_note,
             create_note,
             update_note,
+            rename_note,
             delete_note,
             reorder_notes,
             get_notes_directory,

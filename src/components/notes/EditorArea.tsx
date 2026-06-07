@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Note } from '../../types';
-import { extractTitleFromContent } from '../../lib/utils';
 import { useConfigStore } from '../../stores/config-store';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
+import { TitleEditor } from './TitleEditor';
 
 interface SaveStatus {
   isSaving: boolean;
@@ -14,6 +14,7 @@ interface SaveStatus {
 
 interface EditorAreaProps {
   selectedNote: Note | null;
+  selectedNoteId?: string | null;
   currentContent: string;
   isPreviewMode: boolean;
   saveStatus: SaveStatus;
@@ -29,12 +30,14 @@ interface EditorAreaProps {
     notePaperStyle?: 'none' | 'dotted-grid' | 'lines' | 'ruled';
   };
   onContentChange: (content: string) => void;
+  onTitleChange?: (newTitle: string) => Promise<boolean>;
   onSave?: () => void;
   onPreviewToggle: () => void;
 }
 
 export function EditorArea({
   selectedNote,
+  selectedNoteId: _selectedNoteId,
   currentContent,
   isPreviewMode,
   saveStatus,
@@ -42,12 +45,14 @@ export function EditorArea({
   textareaRef,
   editorConfig,
   onContentChange,
+  onTitleChange,
   onSave,
   onPreviewToggle
 }: EditorAreaProps) {
   const { t } = useTranslation();
   const { config } = useConfigStore();
   const [vimStatus, setVimStatus] = useState<VimStatus>({ mode: 'NORMAL' });
+  const [titleError, setTitleError] = useState<string | null>(null);
 
   // Create a unified config object for NoteEditor
   const noteEditorConfig: EditorConfig = useMemo(() => ({
@@ -64,22 +69,44 @@ export function EditorArea({
     notePaperStyle: editorConfig.notePaperStyle
   }), [editorConfig, config?.appearance?.vimMode, config?.appearance?.typewriterMode, config?.appearance?.wordWrap]);
 
+  // Handle title change
+  const handleTitleChange = async (newTitle: string) => {
+    if (!onTitleChange) return;
+    setTitleError(null);
+    const success = await onTitleChange(newTitle);
+    if (!success) {
+      setTitleError('A note with this title already exists');
+      // Clear error after 3 seconds
+      setTimeout(() => setTitleError(null), 3000);
+    }
+  };
+
   // Header component with mode toggle
   const renderHeader = () => (
     <div className="flex items-center justify-between px-5 py-3 border-b border-border/15 relative">
-      <h2 className="text-lg font-medium text-foreground/85 truncate flex-1" style={{ fontFamily: 'var(--font-ui)' }}>
-        {extractTitleFromContent(currentContent) || 'Untitled'}
-      </h2>
-      
+      <div className="flex-1 min-w-0">
+        <TitleEditor
+          title={selectedNote?.title || ''}
+          onTitleChange={handleTitleChange}
+          placeholder="Untitled"
+          className="text-lg font-medium text-foreground/85"
+        />
+        {titleError && (
+          <div className="text-xs text-red-400 mt-1 animate-fade-in">
+            {titleError}
+          </div>
+        )}
+      </div>
+
       {/* Note ID display - developer mode only */}
       {config?.advanced?.developerMode && selectedNote && (
         <div className="absolute right-5 top-full mt-1 text-[10px] font-mono text-muted-foreground/50">
           ID: {selectedNote.id}
         </div>
       )}
-      
+
       {/* Mode toggle */}
-      <div className="flex items-center bg-card/30 border border-border/20 rounded-lg p-0.5">
+      <div className="flex items-center bg-card/30 border border-border/20 rounded-lg p-0.5 ml-4">
         <button
           onClick={() => onPreviewToggle()}
           className={`px-2.5 py-1 flex items-center gap-1.5 rounded-md transition-all duration-150 text-xs font-medium ${
