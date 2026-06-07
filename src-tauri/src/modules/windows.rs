@@ -551,7 +551,7 @@ pub async fn create_hybrid_drag_window(
 
     // 先关闭已存在的窗口（如果有的话）
     if let Some(existing_window) = app.get_webview_window(&window_label) {
-        println!("[DRAG] Closing existing hybrid window: {}", window_label);
+        log_info!("DRAG", "Closing existing hybrid window: {}", window_label);
         let _ = existing_window.close();
         // 等待一小段时间确保窗口完全关闭
         tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
@@ -559,8 +559,8 @@ pub async fn create_hybrid_drag_window(
 
     // Create a window that follows the mouse
     let window_url = format!("index.html?note={}", note_id);
-    println!("[DRAG] Creating hybrid drag window with URL: {}", window_url);
-    println!("[DRAG] Window label: {}", window_label);
+    log_info!("DRAG", "Creating hybrid drag window with URL: {}", window_url);
+    log_info!("DRAG", "Window label: {}", window_label);
 
     // Windows 上 transparent=true 会导致 webview 不渲染，macOS/Linux 正常
     #[cfg(target_os = "windows")]
@@ -585,7 +585,7 @@ pub async fn create_hybrid_drag_window(
     .shadow(true)
     .build()
     .map_err(|e| {
-        println!("[DRAG] Failed to create window: {:?}", e);
+        log_info!("DRAG", "Failed to create window: {:?}", e);
         format!("Failed to create hybrid drag window: {}", e)
     })?;
     
@@ -736,10 +736,8 @@ pub async fn finalize_hybrid_drag_window(
         windows_lock.insert(window_label.clone(), detached_window.clone());
         save_detached_windows_to_disk(&windows_lock).await?;
         
-        // Update the app menu
         drop(windows_lock);
-        update_app_menu(app.clone(), detached_windows.clone(), notes.clone()).await?;
-        
+
         // Note: Window position/size tracking is now handled by the frontend useWindowTracking hook
         // with proper debouncing to avoid excessive file I/O operations
         
@@ -778,7 +776,7 @@ pub async fn restore_detached_windows(
     let mut restored_windows = Vec::new();
     let mut windows_to_remove = Vec::new();
     
-    println!("[RESTORE_WINDOWS] Checking {} windows in state", windows_lock.len());
+    log_info!("RESTORE_WINDOWS", "Checking {} windows in state", windows_lock.len());
     
     for (window_label, window_data) in windows_lock.iter() {
         if let Some(window) = app.get_webview_window(window_label) {
@@ -786,21 +784,21 @@ pub async fn restore_detached_windows(
             match window.is_visible() {
                 Ok(visible) => {
                     if !visible {
-                        println!("[RESTORE_WINDOWS] Showing hidden window: {}", window_label);
+                        log_info!("RESTORE_WINDOWS", "Showing hidden window: {}", window_label);
                         window.show().map_err(|e| e.to_string())?;
                         window.set_focus().map_err(|e| e.to_string())?;
                         restored_windows.push(window_label.clone());
                     } else {
-                        println!("[RESTORE_WINDOWS] Window already visible: {}", window_label);
+                        log_info!("RESTORE_WINDOWS", "Window already visible: {}", window_label);
                     }
                 },
                 Err(e) => {
-                    println!("[RESTORE_WINDOWS] Failed to check visibility for {}: {}", window_label, e);
+                    log_info!("RESTORE_WINDOWS", "Failed to check visibility for {}: {}", window_label, e);
                 }
             }
         } else {
             // Window doesn't exist, recreate it
-            println!("[RESTORE_WINDOWS] Recreating missing window: {}", window_label);
+            log_info!("RESTORE_WINDOWS", "Recreating missing window: {}", window_label);
             let _request = CreateDetachedWindowRequest {
                 note_id: window_data.note_id.clone(),
                 x: Some(window_data.position.0),
@@ -810,7 +808,7 @@ pub async fn restore_detached_windows(
             };
             
             // Don't recreate windows in restore - just remove them from state
-            println!("[RESTORE_WINDOWS] Removing missing window from state: {}", window_label);
+            log_info!("RESTORE_WINDOWS", "Removing missing window from state: {}", window_label);
             windows_to_remove.push(window_label.clone());
         }
     }
@@ -824,7 +822,7 @@ pub async fn restore_detached_windows(
         save_detached_windows_to_disk(&windows_lock).await?;
     }
     
-    println!("[RESTORE_WINDOWS] Restored {} windows", restored_windows.len());
+    log_info!("RESTORE_WINDOWS", "Restored {} windows", restored_windows.len());
     Ok(restored_windows)
 }
 
@@ -836,7 +834,7 @@ pub async fn clear_all_detached_windows(
     let mut windows_lock = detached_windows.lock().await;
     let window_count = windows_lock.len() as i32;
 
-    println!("[CLEAR_WINDOWS] Clearing {} detached windows", window_count);
+    log_info!("CLEAR_WINDOWS", "Clearing {} detached windows", window_count);
 
     // Close all actual Tauri windows
     for (window_label, _) in windows_lock.iter() {
@@ -861,7 +859,7 @@ pub async fn clear_all_detached_windows(
         log_error!("WINDOW", "Failed to emit all-detached-windows-cleared event: {}", e);
     });
 
-    println!("[CLEAR_WINDOWS] All {} detached windows cleared", window_count);
+    log_info!("CLEAR_WINDOWS", "All {} detached windows cleared", window_count);
     Ok(window_count)
 }
 
@@ -872,16 +870,16 @@ pub async fn focus_detached_window(
     detached_windows: State<'_, DetachedWindowsState>,
 ) -> Result<bool, String> {
     let windows_lock = detached_windows.lock().await;
-    println!("[FOCUS_DETACHED_WINDOW] Looking for note: {}", note_id);
+    log_info!("FOCUS_DETACHED_WINDOW", "Looking for note: {}", note_id);
     
     // Find window by note_id (only in note-* windows, not hybrid-drag)
     if let Some((window_label, _window_data)) = windows_lock.iter().find(|(label, w)| {
         label.starts_with("note-") && w.note_id == note_id
     }) {
-        println!("[FOCUS_DETACHED_WINDOW] Found window in state: {} -> {}", window_label, note_id);
+        log_info!("FOCUS_DETACHED_WINDOW", "Found window in state: {} -> {}", window_label, note_id);
         
         if let Some(window) = app.get_webview_window(window_label) {
-            println!("[FOCUS_DETACHED_WINDOW] ✅ Tauri window found, attempting to focus...");
+            log_info!("FOCUS_DETACHED_WINDOW", "✅ Tauri window found, attempting to focus...");
             
             // Show and focus the window
             window.show().map_err(|e| format!("Failed to show window: {}", e))?;
@@ -892,18 +890,18 @@ pub async fn focus_detached_window(
                 window.unminimize().map_err(|e| format!("Failed to unminimize window: {}", e))?;
             }
             
-            println!("[FOCUS_DETACHED_WINDOW] ✅ Successfully focused window for note: {}", note_id);
+            log_info!("FOCUS_DETACHED_WINDOW", "✅ Successfully focused window for note: {}", note_id);
             log_info!("WINDOW", "Focused existing detached window for note: {}", note_id);
             return Ok(true);
         } else {
-            println!("[FOCUS_DETACHED_WINDOW] ❌ Window found in state but Tauri window doesn't exist: {}", window_label);
-            println!("[FOCUS_DETACHED_WINDOW] ❌ Window may have been closed but not cleaned up from state");
+            log_info!("FOCUS_DETACHED_WINDOW", "❌ Window found in state but Tauri window doesn't exist: {}", window_label);
+            log_info!("FOCUS_DETACHED_WINDOW", "❌ Window may have been closed but not cleaned up from state");
         }
     } else {
-        println!("[FOCUS_DETACHED_WINDOW] ❌ No note window found in state for note: {}", note_id);
+        log_info!("FOCUS_DETACHED_WINDOW", "❌ No note window found in state for note: {}", note_id);
     }
     
-    println!("[FOCUS_DETACHED_WINDOW] ❌ Failed to focus window for note: {}", note_id);
+    log_info!("FOCUS_DETACHED_WINDOW", "❌ Failed to focus window for note: {}", note_id);
     log_info!("WINDOW", "No existing detached window found for note: {}", note_id);
     Ok(false)
 }
@@ -915,36 +913,36 @@ pub async fn create_detached_window(
     detached_windows: State<'_, DetachedWindowsState>,
     notes: State<'_, NotesState>,
 ) -> Result<DetachedWindow, String> {
-    println!("[CREATE_DETACHED_WINDOW] Starting window creation for note: {}", request.note_id);
-    println!("[CREATE_DETACHED_WINDOW] Request params: x={:?}, y={:?}, width={:?}, height={:?}", 
+    log_info!("CREATE_DETACHED_WINDOW", "Starting window creation for note: {}", request.note_id);
+    log_info!("CREATE_DETACHED_WINDOW", "Request params: x={:?}, y={:?}, width={:?}, height={:?}", 
         request.x, request.y, request.width, request.height);
     
     // Clean up any existing drag ghost window first
     if let Some(ghost_window) = app.get_webview_window("drag-ghost") {
-        println!("[CREATE_DETACHED_WINDOW] Found existing drag ghost window, closing it...");
+        log_info!("CREATE_DETACHED_WINDOW", "Found existing drag ghost window, closing it...");
         let _ = ghost_window.close();
     }
     
     // Check if note exists
     {
-        println!("[CREATE_DETACHED_WINDOW] Checking if note exists...");
+        log_info!("CREATE_DETACHED_WINDOW", "Checking if note exists...");
         let notes_lock = notes.lock().await;
         if !notes_lock.contains_key(&request.note_id) {
-            println!("[CREATE_DETACHED_WINDOW] ERROR: Note not found: {}", request.note_id);
+            log_info!("CREATE_DETACHED_WINDOW", "ERROR: Note not found: {}", request.note_id);
             return Err("Note not found".to_string());
         }
-        println!("[CREATE_DETACHED_WINDOW] Note exists ✓");
+        log_info!("CREATE_DETACHED_WINDOW", "Note exists ✓");
     }
 
     // Check if window already exists for this note
     let mut windows_lock = detached_windows.lock().await;
-    println!("[CREATE_DETACHED_WINDOW] Current windows count: {}", windows_lock.len());
-    println!("[CREATE_DETACHED_WINDOW] === BACKEND WINDOWS STATE ===");
+    log_info!("CREATE_DETACHED_WINDOW", "Current windows count: {}", windows_lock.len());
+    log_info!("CREATE_DETACHED_WINDOW", "=== BACKEND WINDOWS STATE ===");
     for (window_label, window) in windows_lock.iter() {
-        println!("[CREATE_DETACHED_WINDOW] Backend window: {} -> note_id: {}, position: ({}, {})", 
+        log_info!("CREATE_DETACHED_WINDOW", "Backend window: {} -> note_id: {}, position: ({}, {})", 
             window_label, window.note_id, window.position.0, window.position.1);
     }
-    println!("[CREATE_DETACHED_WINDOW] === END BACKEND WINDOWS STATE ===");
+    log_info!("CREATE_DETACHED_WINDOW", "=== END BACKEND WINDOWS STATE ===");
     
     // Only check for actual note windows (not hybrid-drag windows)
     let existing_note_window = windows_lock
@@ -954,16 +952,16 @@ pub async fn create_detached_window(
         });
     
     if existing_note_window.is_some() {
-        println!("[CREATE_DETACHED_WINDOW] ERROR: Note window already exists for note: {}", request.note_id);
+        log_info!("CREATE_DETACHED_WINDOW", "ERROR: Note window already exists for note: {}", request.note_id);
         return Err("Window already exists for this note".to_string());
     }
-    println!("[CREATE_DETACHED_WINDOW] No existing note window for this note ✓");
+    log_info!("CREATE_DETACHED_WINDOW", "No existing note window for this note ✓");
 
     let window_label = format!("note-{}", request.note_id);
-    println!("[CREATE_DETACHED_WINDOW] Window label: {}", window_label);
+    log_info!("CREATE_DETACHED_WINDOW", "Window label: {}", window_label);
     
     // Check if we have a saved position for this note
-    println!("[CREATE_DETACHED_WINDOW] Loading saved spatial data...");
+    log_info!("CREATE_DETACHED_WINDOW", "Loading saved spatial data...");
     let saved_window = load_spatial_data(&request.note_id).await;
     
     // Use requested dimensions first, then saved, then defaults
@@ -1000,18 +998,18 @@ pub async fn create_detached_window(
         // Offset by 30 pixels from the requested position
         x += 30.0;
         y += 30.0;
-        println!("[CREATE_DETACHED_WINDOW] Offsetting window position to avoid overlap");
+        log_info!("CREATE_DETACHED_WINDOW", "Offsetting window position to avoid overlap");
     }
     
-    println!("[CREATE_DETACHED_WINDOW] Window dimensions: {}x{} at ({}, {})", width, height, x, y);
+    log_info!("CREATE_DETACHED_WINDOW", "Window dimensions: {}x{} at ({}, {})", width, height, x, y);
 
     // Create the window
-    println!("[CREATE_DETACHED_WINDOW] Creating WebviewWindow...");
+    log_info!("CREATE_DETACHED_WINDOW", "Creating WebviewWindow...");
     let window_url = format!("index.html?note={}", request.note_id);
-    println!("[CREATE_DETACHED_WINDOW] Window URL: {}", window_url);
+    log_info!("CREATE_DETACHED_WINDOW", "Window URL: {}", window_url);
     
     // Create window with custom title bar
-    println!("[CREATE_DETACHED_WINDOW] Building window...");
+    log_info!("CREATE_DETACHED_WINDOW", "Building window...");
     let webview_window = WebviewWindowBuilder::new(
         &app,
         &window_label,
@@ -1028,32 +1026,32 @@ pub async fn create_detached_window(
     .min_inner_size(400.0, 300.0)  // Minimum size for proper display
     .build()
     .map_err(|e| {
-        println!("[CREATE_DETACHED_WINDOW] ERROR: Failed to create window: {:?}", e);
+        log_info!("CREATE_DETACHED_WINDOW", "ERROR: Failed to create window: {:?}", e);
         format!("Failed to create window: {}", e)
     })?;
     
-    println!("[CREATE_DETACHED_WINDOW] WebviewWindow created successfully ✓");
+    log_info!("CREATE_DETACHED_WINDOW", "WebviewWindow created successfully ✓");
     
     // Ensure the window is visible
-    println!("[CREATE_DETACHED_WINDOW] Showing window...");
+    log_info!("CREATE_DETACHED_WINDOW", "Showing window...");
     webview_window.show().map_err(|e| {
-        println!("[CREATE_DETACHED_WINDOW] ERROR: Failed to show window: {:?}", e);
+        log_info!("CREATE_DETACHED_WINDOW", "ERROR: Failed to show window: {:?}", e);
         format!("Failed to show window: {}", e)
     })?;
-    println!("[CREATE_DETACHED_WINDOW] Window shown ✓");
+    log_info!("CREATE_DETACHED_WINDOW", "Window shown ✓");
     
     // Set focus to ensure it's brought to front
     webview_window.set_focus().map_err(|e| {
-        println!("[CREATE_DETACHED_WINDOW] WARNING: Failed to set focus: {:?}", e);
+        log_info!("CREATE_DETACHED_WINDOW", "WARNING: Failed to set focus: {:?}", e);
         e.to_string()
     }).unwrap_or_else(|e| {
-        println!("[CREATE_DETACHED_WINDOW] Focus warning: {}", e);
+        log_info!("CREATE_DETACHED_WINDOW", "Focus warning: {}", e);
     });
     
     // Verify window is actually visible
     match webview_window.is_visible() {
-        Ok(visible) => println!("[CREATE_DETACHED_WINDOW] Window visibility check: {}", visible),
-        Err(e) => println!("[CREATE_DETACHED_WINDOW] ERROR: Failed to check visibility: {:?}", e),
+        Ok(visible) => log_info!("CREATE_DETACHED_WINDOW", "Window visibility check: {}", visible),
+        Err(e) => log_info!("CREATE_DETACHED_WINDOW", "ERROR: Failed to check visibility: {:?}", e),
     }
 
     let detached_window = DetachedWindow {
@@ -1066,27 +1064,22 @@ pub async fn create_detached_window(
         is_shaded: false,
         original_height: None,
     };
-    println!("[CREATE_DETACHED_WINDOW] DetachedWindow struct created: {:?}", detached_window);
+    log_info!("CREATE_DETACHED_WINDOW", "DetachedWindow struct created: {:?}", detached_window);
 
-    println!("[CREATE_DETACHED_WINDOW] Inserting window into state...");
+    log_info!("CREATE_DETACHED_WINDOW", "Inserting window into state...");
     windows_lock.insert(window_label.clone(), detached_window.clone());
-    println!("[CREATE_DETACHED_WINDOW] Window inserted into state ✓");
+    log_info!("CREATE_DETACHED_WINDOW", "Window inserted into state ✓");
     
-    println!("[CREATE_DETACHED_WINDOW] Saving detached windows to disk...");
+    log_info!("CREATE_DETACHED_WINDOW", "Saving detached windows to disk...");
     save_detached_windows_to_disk(&windows_lock).await.map_err(|e| {
-        println!("[CREATE_DETACHED_WINDOW] ERROR: Failed to save windows to disk: {}", e);
+        log_info!("CREATE_DETACHED_WINDOW", "ERROR: Failed to save windows to disk: {}", e);
         e
     })?;
-    println!("[CREATE_DETACHED_WINDOW] Windows saved to disk ✓");
+    log_info!("CREATE_DETACHED_WINDOW", "Windows saved to disk ✓");
     
     // Update the app menu to include the new window
     drop(windows_lock);
-    println!("[CREATE_DETACHED_WINDOW] Updating app menu...");
-    update_app_menu(app.clone(), detached_windows.clone(), notes.clone()).await.map_err(|e| {
-        println!("[CREATE_DETACHED_WINDOW] ERROR: Failed to update app menu: {}", e);
-        e
-    })?;
-    println!("[CREATE_DETACHED_WINDOW] App menu updated ✓");
+    log_info!("CREATE_DETACHED_WINDOW", "App menu updated ✓");
     
     // Set up window event listeners for lifecycle tracking
     let window_label_for_events = window_label.clone();
@@ -1116,13 +1109,13 @@ pub async fn create_detached_window(
         }
     });
     
-    println!("[CREATE_DETACHED_WINDOW] Window lifecycle listeners attached ✓");
+    log_info!("CREATE_DETACHED_WINDOW", "Window lifecycle listeners attached ✓");
     
     // Note: Window position/size tracking is now handled by the frontend useWindowTracking hook
     // with proper debouncing to avoid excessive file I/O operations
-    println!("[CREATE_DETACHED_WINDOW] Window tracking delegated to frontend (debounced) ✓");
+    log_info!("CREATE_DETACHED_WINDOW", "Window tracking delegated to frontend (debounced) ✓");
 
-    println!("[CREATE_DETACHED_WINDOW] Window creation completed successfully! Returning: {:?}", detached_window);
+    log_info!("CREATE_DETACHED_WINDOW", "Window creation completed successfully! Returning: {:?}", detached_window);
     Ok(detached_window)
 }
 
@@ -1168,10 +1161,8 @@ pub async fn close_detached_window(
     windows_lock.remove(&window_label);
     save_detached_windows_to_disk(&windows_lock).await?;
     
-    // Update the app menu to remove the closed window
     drop(windows_lock);
-    update_app_menu(app.clone(), detached_windows.clone(), notes.clone()).await?;
-    
+
     // Emit event to all windows to notify frontend
     app.emit("window-closed", note_id.clone()).map_err(|e| e.to_string())?;
     log_info!("WINDOW", "Emitted window-closed event for note: {}", note_id);
@@ -1363,16 +1354,6 @@ async fn save_spatial_data(note_id: &str, window_data: &DetachedWindow) -> Resul
 // HELPER FUNCTIONS
 // ============================================================================
 
-/// Update the app menu to include detached windows
-async fn update_app_menu(
-    _app: AppHandle,
-    _detached_windows: State<'_, DetachedWindowsState>,
-    _notes: State<'_, NotesState>,
-) -> Result<(), String> {
-    // For now, just return Ok - menu functionality would be implemented here
-    // This is a placeholder to satisfy the function calls
-    Ok(())
-}
 
 // ============================================================================
 // DEPRECATED FUNCTIONS (KEPT FOR COMPATIBILITY)
@@ -1485,7 +1466,7 @@ pub async fn set_detached_window_opacity_windows(
     window_label: String,
     opacity: f64,
 ) -> Result<(), String> {
-    println!("[OPACITY] Setting opacity for window: {} to {}", window_label, opacity);
+    log_debug!("OPACITY", "Setting opacity for window: {} to {}", window_label, opacity);
 
     let window = app.get_webview_window(&window_label)
         .ok_or("Window not found")?;
@@ -1501,15 +1482,15 @@ pub async fn set_detached_window_opacity_windows(
         // 获取窗口句柄
         let hwnd = window.hwnd().map_err(|e| e.to_string())?;
         let hwnd = HWND(hwnd.0 as _);
-        println!("[OPACITY] Window HWND: {:?}", hwnd);
+        log_debug!("OPACITY", "Window HWND: {:?}", hwnd);
 
         // 获取当前扩展样式
         let ex_style = unsafe { GetWindowLongW(hwnd, GWL_EXSTYLE) };
-        println!("[OPACITY] Current ex_style: {}", ex_style);
+        log_debug!("OPACITY", "Current ex_style: {}", ex_style);
 
         // 添加 WS_EX_LAYERED 样式（如果还没有）
         if (ex_style & WS_EX_LAYERED.0 as i32) == 0 {
-            println!("[OPACITY] Adding WS_EX_LAYERED style");
+            log_debug!("OPACITY", "Adding WS_EX_LAYERED style");
             unsafe {
                 SetWindowLongW(hwnd, GWL_EXSTYLE, ex_style | WS_EX_LAYERED.0 as i32);
             }
@@ -1517,15 +1498,15 @@ pub async fn set_detached_window_opacity_windows(
 
         // 设置透明度（0-255）
         let alpha = (opacity * 255.0) as u8;
-        println!("[OPACITY] Setting alpha to: {}", alpha);
+        log_debug!("OPACITY", "Setting alpha to: {}", alpha);
         unsafe {
             match SetLayeredWindowAttributes(hwnd, COLORREF(0), alpha, LWA_ALPHA) {
                 Ok(_) => {
-                    println!("[OPACITY] Successfully set opacity");
+                    log_debug!("OPACITY", "Successfully set opacity");
                     Ok(())
                 },
                 Err(e) => {
-                    println!("[OPACITY] Failed to set opacity: {}", e);
+                    log_debug!("OPACITY", "Failed to set opacity: {}", e);
                     Err(format!("Failed to set opacity: {}", e))
                 }
             }

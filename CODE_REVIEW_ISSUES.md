@@ -95,7 +95,7 @@
   - 文件: `src/components/windows/DetachedWindowOpacitySlider.tsx` 第 49-58 行
   - 详情: 挂载时强制设为 `TRANSPARENCY_CONFIG.defaultOpacity`（0.9），忽略 `initialOpacity`
 
-- [ ] **#21** `tauri-api.ts` 完全没有错误处理
+- [x] **#21** `tauri-api.ts` 完全没有错误处理
   - 文件: `src/services/tauri-api.ts`
   - 详情: 所有方法都没有 `try/catch`，异常直接冒泡，日志中无 `[FLOATNOTE]` 前缀
   - **推迟原因**: 需要统一错误处理策略，与 #43 一起处理
@@ -191,7 +191,7 @@
   - 文件: `src/hooks/use-global-event-listeners.tsx` 第 75-84 行
   - 详情: 注册了事件但回调函数体为空，消耗资源却什么都不做
 
-- [ ] **#42** `window-positions-store` 硬编码窗口 label 格式 `note-${noteId}`
+- [x] **#42** `window-positions-store` 硬编码窗口 label 格式 `note-${noteId}`
   - 文件: `src/stores/window-positions-store.ts` 第 100-120 行
   - 详情: 后端 label 生成逻辑变化时会悄悄出错
   - **推迟原因**: 与 #18 一起处理（store 合并时统一 label 管理）
@@ -219,7 +219,7 @@
   - 文件: `src-tauri/src/modules/note_commands.rs`、`src-tauri/src/services/note_service.rs`
   - 详情: 增加维护负担和编译时间
 
-- [ ] **#48** `update_app_menu` 是空实现，多处调用做无用功
+- [x] **#48** `update_app_menu` 是空实现，多处调用做无用功
   - 文件: `src-tauri/src/modules/windows.rs` 第 1364-1372 行
   - 详情: TODO 占位符，函数体只是 `Ok(())`
   - **推迟原因**: 需要实现完整的菜单更新逻辑或移除相关调用
@@ -232,7 +232,7 @@
   - 文件: `src-tauri/src/handlers/menu_handler.rs` 第 276 行
   - 详情: 需要加注释说明或删除
 
-- [ ] **#51** 日志方式不一致（`println!` vs `log_info!` 宏）
+- [x] **#51** 日志方式不一致（`println!` vs `log_info!` 宏）
   - 文件: `src-tauri/src/modules/windows.rs`
   - 详情: 应统一使用日志宏以便于日志收集和过滤
   - **推迟原因**: 需要全面扫描替换，影响文件较多

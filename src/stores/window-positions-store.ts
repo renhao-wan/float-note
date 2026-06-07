@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { invoke } from '@tauri-apps/api/core';
 import { DetachedWindow } from '../services/detached-windows-api';
+import { WINDOW_LABEL_PREFIX } from '../types/window';
 
 interface WindowPosition {
   position: [number, number];
@@ -98,7 +99,7 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
 
       // Update backend position (fire and forget)
       invoke('update_detached_window_position', {
-        windowLabel: `note-${noteId}`,
+        windowLabel: `${WINDOW_LABEL_PREFIX}${noteId}`,
         x,
         y
       }).catch(() => {}); // Ignore errors
@@ -119,7 +120,7 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
 
       // Update backend size (fire and forget)
       invoke('update_detached_window_size', {
-        windowLabel: `note-${noteId}`,
+        windowLabel: `${WINDOW_LABEL_PREFIX}${noteId}`,
         width,
         height
       }).catch(() => {}); // Ignore errors
