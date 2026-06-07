@@ -6,14 +6,20 @@
   overflow: hidden !important;
 }
 
-/* Hide default scrollbars and use custom ones - match global scrollbar style */
+/* Hide default scrollbars - match notes list scrollbar-thin style */
 .cm-scroller {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--primary) / 0.12) transparent;
+  scrollbar-color: transparent transparent;
   overflow-x: auto !important; /* Allow horizontal scroll only when needed */
 }
 
 .cm-scroller::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  transition: width 0.3s ease;
+}
+
+.cm-editor:hover .cm-scroller::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
@@ -23,12 +29,15 @@
 }
 
 .cm-scroller::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.12);
-  border-radius: 3px;
-  transition: background 0.3s ease;
+  background: transparent;
 }
 
-.cm-scroller::-webkit-scrollbar-thumb:hover {
+.cm-editor:hover .cm-scroller::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.12);
+  border-radius: 3px;
+}
+
+.cm-editor:hover .cm-scroller::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary) / 0.25);
 }
 
