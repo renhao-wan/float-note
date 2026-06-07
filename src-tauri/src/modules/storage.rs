@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-use std::fs;
 use std::path::PathBuf;
 use tauri::{AppHandle, Emitter, State};
+use tokio::fs;
 
 use crate::types::{
     note::Note,
@@ -14,15 +14,15 @@ use crate::{log_debug, log_error, log_info};
 /// Save app configuration to disk
 pub async fn save_config_to_disk(config: &AppConfig) -> Result<(), String> {
     let notes_dir = get_notes_directory()?;
-    fs::create_dir_all(&notes_dir).map_err(|e| format!("Failed to create notes directory: {}", e))?;
-    
+    fs::create_dir_all(&notes_dir).await.map_err(|e| format!("Failed to create notes directory: {}", e))?;
+
     let config_file = notes_dir.join("config.json");
     let config_json = serde_json::to_string_pretty(config)
         .map_err(|e| format!("Failed to serialize config: {}", e))?;
-    
-    fs::write(config_file, config_json)
+
+    fs::write(config_file, config_json).await
         .map_err(|e| format!("Failed to write config to disk: {}", e))?;
-    
+
     log_debug!("CONFIG", "Config saved to disk");
     Ok(())
 }
@@ -31,18 +31,18 @@ pub async fn save_config_to_disk(config: &AppConfig) -> Result<(), String> {
 pub async fn load_config_from_disk() -> Result<AppConfig, String> {
     let notes_dir = get_notes_directory()?;
     let config_file = notes_dir.join("config.json");
-    
+
     if !config_file.exists() {
         log_debug!("CONFIG", "No config file found, using defaults");
         return Ok(AppConfig::default());
     }
-    
-    let config_json = fs::read_to_string(config_file)
+
+    let config_json = fs::read_to_string(config_file).await
         .map_err(|e| format!("Failed to read config from disk: {}", e))?;
-    
+
     let config: AppConfig = serde_json::from_str(&config_json)
         .map_err(|e| format!("Failed to parse config JSON: {}", e))?;
-    
+
     log_debug!("CONFIG", "Config loaded from disk");
     Ok(config)
 }
@@ -50,13 +50,13 @@ pub async fn load_config_from_disk() -> Result<AppConfig, String> {
 /// Save detached windows state to disk
 pub async fn save_detached_windows_to_disk(windows: &HashMap<String, DetachedWindow>) -> Result<(), String> {
     let notes_dir = get_notes_directory()?;
-    fs::create_dir_all(&notes_dir).map_err(|e| format!("Failed to create notes directory: {}", e))?;
-    
+    fs::create_dir_all(&notes_dir).await.map_err(|e| format!("Failed to create notes directory: {}", e))?;
+
     let windows_file = notes_dir.join("detached_windows.json");
     let windows_json = serde_json::to_string_pretty(windows)
         .map_err(|e| format!("Failed to serialize detached windows: {}", e))?;
-    
-    fs::write(windows_file, windows_json)
+
+    fs::write(windows_file, windows_json).await
         .map_err(|e| format!("Failed to write detached windows to disk: {}", e))?;
     
     Ok(())
@@ -66,17 +66,17 @@ pub async fn save_detached_windows_to_disk(windows: &HashMap<String, DetachedWin
 pub async fn load_detached_windows_from_disk() -> Result<HashMap<String, DetachedWindow>, String> {
     let notes_dir = get_notes_directory()?;
     let windows_file = notes_dir.join("detached_windows.json");
-    
+
     if !windows_file.exists() {
         return Ok(HashMap::new());
     }
-    
-    let windows_json = fs::read_to_string(windows_file)
+
+    let windows_json = fs::read_to_string(windows_file).await
         .map_err(|e| format!("Failed to read detached windows from disk: {}", e))?;
-    
+
     let windows: HashMap<String, DetachedWindow> = serde_json::from_str(&windows_json)
         .map_err(|e| format!("Failed to parse detached windows JSON: {}", e))?;
-    
+
     Ok(windows)
 }
 

@@ -119,7 +119,7 @@
   - 文件: `src-tauri/src/modules/commands.rs` 第 74-87 行
   - 详情: 缺少最大重试次数限制
 
-- [ ] **#26** 同步文件 I/O 声明为 `async fn`，阻塞 Tokio 运行时
+- [x] **#26** 同步文件 I/O 声明为 `async fn`，阻塞 Tokio 运行时
   - 文件: `src-tauri/src/modules/storage.rs`、`src-tauri/src/modules/file_notes_storage.rs`
   - 详情: 使用 `std::fs` 而非 `tokio::fs`，阻塞工作线程
   - **推迟原因**: 桌面应用本地 SSD 影响较小，改动范围大需全面测试
