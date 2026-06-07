@@ -81,6 +81,10 @@ export function CodeMirrorEditor({
         lineHeight: `${lineHeight}`,
         backgroundColor: 'transparent',
         caretColor: '#5a9e96 !important',
+        overflowY: 'auto',
+        overflowX: 'auto',
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'hsl(34 62% 60% / 0.12) transparent',
       },
       '.cm-placeholder': {
         color: 'var(--muted-foreground)',
