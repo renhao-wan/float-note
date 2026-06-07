@@ -47,7 +47,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isPreviewMode, setIsPreviewMode] = useState(false); // Start in edit mode
   const [currentView, setCurrentView] = useState<'notes' | 'settings'>('notes');
-  const [selectedSettingsSection, setSelectedSettingsSection] = useState<'general' | 'appearance' | 'editor'>('appearance');
+  const [selectedSettingsSection, setSelectedSettingsSection] = useState<'general' | 'appearance' | 'editor'>('general');
 
   // 同步语言设置
   useEffect(() => {
