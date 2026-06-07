@@ -60,6 +60,7 @@
 - [ ] **#12** `CodeMirrorEditor` 多个 `useEffect` 互相冲突地重建编辑器状态
   - 文件: `src/components/editor/CodeMirrorEditor.tsx` 第 385-443 行
   - 详情: `vimMode` 和 `typewriterMode` 变化时都调用 `view.setState()` 重建状态，同时变化会产生竞态
+  - **推迟原因**: 需要重构为统一的编辑器状态管理，涉及 CodeMirror 扩展系统的设计决策
 
 - [x] **#13** `Vim.defineEx` 全局注册，多窗口实例互相覆盖 `onSave`
   - 文件: `src/components/editor/CodeMirrorEditor.tsx` 第 298-309 行
@@ -84,6 +85,7 @@
 - [ ] **#18** `detached-windows-store` 和 `window-positions-store` 严重职责重叠
   - 文件: `src/stores/detached-windows-store.ts` 和 `src/stores/window-positions-store.ts`
   - 详情: 两个 store 都调用相同的 Tauri 后端命令，维护独立状态，建议合并
+  - **推迟原因**: 重大架构重构，需要仔细规划迁移路径，避免破坏现有功能
 
 - [x] **#19** `config-store` 的 `loadConfig` 异常时 error 被置为 null
   - 文件: `src/stores/config-store.ts` 第 52-56 行
@@ -96,6 +98,7 @@
 - [ ] **#21** `tauri-api.ts` 完全没有错误处理
   - 文件: `src/services/tauri-api.ts`
   - 详情: 所有方法都没有 `try/catch`，异常直接冒泡，日志中无 `[FLOATNOTE]` 前缀
+  - **推迟原因**: 需要统一错误处理策略，与 #43 一起处理
 
 ### 后端
 
@@ -110,6 +113,7 @@
 - [ ] **#24** 多函数同时持有 `notes` 和 `config` 两个锁，锁顺序脆弱
   - 文件: `src-tauri/src/modules/commands.rs`
   - 详情: 目前获取顺序一致（先 notes 后 config），但未来修改可能引入死锁
+  - **推迟原因**: 需要重构为统一的应用状态结构体，涉及整个后端架构
 
 - [x] **#25** `generate_unique_title` 理论上可能无限循环
   - 文件: `src-tauri/src/modules/commands.rs` 第 74-87 行
@@ -118,6 +122,7 @@
 - [ ] **#26** 同步文件 I/O 声明为 `async fn`，阻塞 Tokio 运行时
   - 文件: `src-tauri/src/modules/storage.rs`、`src-tauri/src/modules/file_notes_storage.rs`
   - 详情: 使用 `std::fs` 而非 `tokio::fs`，阻塞工作线程
+  - **推迟原因**: 桌面应用本地 SSD 影响较小，改动范围大需全面测试
 
 - [x] **#27** `data_loader.rs` 静默吞掉启动加载错误
   - 文件: `src-tauri/src/startup/data_loader.rs` 第 26-27 行
@@ -134,6 +139,7 @@
 - [ ] **#30** `error.rs` 定义了完善的错误类型但几乎未被使用
   - 文件: `src-tauri/src/error.rs`
   - 详情: 所有 Tauri command 都返回 `Result<T, String>`，错误信息丢失上下文
+  - **推迟原因**: 需要全面修改所有 Tauri command 的返回类型，影响面广
 
 ---
 
@@ -143,6 +149,7 @@
 
 - [ ] **#31** `App.tsx` 大量内联回调传给子组件，导致不必要的重渲染链
   - 文件: `src/App.tsx` 第 96-266 行
+  - **推迟原因**: 需要系统性重构组件 props 接口，涉及多个子组件
 
 - [x] **#32** `use-drag-to-detach` 中 `isOutsideSidebar`/`realWindowCreated` 不必要的 state
   - 文件: `src/hooks/use-drag-to-detach.tsx` 第 33-34 行
@@ -187,10 +194,12 @@
 - [ ] **#42** `window-positions-store` 硬编码窗口 label 格式 `note-${noteId}`
   - 文件: `src/stores/window-positions-store.ts` 第 100-120 行
   - 详情: 后端 label 生成逻辑变化时会悄悄出错
+  - **推迟原因**: 与 #18 一起处理（store 合并时统一 label 管理）
 
 - [ ] **#43** 各 store 错误处理策略不统一
   - 文件: 全部 store
   - 详情: 有的抛异常，有的静默，有的设 error 状态，建议统一
+  - **推迟原因**: 需要制定统一的错误处理规范并全面修改
 
 - [x] **#44** `NotesPanel` 搜索未做防抖，每次输入对所有笔记执行 `markdownToPlainText`
   - 文件: `src/components/notes/NotesPanel.tsx` 第 62-65 行
@@ -213,6 +222,7 @@
 - [ ] **#48** `update_app_menu` 是空实现，多处调用做无用功
   - 文件: `src-tauri/src/modules/windows.rs` 第 1364-1372 行
   - 详情: TODO 占位符，函数体只是 `Ok(())`
+  - **推迟原因**: 需要实现完整的菜单更新逻辑或移除相关调用
 
 - [x] **#49** `uuid_from_slug.rs` 使用 RFC 4122 DNS namespace UUID 而非自定义
   - 文件: `src-tauri/src/utils/uuid_from_slug.rs` 第 5 行
@@ -225,3 +235,4 @@
 - [ ] **#51** 日志方式不一致（`println!` vs `log_info!` 宏）
   - 文件: `src-tauri/src/modules/windows.rs`
   - 详情: 应统一使用日志宏以便于日志收集和过滤
+  - **推迟原因**: 需要全面扫描替换，影响文件较多
