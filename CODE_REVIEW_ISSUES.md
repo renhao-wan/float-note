@@ -61,7 +61,7 @@
   - 文件: `src/components/editor/CodeMirrorEditor.tsx` 第 385-443 行
   - 详情: `vimMode` 和 `typewriterMode` 变化时都调用 `view.setState()` 重建状态，同时变化会产生竞态
 
-- [ ] **#13** `Vim.defineEx` 全局注册，多窗口实例互相覆盖 `onSave`
+- [x] **#13** `Vim.defineEx` 全局注册，多窗口实例互相覆盖 `onSave`
   - 文件: `src/components/editor/CodeMirrorEditor.tsx` 第 298-309 行
   - 详情: 后注册的会覆盖先注册的，导致 `onSave` 指向错误的回调
 
@@ -127,7 +127,7 @@
   - 文件: `src-tauri/src/modules/file_operations.rs` 第 314 行
   - 详情: 只处理 `---\n`，不处理 `---\r\n`
 
-- [ ] **#29** `export_all_notes_to_directory` 缺少路径验证
+- [x] **#29** `export_all_notes_to_directory` 缺少路径验证
   - 文件: `src-tauri/src/modules/file_operations.rs` 第 144 行
   - 详情: 来自前端的 `directory_path` 直接用于创建目录和写入文件，无验证
 
@@ -152,7 +152,7 @@
   - 文件: `src/hooks/use-note-management.ts` 第 247-290 行
   - 详情: 每次用户输入字符回调都重建，应使用 ref 持有 `currentContent`
 
-- [ ] **#34** `use-app-initialization` 的 `Promise.all` 未 await
+- [x] **#34** `use-app-initialization` 的 `Promise.all` 未 await
   - 文件: `src/hooks/use-app-initialization.ts` 第 22-25 行
   - 详情: 未处理的 Promise rejection 风险，`data-loaded` 事件可能触发重复加载
 

@@ -18,8 +18,8 @@ export function useAppInitialization({ isDetachedWindow }: AppInitializationProp
     let cancelled = false;
 
     const initializeApp = async () => {
-      // Just request the data - backend will load it asynchronously
-      Promise.all([
+      // Load config and windows concurrently
+      await Promise.all([
         loadConfig().catch(err => console.warn('[FLOATNOTE] Config load failed:', err)),
         loadWindows().catch(err => console.warn('[FLOATNOTE] Windows load failed:', err))
       ]);

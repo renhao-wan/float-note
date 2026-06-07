@@ -42,6 +42,8 @@ export function CodeMirrorEditor({
 }: CodeMirrorEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
   const [isVimActive, setIsVimActive] = useState(vimMode);
   const configCompartment = useRef(new Compartment());
 
@@ -293,18 +295,13 @@ export function CodeMirrorEditor({
 
     viewRef.current = view;
 
-    // Define vim :w command for saving
-    if (vimMode && onSave) {
+    // Define vim :w command for saving (use ref to avoid stale closure)
+    if (vimMode) {
       Vim.defineEx('write', 'w', function() {
-        console.log('[FLOATNOTE] Vim :w command triggered');
-        onSave();
+        onSaveRef.current?.();
       });
-      
-      // Also define :wq for save and quit (just save for now)
       Vim.defineEx('wq', 'wq', function() {
-        console.log('[FLOATNOTE] Vim :wq command triggered');
-        onSave();
-        // Note: We don't actually quit since we're in a note editor
+        onSaveRef.current?.();
       });
     }
 

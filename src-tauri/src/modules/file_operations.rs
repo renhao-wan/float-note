@@ -139,10 +139,26 @@ pub async fn export_all_notes_to_directory(
     notes: State<'_, NotesState>,
 ) -> Result<Vec<String>, String> {
     log_info!("FILE_EXPORT", "Exporting all notes to directory: {}", directory_path);
-    
+
     let dir_path = Path::new(&directory_path);
-    fs::create_dir_all(dir_path)
-        .map_err(|e| format!("Failed to create directory: {}", e))?;
+
+    // Validate path: ensure it's absolute and not a system-critical directory
+    if !dir_path.is_absolute() {
+        return Err("Export path must be absolute".to_string());
+    }
+    let canonical = dir_path.canonicalize().or_else(|_| {
+        fs::create_dir_all(dir_path).map_err(|e| format!("Failed to create directory: {}", e))?;
+        dir_path.canonicalize().map_err(|e| format!("Failed to resolve path: {}", e))
+    })?;
+
+    // Reject system-critical directories
+    let path_str = canonical.to_string_lossy().to_lowercase();
+    let restricted = ["/windows", "/system32", "/etc", "/usr", "/bin", "/sbin", "/boot"];
+    for r in restricted {
+        if path_str.contains(r) && !path_str.contains("documents") && !path_str.contains("desktop") {
+            return Err("Cannot export to system-critical directories".to_string());
+        }
+    }
     
     let notes_lock = notes.lock().await;
     let mut exported_files = Vec::new();
