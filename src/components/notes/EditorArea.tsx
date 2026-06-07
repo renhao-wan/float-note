@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Note } from '../../types';
 import { useConfigStore } from '../../stores/config-store';
@@ -69,10 +69,10 @@ export function EditorArea({
   }), [editorConfig, config?.appearance?.vimMode, config?.appearance?.typewriterMode, config?.appearance?.wordWrap]);
 
   // Handle title change
-  const handleTitleChange = async (newTitle: string) => {
+  const handleTitleChange = useCallback(async (newTitle: string) => {
     if (!onTitleChange) return;
     await onTitleChange(newTitle);
-  };
+  }, [onTitleChange]);
 
   // Header component with mode toggle
   const renderHeader = () => (

@@ -65,7 +65,7 @@
   - 文件: `src/components/editor/CodeMirrorEditor.tsx` 第 298-309 行
   - 详情: 后注册的会覆盖先注册的，导致 `onSave` 指向错误的回调
 
-- [ ] **#14** `EditorArea` 的 `renderHeader`/`renderFooter` 每次渲染创建新引用
+- [x] **#14** `EditorArea` 的 `renderHeader`/`renderFooter` 每次渲染创建新引用
   - 文件: `src/components/notes/EditorArea.tsx` 第 78 行、第 131 行
   - 详情: 作为 props 传给 `NoteEditor`，破坏子组件 `React.memo` 优化
 
@@ -148,7 +148,7 @@
   - 文件: `src/hooks/use-drag-to-detach.tsx` 第 33-34 行
   - 详情: 从未返回给消费者，仅通过 ref 使用，应移除 state 改用 ref
 
-- [ ] **#33** `saveNoteImmediately` 依赖 `currentContent` 导致引用不稳定
+- [x] **#33** `saveNoteImmediately` 依赖 `currentContent` 导致引用不稳定
   - 文件: `src/hooks/use-note-management.ts` 第 247-290 行
   - 详情: 每次用户输入字符回调都重建，应使用 ref 持有 `currentContent`
 
