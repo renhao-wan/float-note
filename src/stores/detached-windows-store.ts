@@ -63,6 +63,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
 
       // Refresh windows list to ensure consistency
       await get().refreshWindows();
+      set({ loading: false });
 
       return newWindow;
     } catch (error) {

@@ -377,8 +377,11 @@ pub async fn toggle_all_windows_hover(
             
             // Hide all detached windows
             let windows_lock = detached_windows.lock().await;
-            for (window_label, _) in windows_lock.iter() {
-                if let Some(window) = app.get_webview_window(window_label) {
+            let labels: Vec<String> = windows_lock.keys().cloned().collect();
+            drop(windows_lock);
+
+            for window_label in labels {
+                if let Some(window) = app.get_webview_window(&window_label) {
                     if let Err(e) = window.hide() {
                         log_error!("WINDOW", "Failed to hide window {}: {}", window_label, e);
                     }

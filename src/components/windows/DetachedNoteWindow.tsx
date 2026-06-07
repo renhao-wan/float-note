@@ -166,44 +166,50 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     }
   };
 
+  // Use ref to hold latest note for stable callback references
+  const noteRef = useRef(note);
+  noteRef.current = note;
+
   const updateNoteContent = useCallback((newContent: string) => {
     setContent(newContent);
-    
+
     // Clear existing timeout
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
-    
+
     // Mark as modified when content changes
-    if (note && newContent !== note.content) {
+    const currentNote = noteRef.current;
+    if (currentNote && newContent !== currentNote.content) {
       modifiedState.markModified();
     }
-    
+
     // Show saving indicator after a short delay to prevent flickering
     const savingIndicatorTimeout = setTimeout(() => {
       saveStatus.startSaving();
     }, 300);
-    
-    // Debounce the actual save operation to 1 second
+
+    // Debounce the actual save operation to 3 seconds
     saveTimeoutRef.current = setTimeout(async () => {
       clearTimeout(savingIndicatorTimeout);
-      
-      if (note) {
+
+      const latestNote = noteRef.current;
+      if (latestNote) {
         try {
           saveStatus.startSaving();
-          
+
           const updatedNote = await invoke<Note>('update_note', {
             id: noteId,
             request: {
               content: newContent
             }
           });
-          
+
           if (updatedNote) {
             setNote(updatedNote);
             saveStatus.saveSuccess();
             modifiedState.markSaved(newContent);
-            
+
             // Notify other windows of the update
             noteSyncService.noteUpdated(updatedNote);
           }
@@ -212,26 +218,19 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
           saveStatus.setSaveError('Failed to save note');
         }
       }
-    }, 3000); // 3 second save interval, same as main window
-  }, [note, noteId, saveStatus]);
+    }, 3000);
+  }, [noteId, saveStatus, modifiedState]);
 
-  const handleCloseWindow = async () => {
+  const handleCloseWindow = useCallback(async () => {
     console.log('[DETACHED-WINDOW] Closing window for note:', noteId);
     try {
-      // Update the detached windows store to remove this window
-      console.log('[DETACHED-WINDOW] Updating store...');
       await closeWindow(noteId);
-      console.log('[DETACHED-WINDOW] Store updated, closing window...');
-      // Close the actual window
       await appWindow.close();
-      console.log('[DETACHED-WINDOW] Window close command sent');
     } catch (error) {
       console.error('[DETACHED-WINDOW] Failed to close window:', error);
-      // Fallback: just close the window
-      console.log('[DETACHED-WINDOW] Attempting fallback close...');
       await appWindow.close();
     }
-  };
+  }, [noteId, closeWindow, appWindow]);
 
   const handleTogglePin = async () => {
     const newPinned = !isPinned;

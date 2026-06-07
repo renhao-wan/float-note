@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { Note } from '../types';
 
@@ -62,20 +62,22 @@ export const noteSyncService = new NoteSyncService();
 
 // Hook for using sync in React components
 export function useNoteSync(noteId: string | null, onNoteUpdate: (note: Note) => void) {
-  const subscribe = (listener: SyncListener) => noteSyncService.subscribe(listener);
+  // Use ref to hold latest callback, avoiding unnecessary re-subscriptions
+  const onNoteUpdateRef = useRef(onNoteUpdate);
+  onNoteUpdateRef.current = onNoteUpdate;
 
   // Set up listener for this specific note
   useEffect(() => {
     if (!noteId) return;
 
-    const unsubscribe = subscribe((event) => {
+    const unsubscribe = noteSyncService.subscribe((event) => {
       if (event.noteId === noteId && event.type === 'note-updated' && event.note) {
-        onNoteUpdate(event.note);
+        onNoteUpdateRef.current(event.note);
       }
     });
 
     return unsubscribe;
-  }, [noteId, onNoteUpdate]);
+  }, [noteId]);
 
   return noteSyncService;
 }

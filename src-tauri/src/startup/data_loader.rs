@@ -6,7 +6,7 @@ use crate::modules::storage::{
 use crate::types::config::AppConfig;
 use crate::{ConfigState, ModifiedStateTrackerState};
 use crate::{DetachedWindowsState, NotesState};
-use crate::log_info;
+use crate::{log_info, log_error};
 use tauri::{AppHandle, Manager, Emitter};
 
 /// Load all application data on startup
@@ -23,13 +23,15 @@ pub async fn load_application_data(app_handle: AppHandle) -> FloatNoteResult<()>
     );
 
     // Update notes state
-    if let Ok(notes) = notes_result {
-        update_notes_state(&app_handle, notes).await?;
+    match notes_result {
+        Ok(notes) => update_notes_state(&app_handle, notes).await?,
+        Err(e) => log_error!("STARTUP", "Failed to load notes: {}", e),
     }
 
     // Update windows state
-    if let Ok(windows) = windows_result {
-        update_windows_state(&app_handle, windows).await?;
+    match windows_result {
+        Ok(windows) => update_windows_state(&app_handle, windows).await?,
+        Err(e) => log_error!("STARTUP", "Failed to load detached windows: {}", e),
     }
 
     // Notify frontend that data is loaded

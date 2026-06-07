@@ -1,6 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeSanitize from 'rehype-sanitize';
 
 interface MarkdownRendererProps {
   content: string;
@@ -28,7 +29,7 @@ export function MarkdownRenderer({
     >
       <ReactMarkdown 
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={syntaxHighlighting ? [rehypeHighlight] : []}
+        rehypePlugins={[rehypeSanitize, ...(syntaxHighlighting ? [rehypeHighlight] : [])]}
         components={{
           h1: ({children}) => <h1 className="text-2xl font-semibold mb-4 mt-6 first:mt-0 text-foreground">{children}</h1>,
           h2: ({children}) => <h2 className="text-xl font-semibold mb-3 mt-5 text-foreground">{children}</h2>,
@@ -56,9 +57,10 @@ export function MarkdownRenderer({
           ul: ({children}) => <ul className="list-disc list-inside mb-4 space-y-1 text-foreground">{children}</ul>,
           ol: ({children}) => <ol className="list-decimal list-inside mb-4 space-y-1 text-foreground">{children}</ol>,
           li: ({children}) => <li className="leading-relaxed">{children}</li>,
-          a: ({href, children}) => (
-            <a href={href} className="text-primary hover:underline font-medium">{children}</a>
-          ),
+          a: ({href, children}) => {
+            const safeHref = href && /^(https?:\/\/|mailto:|\/|#)/.test(href) ? href : '#';
+            return <a href={safeHref} className="text-primary hover:underline font-medium" target="_blank" rel="noopener noreferrer">{children}</a>;
+          },
           strong: ({children}) => <strong className="font-semibold text-foreground">{children}</strong>,
           em: ({children}) => <em className="italic text-foreground">{children}</em>,
           hr: () => <hr className="border-border/30 my-6" />,

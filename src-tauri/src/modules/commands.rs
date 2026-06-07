@@ -76,14 +76,17 @@ fn generate_unique_title(base_title: &str, existing_titles: &HashSet<String>) ->
         return base_title.to_string();
     }
 
+    const MAX_TITLE_ATTEMPTS: u32 = 10000;
     let mut counter = 2;
-    loop {
+    while counter < MAX_TITLE_ATTEMPTS {
         let title = format!("{} ({})", base_title, counter);
         if !existing_titles.contains(&title) {
             return title;
         }
         counter += 1;
     }
+    // Fallback: append timestamp to guarantee uniqueness
+    format!("{} ({})", base_title, chrono::Utc::now().timestamp_millis())
 }
 
 /// Create a new note
@@ -188,13 +191,6 @@ pub async fn update_note(
                 let new_id = generate_unique_slug(&updated_note.title, &existing_ids);
 
                 if new_id != id {
-                    // Remove old entry from state
-                    notes_lock.remove(&id);
-
-                    // Rename file on disk
-                    let file_storage = FileNotesStorage::new(&config_lock)?;
-                    file_storage.rename_note(&id, &new_id).await?;
-
                     // Create updated note with new ID
                     let renamed_note = Note {
                         id: new_id.clone(),
@@ -206,13 +202,20 @@ pub async fn update_note(
                         position: updated_note.position,
                     };
 
-                    // Insert into state with new ID
-                    notes_lock.insert(new_id.clone(), renamed_note.clone());
-
-                    // Save to disk with new frontmatter
+                    // Perform disk operations first, before modifying in-memory state
+                    let file_storage = FileNotesStorage::new(&config_lock)?;
+                    file_storage.rename_note(&id, &new_id).await?;
                     save_note_using_file_storage(&renamed_note, &config_lock).await?;
 
+                    // Only update in-memory state after successful disk operations
+                    notes_lock.remove(&id);
+                    notes_lock.insert(new_id.clone(), renamed_note.clone());
+
                     log_info!("NOTES", "Renamed note via update: {} -> {} (title: {})", id, new_id, renamed_note.title);
+
+                    // Update modified state tracker: remove old entry and initialize new one
+                    modified_tracker.remove_note(&id).await;
+                    modified_tracker.initialize_note(&renamed_note).await;
 
                     // Emit events for synchronization
                     app.emit("note-deleted", &id).unwrap_or_else(|e| {
@@ -262,6 +265,7 @@ pub async fn rename_note(
     new_title: String,
     notes: State<'_, NotesState>,
     config: State<'_, ConfigState>,
+    modified_tracker: State<'_, ModifiedStateTracker>,
 ) -> Result<Note, String> {
     let mut notes_lock = notes.lock().await;
     let config_lock = config.lock().await;
@@ -285,16 +289,6 @@ pub async fn rename_note(
     existing_ids.remove(&id);
     let new_id = generate_unique_slug(&new_title, &existing_ids);
 
-    // Always rename file and update state when title changes
-    // Remove old entry from state
-    notes_lock.remove(&id);
-
-    // Rename file on disk if ID changed
-    if new_id != id {
-        let file_storage = FileNotesStorage::new(&config_lock)?;
-        file_storage.rename_note(&id, &new_id).await?;
-    }
-
     // Create updated note with new ID
     let updated_note = Note {
         id: new_id.clone(),
@@ -306,11 +300,21 @@ pub async fn rename_note(
         position: old_note.position,
     };
 
-    // Insert into state with new ID
+    // Perform disk operations first, before modifying in-memory state
+    // This ensures data consistency if disk operations fail
+    if new_id != id {
+        let file_storage = FileNotesStorage::new(&config_lock)?;
+        file_storage.rename_note(&id, &new_id).await?;
+    }
+    save_note_using_file_storage(&updated_note, &config_lock).await?;
+
+    // Only update in-memory state after successful disk operations
+    notes_lock.remove(&id);
     notes_lock.insert(new_id.clone(), updated_note.clone());
 
-    // Save to disk with new title in frontmatter
-    save_note_using_file_storage(&updated_note, &config_lock).await?;
+    // Update modified state tracker: remove old entry and initialize new one
+    modified_tracker.remove_note(&id).await;
+    modified_tracker.initialize_note(&updated_note).await;
 
     log_info!("NOTES", "Renamed note: {} -> {} (title: {})", id, new_id, updated_note.title);
 

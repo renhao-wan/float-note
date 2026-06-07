@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ResizablePanel } from '../windows/ResizablePanel';
 import { markdownToPlainText, truncateText } from '../../lib/utils';
@@ -37,7 +37,6 @@ export function NotesPanel({
 
   // Track open windows using ref to avoid dependency on notes array
   const openWindowIdsRef = useRef<Set<string>>(new Set());
-  const [openWindowIdsVersion, setOpenWindowIdsVersion] = useState(0);
 
   // Update open windows when notes change - use useMemo to avoid extra renders
   const openWindowIds = useMemo(() => {
@@ -50,7 +49,7 @@ export function NotesPanel({
     openWindowIdsRef.current = openIds;
     return openIds;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [notes, isWindowOpen, openWindowIdsVersion]);
+  }, [notes, isWindowOpen]);
 
   // Filter notes based on search query
   const filteredNotes = useMemo(() => {

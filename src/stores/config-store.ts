@@ -52,23 +52,14 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
       set({
         config: defaultConfig,
         isLoading: false,
-        error: null
+        error: error instanceof Error ? error.message : 'Failed to load config'
       });
     }
   },
 
   updateAlwaysOnTop: async (alwaysOnTop: boolean) => {
-    const { config } = get();
-    const updatedConfig = { ...config, alwaysOnTop };
-    
-    try {
-      const newConfig = await configApi.updateConfig(updatedConfig);
-      set({ config: newConfig });
-    } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : 'Failed to update always on top'
-      });
-    }
+    const { updateConfig } = get();
+    await updateConfig({ alwaysOnTop });
   },
 
   updateConfig: async (configUpdate: Partial<AppConfig>) => {
@@ -96,6 +87,14 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
       window: {
         ...config.window,
         ...(configUpdate.window || {})
+      },
+      storage: {
+        ...config.storage,
+        ...(configUpdate.storage || {})
+      },
+      advanced: {
+        ...config.advanced,
+        ...(configUpdate.advanced || {})
       }
     };
     
@@ -134,20 +133,10 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
   },
 
   updateAppearance: async (appearance: Partial<AppConfig['appearance']>) => {
-    const { config } = get();
-    const updatedConfig = { 
-      ...config, 
+    const { config, updateConfig } = get();
+    await updateConfig({
       appearance: { ...config.appearance, ...appearance }
-    };
-    
-    try {
-      const newConfig = await configApi.updateConfig(updatedConfig);
-      set({ config: newConfig });
-    } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : 'Failed to update appearance'
-      });
-    }
+    });
   },
 
   updateFontSize: async (fontSize: number) => {

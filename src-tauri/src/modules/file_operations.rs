@@ -311,8 +311,10 @@ async fn parse_markdown_file(path: &Path) -> Result<Note, String> {
     };
     
     // Handle migration: if content has frontmatter, extract just the body
-    let actual_content = if content.starts_with("---\n") {
-        let parts: Vec<&str> = content.splitn(3, "---\n").collect();
+    // Support both Unix (\n) and Windows (\r\n) line endings
+    let actual_content = if content.starts_with("---\n") || content.starts_with("---\r\n") {
+        let separator = if content.starts_with("---\r\n") { "---\r\n" } else { "---\n" };
+        let parts: Vec<&str> = content.splitn(3, separator).collect();
         if parts.len() >= 3 {
             parts[2].to_string()
         } else {

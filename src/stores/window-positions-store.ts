@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { invoke } from '@tauri-apps/api/core';
+import { DetachedWindow } from '../services/detached-windows-api';
 
 interface WindowPosition {
   position: [number, number];
@@ -29,10 +30,10 @@ export const useWindowPositionsStore = create<WindowPositionsState>((set, get) =
   loadPositions: async () => {
     try {
       // Load existing window positions from backend on startup
-      const windows = await invoke<{[key: string]: any}>('get_detached_windows');
+      const windows = await invoke<{[key: string]: DetachedWindow}>('get_detached_windows');
       const positions: Record<string, WindowPosition> = {};
 
-      Object.values(windows).forEach((window: any) => {
+      Object.values(windows).forEach((window) => {
         if (window.note_id && window.position && window.size) {
           positions[window.note_id] = {
             position: window.position,

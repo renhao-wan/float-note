@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { DetachedWindowsAPI } from '../../services/detached-windows-api';
@@ -31,7 +31,7 @@ export function CustomTitleBar({
 }: CustomTitleBarProps) {
   const { t } = useTranslation();
   // Get the current window directly - getCurrentWebviewWindow() handles Tauri context internally
-  const appWindow = getCurrentWebviewWindow();
+  const appWindow = useMemo(() => getCurrentWebviewWindow(), []);
   const [isMaximized, setIsMaximized] = useState(false);
 
   // Check initial maximized state and listen for changes

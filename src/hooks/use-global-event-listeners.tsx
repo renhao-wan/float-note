@@ -71,17 +71,8 @@ export function useGlobalEventListeners({
         });
         unlisteners.push(unlistenDeployWindow);
 
-        // Listen for window closed events
-        const unlistenWindowClosed = await listen('window-closed', async () => {
-          // Window positions store will be updated automatically when window closes
-        });
-        unlisteners.push(unlistenWindowClosed);
-
-        // Listen for window created events
-        const unlistenWindowCreated = await listen('window-created', async () => {
-          // Frontend store should be updated directly when creating windows
-        });
-        unlisteners.push(unlistenWindowCreated);
+        // Note: window-closed and window-created events are handled
+        // directly by the stores when they perform the operations
 
         // Listen for window destroyed events
         const unlistenWindowDestroyed = await listen('window-destroyed', async (event) => {
@@ -115,12 +106,18 @@ export function useGlobalEventListeners({
       }
     };
     
+    let cancelled = false;
     let cleanup: (() => void) | undefined;
     setupListeners().then(fn => {
-      cleanup = fn;
+      if (cancelled) {
+        fn();
+      } else {
+        cleanup = fn;
+      }
     });
 
     return () => {
+      cancelled = true;
       if (cleanup) {
         cleanup();
       }

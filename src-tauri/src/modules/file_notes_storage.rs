@@ -78,14 +78,14 @@ impl FileNotesStorage {
     pub async fn save_all_notes(&self, notes: &HashMap<String, Note>) -> Result<(), String> {
         log_info!("FILE_NOTES_STORAGE", "Saving all {} notes to disk", notes.len());
 
-        // Update cache first
-        let mut cache = self.cache.lock().await;
-        *cache = notes.clone();
-
-        // Save each note to disk
+        // Save each note to disk first (atomic: all-or-nothing)
         for (_, note) in notes.iter() {
             self.storage.save_note(note).await?;
         }
+
+        // Only update cache after all disk writes succeed
+        let mut cache = self.cache.lock().await;
+        *cache = notes.clone();
 
         Ok(())
     }

@@ -45,18 +45,18 @@ export const DetachedWindowOpacitySlider = ({
     }, 100);
   }, [applyOpacity]);
 
-  // 初始化时加载并应用默认透明度
+  // 初始化时应用透明度
   useEffect(() => {
     const initOpacity = async () => {
       try {
-        await transparencyManager.setOpacity(windowLabel, TRANSPARENCY_CONFIG.defaultOpacity);
-        setOpacity(TRANSPARENCY_CONFIG.defaultOpacity);
+        await transparencyManager.setOpacity(windowLabel, initialOpacity);
+        setOpacity(initialOpacity);
       } catch (error) {
         console.error('[OPACITY_SLIDER] Failed to init opacity:', error);
       }
     };
     initOpacity();
-  }, [windowLabel, transparencyManager]);
+  }, [windowLabel]); // Only run on windowLabel change, not on every render
 
   // 清理防抖定时器
   useEffect(() => {
