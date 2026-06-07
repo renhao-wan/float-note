@@ -12,33 +12,34 @@ use tauri::{AppHandle, Emitter, State};
 /// Import notes from a directory
 #[tauri::command]
 pub async fn import_notes_from_directory(
+    app: AppHandle,
     directory_path: String,
     notes: State<'_, NotesState>,
     config: State<'_, ConfigState>,
     modified_tracker: State<'_, ModifiedStateTrackerState>,
 ) -> Result<Vec<Note>, String> {
     log_info!("FILE_IMPORT", "Importing notes from directory: {}", directory_path);
-    
+
     let mut imported_notes = Vec::new();
     let mut notes_lock = notes.lock().await;
     let config_lock = config.lock().await;
-    
+
     let dir_path = Path::new(&directory_path);
     if !dir_path.exists() {
         return Err("Directory does not exist".to_string());
     }
-    
+
     // Create FileNotesStorage instance
     let file_storage = FileNotesStorage::new(&config_lock)?;
-    
+
     // Read all markdown files in the directory
     let entries = fs::read_dir(dir_path)
         .map_err(|e| format!("Failed to read directory: {}", e))?;
-    
+
     for entry in entries {
         let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
         let path = entry.path();
-        
+
         if path.extension().and_then(|s| s.to_str()) == Some("md") {
             match parse_markdown_file(&path).await {
                 Ok(note) => {
@@ -54,10 +55,20 @@ pub async fn import_notes_from_directory(
             }
         }
     }
-    
+
     // Save all notes using FileNotesStorage
     file_storage.save_all_notes(&notes_lock).await?;
-    
+
+    drop(notes_lock);
+    drop(config_lock);
+
+    // Emit events for imported notes
+    for note in &imported_notes {
+        app.emit("note-created", note).unwrap_or_else(|e| {
+            log_error!("FILE_IMPORT", "Failed to emit note-created event: {}", e);
+        });
+    }
+
     log_info!("FILE_IMPORT", "Successfully imported {} notes", imported_notes.len());
     Ok(imported_notes)
 }
@@ -65,30 +76,39 @@ pub async fn import_notes_from_directory(
 /// Import a single markdown file as a note
 #[tauri::command]
 pub async fn import_single_file(
+    app: AppHandle,
     file_path: String,
     notes: State<'_, NotesState>,
     config: State<'_, ConfigState>,
 ) -> Result<Note, String> {
     log_info!("FILE_IMPORT", "Importing single file: {}", file_path);
-    
+
     let path = Path::new(&file_path);
     if !path.exists() {
         return Err("File does not exist".to_string());
     }
-    
+
     let note = parse_markdown_file(path).await?;
-    
+
     let mut notes_lock = notes.lock().await;
     let config_lock = config.lock().await;
-    
+
     // Create FileNotesStorage instance
     let file_storage = FileNotesStorage::new(&config_lock)?;
-    
+
     notes_lock.insert(note.id.clone(), note.clone());
-    
+
     // Save all notes using FileNotesStorage
     file_storage.save_all_notes(&notes_lock).await?;
-    
+
+    drop(notes_lock);
+    drop(config_lock);
+
+    // Emit event for imported note
+    app.emit("note-created", &note).unwrap_or_else(|e| {
+        log_error!("FILE_IMPORT", "Failed to emit note-created event: {}", e);
+    });
+
     log_info!("FILE_IMPORT", "Successfully imported note: {}", note.title);
     Ok(note)
 }
