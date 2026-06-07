@@ -6,31 +6,13 @@
   overflow: hidden !important;
 }
 
-/* Scrollbar - same as global scrollbar */
+/* Scrollbar */
 .cm-scroller {
-  overflow: auto !important;
-  scrollbar-width: auto !important;
-  scrollbar-color: hsl(var(--primary) / 0.12) transparent !important;
+  overflow-y: scroll !important;
+  overflow-x: auto !important;
 }
 
-.cm-scroller::-webkit-scrollbar {
-  width: 5px !important;
-  height: 5px !important;
-  display: block !important;
-}
-
-.cm-scroller::-webkit-scrollbar-track {
-  background: transparent !important;
-}
-
-.cm-scroller::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.12) !important;
-  border-radius: 3px !important;
-}
-
-.cm-scroller::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.25) !important;
-}
+/* Scrollbar styling removed temporarily for debugging */
 
 /* Ensure scrollbar is not hidden */
 .cm-scroller::-webkit-scrollbar:vertical {
