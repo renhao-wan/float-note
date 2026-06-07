@@ -831,9 +831,9 @@ pub async fn clear_all_detached_windows(
 ) -> Result<i32, String> {
     let mut windows_lock = detached_windows.lock().await;
     let window_count = windows_lock.len() as i32;
-    
+
     println!("[CLEAR_WINDOWS] Clearing {} detached windows", window_count);
-    
+
     // Close all actual Tauri windows
     for (window_label, _) in windows_lock.iter() {
         if let Some(window) = app.get_webview_window(window_label) {
@@ -843,13 +843,20 @@ pub async fn clear_all_detached_windows(
             }
         }
     }
-    
+
     // Clear all from state
     windows_lock.clear();
-    
+
     // Save empty state to disk
     save_detached_windows_to_disk(&windows_lock).await?;
-    
+
+    drop(windows_lock);
+
+    // Emit event to notify frontend
+    app.emit("all-detached-windows-cleared", window_count).unwrap_or_else(|e| {
+        log_error!("WINDOW", "Failed to emit all-detached-windows-cleared event: {}", e);
+    });
+
     println!("[CLEAR_WINDOWS] All {} detached windows cleared", window_count);
     Ok(window_count)
 }
@@ -1300,13 +1307,18 @@ pub async fn toggle_main_window_shade(
         let config_clone = config_lock.clone();
         drop(config_lock);
         save_config_to_disk(&config_clone).await?;
-        
+
+        // Emit event to notify all windows about config change
+        app.emit("config-updated", &config_clone).unwrap_or_else(|e| {
+            log_error!("WINDOWS", "Failed to emit config-updated event: {}", e);
+        });
+
         window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
             width: current_size.width,
             height: 48,
         }))
         .map_err(|e| format!("Failed to shade window: {}", e))?;
-        
+
         Ok(true)
     }
 }

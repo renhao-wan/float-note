@@ -362,23 +362,39 @@ pub async fn delete_note(
 /// Update note positions for manual reordering
 #[tauri::command]
 pub async fn reorder_notes(
+    app: AppHandle,
     note_ids: Vec<String>,
     notes: State<'_, NotesState>,
     config: State<'_, ConfigState>,
 ) -> Result<(), String> {
     let mut notes_lock = notes.lock().await;
     let config_lock = config.lock().await;
-    
+
     // Update positions based on the order in note_ids
     for (index, note_id) in note_ids.iter().enumerate() {
         if let Some(note) = notes_lock.get_mut(note_id) {
             note.position = Some(index as i32);
         }
     }
-    
+
     // Save all notes since multiple positions changed
     save_all_notes_using_file_storage(&notes_lock, &config_lock).await?;
-    log_info!("NOTES", "Reordered {} notes", note_ids.len());
 
+    // Get updated notes for event emission
+    let updated_notes: Vec<Note> = note_ids.iter()
+        .filter_map(|id| notes_lock.get(id).cloned())
+        .collect();
+
+    drop(notes_lock);
+    drop(config_lock);
+
+    // Emit events for each updated note
+    for note in updated_notes {
+        app.emit("note-updated", &note).unwrap_or_else(|e| {
+            log_error!("NOTES", "Failed to emit note-updated event: {}", e);
+        });
+    }
+
+    log_info!("NOTES", "Reordered {} notes", note_ids.len());
     Ok(())
 }

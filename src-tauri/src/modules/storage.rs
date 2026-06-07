@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
-use tauri::State;
+use tauri::{AppHandle, Emitter, State};
 
 use crate::types::{
     note::Note,
@@ -9,7 +9,7 @@ use crate::types::{
     window::DetachedWindow,
 };
 use crate::{ConfigState, DetachedWindowsState};
-use crate::{log_debug, log_info};
+use crate::{log_debug, log_error, log_info};
 
 /// Save notes to disk as JSON
 #[allow(dead_code)]
@@ -155,14 +155,23 @@ pub async fn get_config(config: State<'_, ConfigState>) -> Result<AppConfig, Str
 
 #[tauri::command]
 pub async fn update_config(
+    app: AppHandle,
     new_config: AppConfig,
     config: State<'_, ConfigState>,
 ) -> Result<AppConfig, String> {
     let mut config_lock = config.lock().await;
     *config_lock = new_config.clone();
     save_config_to_disk(&new_config).await?;
+
+    drop(config_lock);
+
+    // Emit event to notify all windows about config change
+    app.emit("config-updated", &new_config).unwrap_or_else(|e| {
+        log_error!("CONFIG", "Failed to emit config-updated event: {}", e);
+    });
+
     log_info!("CONFIG", "Configuration updated");
-    Ok(new_config) // Return the updated config instead of ()
+    Ok(new_config)
 }
 
 #[tauri::command]

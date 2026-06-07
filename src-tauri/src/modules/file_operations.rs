@@ -171,6 +171,7 @@ pub async fn export_all_notes_to_directory(
 /// Set the notes directory
 #[tauri::command]
 pub async fn set_notes_directory(
+    app: AppHandle,
     directory_path: String,
     config: State<'_, ConfigState>,
 ) -> Result<(), String> {
@@ -205,6 +206,11 @@ pub async fn set_notes_directory(
     drop(config_lock);
 
     save_config_to_disk(&config_clone).await?;
+
+    // Emit event to notify all windows about config change
+    app.emit("config-updated", &config_clone).unwrap_or_else(|e| {
+        log_error!("STORAGE", "Failed to emit config-updated event: {}", e);
+    });
 
     log_info!("STORAGE", "Notes directory updated successfully");
     Ok(())
