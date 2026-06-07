@@ -12,7 +12,7 @@ import { useWindowTracking } from '../../hooks/use-window-tracking';
 import { noteSyncService, useNoteSync } from '../../services/note-sync';
 import { CustomTitleBar } from '../layout/CustomTitleBar';
 import { WindowWrapper } from '../layout/WindowWrapper';
-import { extractTitleFromContent, getWordCount } from '../../lib/utils';
+import { getWordCount } from '../../lib/utils';
 import { isPrimaryModifier } from '../../lib/platform';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
 import { DetachedWindowOpacitySlider } from './DetachedWindowOpacitySlider';
@@ -126,8 +126,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
         clearTimeout(titleTimeoutRef.current);
       }
       titleTimeoutRef.current = setTimeout(() => {
-        const title = extractTitleFromContent(content);
-        appWindow.setTitle(title);
+        appWindow.setTitle(note.title || 'Untitled');
       }, 300);
     }
 
@@ -136,7 +135,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
         clearTimeout(titleTimeoutRef.current);
       }
     };
-  }, [content, note, appWindow]);
+  }, [note?.title, note, appWindow]);
 
   const loadNote = async () => {
     setLoading(true);
@@ -425,7 +424,7 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
   return (
     <WindowWrapper className="detached-note-window">
       <CustomTitleBar
-        title={extractTitleFromContent(content)}
+        title={note?.title || 'Untitled'}
         noteId={noteId}
         rightContent={!isShaded ? titleBarRightContent : undefined}
         onClose={handleCloseWindow}
