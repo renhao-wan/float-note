@@ -68,24 +68,13 @@ function App() {
     isWindowOpen,
   } = useDetachedWindowsStore();
 
-  // Drag-to-detach functionality - stable callback to prevent re-renders
-  const onDropCallback = useCallback(async (noteId: string, x: number, y: number) => {
-    if (!isWindowOpen(noteId)) {
-      await createWindow(noteId, x, y);
-    }
-  }, [isWindowOpen, createWindow]);
-
-  const { startDrag, isDragging } = useDragToDetach({
-    onDrop: onDropCallback
-  });
-
   // Save status tracking
   const saveStatus = useSaveStatus();
   const modifiedState = useModifiedState();
 
   // Typewriter mode hook
   const textareaRef = useTypewriterMode();
-  
+
   // Window shade hook - tracks if window is shaded
   const isShaded = useWindowShade();
 
@@ -116,12 +105,27 @@ function App() {
     }
   });
 
+  // Drag-to-detach functionality - stable callback to prevent re-renders
+  const onDropCallback = useCallback(async (noteId: string, x: number, y: number) => {
+    if (!isWindowOpen(noteId)) {
+      // Force save before detaching to ensure the detached window loads latest content
+      await saveNoteImmediately();
+      await createWindow(noteId, x, y);
+    }
+  }, [isWindowOpen, createWindow, saveNoteImmediately]);
+
+  const { startDrag, isDragging } = useDragToDetach({
+    onDrop: onDropCallback
+  });
+
   // Context menu hook
   const {
     showContextMenu,
   } = useContextMenu({
     onDeleteNote: deleteNote,
     onDetachNote: async (noteId: string) => {
+      // Force save before detaching to ensure the detached window loads latest content
+      await saveNoteImmediately();
       const { x, y } = getCenterPosition();
       await createWindow(noteId, x, y);
     },
