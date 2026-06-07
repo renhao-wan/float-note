@@ -8,7 +8,7 @@
 
 /* Scrollbar - same as global scrollbar */
 .cm-scroller {
-  overflow-x: auto !important;
+  overflow: auto !important;
   scrollbar-width: auto !important;
   scrollbar-color: hsl(var(--primary) / 0.12) transparent !important;
 }
