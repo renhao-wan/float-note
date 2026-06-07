@@ -78,6 +78,20 @@ function App() {
   // Window shade hook - tracks if window is shaded
   const isShaded = useWindowShade();
 
+  // Stable callbacks for note management
+  const onSaveStart = useCallback(() => {
+    saveStatus.startSaving();
+  }, [saveStatus]);
+
+  const onSaveComplete = useCallback((savedContent: string) => {
+    saveStatus.saveSuccess();
+    modifiedState.markSaved(savedContent);
+  }, [saveStatus, modifiedState]);
+
+  const onSaveError = useCallback(() => {
+    saveStatus.setSaveError('Failed to save note');
+  }, [saveStatus]);
+
   // Note management hook
   const {
     notes,
@@ -93,16 +107,9 @@ function App() {
     renameNote,
     setCurrentContent,
   } = useNoteManagement({
-    onSaveStart: () => {
-      saveStatus.startSaving();
-    },
-    onSaveComplete: (savedContent: string) => {
-      saveStatus.saveSuccess();
-      modifiedState.markSaved(savedContent);
-    },
-    onSaveError: () => {
-      saveStatus.setSaveError('Failed to save note');
-    }
+    onSaveStart,
+    onSaveComplete,
+    onSaveError,
   });
 
   // Drag-to-detach functionality - stable callback to prevent re-renders
@@ -120,16 +127,17 @@ function App() {
   });
 
   // Context menu hook
+  const onDetachNote = useCallback(async (noteId: string) => {
+    await saveNoteImmediately();
+    const { x, y } = getCenterPosition();
+    await createWindow(noteId, x, y);
+  }, [saveNoteImmediately, createWindow]);
+
   const {
     showContextMenu,
   } = useContextMenu({
     onDeleteNote: deleteNote,
-    onDetachNote: async (noteId: string) => {
-      // Force save before detaching to ensure the detached window loads latest content
-      await saveNoteImmediately();
-      const { x, y } = getCenterPosition();
-      await createWindow(noteId, x, y);
-    },
+    onDetachNote,
   });
 
   // Global event listeners
@@ -148,22 +156,23 @@ function App() {
 
 
   // Animation handlers
-  const handleNotesClick = () => {
+  const handleNotesClick = useCallback(() => {
     if (currentView === 'notes') {
       setSidebarVisible(!sidebarVisible);
     } else {
       setCurrentView('notes');
       setSidebarVisible(true);
     }
-  };
-  const handleSettingsClick = () => {
+  }, [currentView, sidebarVisible]);
+
+  const handleSettingsClick = useCallback(() => {
     if (currentView === 'settings') {
       setSidebarVisible(!sidebarVisible);
     } else {
       setCurrentView('settings');
       setSidebarVisible(true);
     }
-  };
+  }, [currentView, sidebarVisible]);
 
   // If this is a detached window, render the detached note component
   if (isDetachedWindow && detachedNoteId) {
