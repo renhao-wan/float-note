@@ -8,11 +8,26 @@
 
 /* Scrollbar */
 .cm-scroller {
-  overflow-y: scroll !important;
-  overflow-x: auto !important;
+  overflow: auto !important;
 }
 
-/* Scrollbar styling removed temporarily for debugging */
+.cm-scroller::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.cm-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cm-scroller::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.12);
+  border-radius: 3px;
+}
+
+.cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.25);
+}
 
 /* Ensure scrollbar is not hidden */
 .cm-scroller::-webkit-scrollbar:vertical {

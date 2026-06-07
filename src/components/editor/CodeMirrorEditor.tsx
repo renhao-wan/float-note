@@ -444,7 +444,7 @@ export function CodeMirrorEditor({
   return (
     <div 
       ref={editorRef} 
-      className={`h-full w-full overflow-hidden ${className}`}
+      className={`h-full w-full ${className}`}
       style={{
         '--primary': 'hsl(var(--primary))',
         '--background': 'hsl(var(--background))',
