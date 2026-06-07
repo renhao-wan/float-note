@@ -1,14 +1,14 @@
 /* CodeMirror Custom Styles for FloatNote */
 
+/* Hide scrollbar but keep scroll functionality */
+.cm-scroller::-webkit-scrollbar {
+  display: none;
+}
+
 /* Prevent horizontal overflow from cursor layers */
 .cm-cursorLayer,
 .cm-vimCursorLayer {
   overflow: hidden !important;
-}
-
-/* Ensure scrollbar is not hidden */
-.cm-scroller::-webkit-scrollbar:vertical {
-  display: block !important;
 }
 
 /* Paper styles for CodeMirror */

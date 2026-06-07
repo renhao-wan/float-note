@@ -142,7 +142,7 @@ export function NoteEditor({
           <MarkdownRenderer
             content={content}
             syntaxHighlighting={config.syntaxHighlighting}
-            className={`w-full h-full overflow-y-auto prose prose-invert max-w-none cursor-text ${paperStyleClass} ${previewClassName}`}
+            className={`w-full h-full overflow-y-auto scrollbar-hide prose max-w-none content-font cursor-text text-foreground ${paperStyleClass} ${previewClassName}`}
             onDoubleClick={onPreviewToggle}
             title="Double-click to edit"
             style={{ 

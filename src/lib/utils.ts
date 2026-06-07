@@ -75,8 +75,18 @@ export function extractTitleFromContent(content: string): string {
   return title.substring(0, 50).trim() || 'Untitled';
 }
 
-// Count words in text content
+// Count words in text content (supports both Chinese and English)
 export function getWordCount(content: string): number {
   if (!content.trim()) return 0;
-  return content.split(/\s+/).filter(word => word.length > 0).length;
+
+  // Count Chinese characters individually
+  const chineseChars = content.match(/[一-鿿㐀-䶿]/g);
+  const chineseCount = chineseChars ? chineseChars.length : 0;
+
+  // Remove Chinese characters and count remaining English words
+  const withoutChinese = content.replace(/[一-鿿㐀-䶿]/g, '');
+  const englishWords = withoutChinese.split(/\s+/).filter(word => word.length > 0);
+  const englishCount = englishWords.length;
+
+  return chineseCount + englishCount;
 }
