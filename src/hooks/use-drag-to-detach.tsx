@@ -5,6 +5,7 @@ import { DragCancelEffect } from '../components/windows';
 
 interface UseDragToDetachOptions {
   onDrop: (noteId: string, x: number, y: number) => Promise<void>;
+  beforeDetach?: () => Promise<void>;
   dragThreshold?: number;
 }
 
@@ -26,11 +27,15 @@ const showDragCancelEffect = (x: number, y: number) => {
   );
 };
 
-export function useDragToDetach({ onDrop: _onDrop, dragThreshold = 5 }: UseDragToDetachOptions) {
+export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold = 5 }: UseDragToDetachOptions) {
   // Only isDragging and noteId are exposed to consumers; positions stay in refs
   const [isDragging, setIsDragging] = useState(false);
   const [isOutsideSidebar, setIsOutsideSidebar] = useState(false);
   const [realWindowCreated, setRealWindowCreated] = useState(false);
+
+  // Store beforeDetach in ref to avoid stale closure
+  const beforeDetachRef = useRef(beforeDetach);
+  beforeDetachRef.current = beforeDetach;
 
   // Single ref for all drag-related mutable state (avoids frequent setState in mousemove)
   const dragRef = useRef({
@@ -253,6 +258,11 @@ export function useDragToDetach({ onDrop: _onDrop, dragThreshold = 5 }: UseDragT
         if (ref.isDragging && ref.isOutsideSidebar) {
           // Actually dragged and dropped outside sidebar - finalize the window in place
           try {
+            // Force save before detaching to ensure the detached window loads latest content
+            if (beforeDetachRef.current) {
+              await beforeDetachRef.current();
+            }
+
             await invoke('finalize_hybrid_drag_window', {
               windowLabel: ref.realWindowLabel,
               noteId: ref.noteId,

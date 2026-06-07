@@ -115,7 +115,8 @@ function App() {
   }, [isWindowOpen, createWindow, saveNoteImmediately]);
 
   const { startDrag, isDragging } = useDragToDetach({
-    onDrop: onDropCallback
+    onDrop: onDropCallback,
+    beforeDetach: saveNoteImmediately
   });
 
   // Context menu hook
