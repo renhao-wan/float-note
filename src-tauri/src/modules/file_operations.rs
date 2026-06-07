@@ -7,7 +7,7 @@ use crate::NotesState;
 use crate::{log_error, log_info};
 use std::fs;
 use std::path::{Path, PathBuf};
-use tauri::State;
+use tauri::{AppHandle, Emitter, State};
 
 /// Import notes from a directory
 #[tauri::command]
@@ -193,33 +193,57 @@ pub async fn set_notes_directory(
 /// Reload notes from the configured directory
 #[tauri::command]
 pub async fn reload_notes_from_directory(
+    app: AppHandle,
     config: State<'_, ConfigState>,
     notes: State<'_, NotesState>,
     modified_tracker: State<'_, ModifiedStateTrackerState>,
 ) -> Result<Vec<Note>, String> {
     log_info!("STORAGE", "Reloading notes from configured directory");
-    
+
     let config_lock = config.lock().await;
-    
+
     // Create FileNotesStorage instance
     let file_storage = FileNotesStorage::new(&config_lock)?;
-    
+
     // Load all notes using FileNotesStorage
     let loaded_notes_map = file_storage.load_notes().await?;
-    
+
     // Convert HashMap to Vec for return value
     let loaded_notes: Vec<Note> = loaded_notes_map.values().cloned().collect();
-    
-    // Update the notes state
+
+    // Update the notes state (replaces all existing notes)
     let mut notes_lock = notes.lock().await;
+
+    // Get old note IDs for cleanup
+    let old_ids: Vec<String> = notes_lock.keys().cloned().collect();
+
+    // Replace all notes with loaded ones
     *notes_lock = loaded_notes_map;
-    
+
     // Clear and reinitialize dirty tracking for all notes
     modified_tracker.clear_all().await;
     for note in notes_lock.values() {
         modified_tracker.initialize_note(note).await;
     }
-    
+
+    drop(notes_lock);
+    drop(config_lock);
+
+    // Emit events to notify frontend
+    // First, emit delete events for old notes that may have been removed
+    for old_id in old_ids {
+        app.emit("note-deleted", &old_id).unwrap_or_else(|e| {
+            log_error!("STORAGE", "Failed to emit note-deleted event: {}", e);
+        });
+    }
+
+    // Then, emit create events for all loaded notes
+    for note in &loaded_notes {
+        app.emit("note-created", note).unwrap_or_else(|e| {
+            log_error!("STORAGE", "Failed to emit note-created event: {}", e);
+        });
+    }
+
     log_info!("STORAGE", "Successfully loaded {} notes from directory", loaded_notes.len());
     Ok(loaded_notes)
 }
