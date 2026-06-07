@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
@@ -10,6 +11,24 @@ interface MarkdownRendererProps {
   className?: string;
   onDoubleClick?: () => void;
   title?: string;
+}
+
+function SafeImage({ src, alt }: { src?: string; alt?: string }) {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) {
+    return <span className="text-muted-foreground text-sm italic">图片加载失败: {alt || src}</span>;
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt || ''}
+      className="max-w-full h-auto rounded-lg my-4 shadow-lg"
+      loading="lazy"
+      onError={() => setHasError(true)}
+    />
+  );
 }
 
 export function MarkdownRenderer({
@@ -79,22 +98,7 @@ export function MarkdownRenderer({
           td: ({children}) => (
             <td className="border border-border/30 px-3 py-2 text-foreground">{children}</td>
           ),
-          img: ({src, alt}) => (
-            <img
-              src={src}
-              alt={alt || ''}
-              className="max-w-full h-auto rounded-lg my-4 shadow-lg"
-              loading="lazy"
-              onError={(e) => {
-                const target = e.currentTarget;
-                target.style.display = 'none';
-                const errorText = document.createElement('span');
-                errorText.className = 'text-muted-foreground text-sm italic';
-                errorText.textContent = `图片加载失败: ${alt || src}`;
-                target.parentNode?.insertBefore(errorText, target);
-              }}
-            />
-          ),
+          img: ({src, alt}) => <SafeImage src={src} alt={alt} />,
           input: ({type, checked, ...props}) => (
             <input
               type={type}

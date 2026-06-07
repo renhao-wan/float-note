@@ -103,7 +103,22 @@ export class TransparencyStrategyManager {
       return state.opacity;
     }
 
-    // 如果没有记录，返回默认值
+    // 尝试从策略层获取实际透明度
+    try {
+      const actualOpacity = await this.strategy.getOpacity(windowLabel);
+      if (actualOpacity !== undefined && actualOpacity !== null) {
+        // 缓存结果
+        this.opacityStates.set(windowLabel, {
+          windowLabel,
+          opacity: actualOpacity,
+          isCustom: actualOpacity !== TRANSPARENCY_CONFIG.defaultOpacity,
+        });
+        return actualOpacity;
+      }
+    } catch {
+      // 策略层不支持查询，回退到默认值
+    }
+
     return TRANSPARENCY_CONFIG.defaultOpacity;
   }
 

@@ -53,7 +53,7 @@
   - 文件: `src/hooks/use-note-management.ts` 第 60-64 行
   - 详情: 内联箭头函数每次渲染都是新引用，`useEffect` 依赖数组包含 `onNoteUpdate`，高频编辑场景下造成性能问题
 
-- [ ] **#11** `NotesPanel` 的 `useMemo` 内执行副作用（修改 ref）
+- [x] **#11** `NotesPanel` 的 `useMemo` 内执行副作用（修改 ref）
   - 文件: `src/components/notes/NotesPanel.tsx` 第 43-53 行
   - 详情: `useMemo` 内部调用 `isWindowOpen` 并修改 `openWindowIdsRef.current`，`useMemo` 应该是纯计算
 
@@ -164,7 +164,7 @@
   - 文件: `src/lib/platform.ts` 第 7 行
   - 详情: 应复用 `strategy-manager.ts` 中的 `userAgent` 方案
 
-- [ ] **#37** 策略管理器 `getOpacity` 不查询实际窗口状态，仅返回缓存
+- [x] **#37** 策略管理器 `getOpacity` 不查询实际窗口状态，仅返回缓存
   - 文件: `src/lib/transparency/strategy-manager.ts` 第 100-108 行
   - 详情: 缓存丢失时所有窗口透明度被错误报告为默认值
 
@@ -172,7 +172,7 @@
   - 文件: `src/lib/utils.ts` 第 7-22 行
   - 详情: `Invalid Date` 会静默通过所有条件判断
 
-- [ ] **#39** `MarkdownRenderer` 的 `onError` 手动 DOM 操作不受 React 管理
+- [x] **#39** `MarkdownRenderer` 的 `onError` 手动 DOM 操作不受 React 管理
   - 文件: `src/components/common/MarkdownRenderer.tsx` 第 86-93 行
   - 详情: 组件卸载时手动创建的 DOM 节点不会被 React 清理
 
@@ -192,7 +192,7 @@
   - 文件: 全部 store
   - 详情: 有的抛异常，有的静默，有的设 error 状态，建议统一
 
-- [ ] **#44** `NotesPanel` 搜索未做防抖，每次输入对所有笔记执行 `markdownToPlainText`
+- [x] **#44** `NotesPanel` 搜索未做防抖，每次输入对所有笔记执行 `markdownToPlainText`
   - 文件: `src/components/notes/NotesPanel.tsx` 第 62-65 行
   - 详情: 笔记数量多或内容长时会很慢
 
@@ -206,7 +206,7 @@
   - 文件: `src-tauri/src/modules/storage.rs` 第 14-47 行
   - 详情: 旧 JSON 存储方式的残留，已被 `FileNotesStorage` 替代
 
-- [ ] **#47** `note_commands.rs` 和 `note_service.rs` 全部是未使用的 v2 迁移残留
+- [x] **#47** `note_commands.rs` 和 `note_service.rs` 全部是未使用的 v2 迁移残留
   - 文件: `src-tauri/src/modules/note_commands.rs`、`src-tauri/src/services/note_service.rs`
   - 详情: 增加维护负担和编译时间
 

@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ResizablePanel } from '../windows/ResizablePanel';
 import { markdownToPlainText, truncateText } from '../../lib/utils';
@@ -34,11 +34,20 @@ export function NotesPanel({
 }: NotesPanelProps) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Debounce search input
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(() => setDebouncedQuery(value), 200);
+  };
 
   // Track open windows using ref to avoid dependency on notes array
   const openWindowIdsRef = useRef<Set<string>>(new Set());
 
-  // Update open windows when notes change - use useMemo to avoid extra renders
+  // Compute open window IDs (pure computation, no side effects)
   const openWindowIds = useMemo(() => {
     const openIds = new Set<string>();
     notes.forEach(note => {
@@ -46,23 +55,27 @@ export function NotesPanel({
         openIds.add(note.id);
       }
     });
-    openWindowIdsRef.current = openIds;
     return openIds;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notes, isWindowOpen]);
 
-  // Filter notes based on search query
+  // Sync to ref in useEffect (side effect)
+  useEffect(() => {
+    openWindowIdsRef.current = openWindowIds;
+  }, [openWindowIds]);
+
+  // Filter notes based on debounced search query
   const filteredNotes = useMemo(() => {
-    if (!searchQuery.trim()) {
+    if (!debouncedQuery.trim()) {
       return notes;
     }
-    
-    const query = searchQuery.toLowerCase();
-    return notes.filter(note => 
+
+    const query = debouncedQuery.toLowerCase();
+    return notes.filter(note =>
       note.title.toLowerCase().includes(query) ||
       markdownToPlainText(note.content).toLowerCase().includes(query)
     );
-  }, [notes, searchQuery]);
+  }, [notes, debouncedQuery]);
 
   // Helper function to get just the first line of text
   const getFirstLine = (text: string): string => {
@@ -126,7 +139,7 @@ export function NotesPanel({
                 type="text"
                 placeholder={t('commandPalette.searchPlaceholder')}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-9 pr-8 py-1.5 bg-background/60 border border-border/30 rounded-lg text-xs placeholder-muted-foreground/50 focus:outline-none focus:border-primary/40 focus:bg-background/80 transition-all duration-200"
               />
               {searchQuery && (

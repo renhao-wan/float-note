@@ -4,8 +4,8 @@ pub mod file_storage;
 pub mod file_notes_storage;
 pub mod file_operations;
 pub mod commands;
-pub mod note_commands;
-pub mod window_commands;
+// pub mod note_commands;  // v2 迁移残留，暂未使用
+// pub mod window_commands;  // 暂未使用
 pub mod system_commands;
 pub mod test_commands;
 // pub mod config;  // TODO: Extract config functions
