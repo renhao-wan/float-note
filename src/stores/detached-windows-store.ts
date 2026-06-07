@@ -91,7 +91,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
       
       return success;
     } catch (error) {
-      console.error('Failed to close detached window:', error);
+      console.error('[DETACHED-WINDOWS-STORE] Failed to close detached window:', error);
       set({ error: error instanceof Error ? error.message : String(error), loading: false });
       return false;
     }
@@ -141,7 +141,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
         )
       });
     } catch (error) {
-      console.error('Failed to update window position:', error);
+      console.error('[DETACHED-WINDOWS-STORE] Failed to update window position:', error);
       set({ error: error instanceof Error ? error.message : String(error) });
     }
   },
@@ -161,7 +161,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
         )
       });
     } catch (error) {
-      console.error('Failed to update window size:', error);
+      console.error('[DETACHED-WINDOWS-STORE] Failed to update window size:', error);
       set({ error: error instanceof Error ? error.message : String(error) });
     }
   },
@@ -182,7 +182,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
     try {
       return await DetachedWindowsAPI.focusDetachedWindow(noteId);
     } catch (error) {
-      console.error('Failed to focus detached window:', error);
+      console.error('[DETACHED-WINDOWS-STORE] Failed to focus detached window:', error);
       return false;
     }
   },
