@@ -70,6 +70,22 @@ pub async fn get_note(id: String, notes: State<'_, NotesState>) -> Result<Option
     Ok(notes_lock.get(&id).cloned())
 }
 
+/// Generate a unique title by appending (N) if needed
+fn generate_unique_title(base_title: &str, existing_titles: &HashSet<String>) -> String {
+    if !existing_titles.contains(base_title) {
+        return base_title.to_string();
+    }
+
+    let mut counter = 2;
+    loop {
+        let title = format!("{} ({})", base_title, counter);
+        if !existing_titles.contains(&title) {
+            return title;
+        }
+        counter += 1;
+    }
+}
+
 /// Create a new note
 #[tauri::command]
 pub async fn create_note(
@@ -88,14 +104,17 @@ pub async fn create_note(
         .max()
         .unwrap_or(-1);
 
-    // Generate a unique slug as the note ID (also used as filename)
+    // Generate unique title and slug
+    let existing_titles: HashSet<String> = notes_lock.values().map(|n| n.title.clone()).collect();
+    let title = generate_unique_title(&request.title, &existing_titles);
+
     let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
-    let id = generate_unique_slug(&request.title, &existing_ids);
+    let id = generate_unique_slug(&title, &existing_ids);
 
     let now = chrono::Utc::now().to_rfc3339();
     let note = Note {
         id: id.clone(),
-        title: request.title,
+        title: title,
         content: request.content,
         created_at: now.clone(),
         updated_at: now,
@@ -133,7 +152,7 @@ pub async fn update_note(
 ) -> Result<Option<Note>, String> {
     let mut notes_lock = notes.lock().await;
     let config_lock = config.lock().await;
-    
+
     if let Some(note) = notes_lock.get_mut(&id) {
         // Check if content has actually changed
         let content_changed = if let Some(ref new_content) = request.content {
@@ -141,11 +160,11 @@ pub async fn update_note(
         } else {
             false
         };
-        
+
         // Check if other fields changed
         let title_changed = request.title.as_ref().map_or(false, |t| t != &note.title);
         let tags_changed = request.tags.as_ref().map_or(false, |t| t != &note.tags);
-        
+
         // Only update if something actually changed
         if content_changed || title_changed || tags_changed {
             if let Some(title) = request.title {
@@ -158,10 +177,56 @@ pub async fn update_note(
                 note.tags = tags;
             }
             note.updated_at = chrono::Utc::now().to_rfc3339();
-            
+
             let updated_note = note.clone();
-            
-            // Save only if content changed (title/tags changes are lightweight)
+
+            // If title changed, need to rename file and update ID
+            if title_changed {
+                // Generate new slug from new title
+                let mut existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
+                existing_ids.remove(&id);
+                let new_id = generate_unique_slug(&updated_note.title, &existing_ids);
+
+                if new_id != id {
+                    // Remove old entry from state
+                    notes_lock.remove(&id);
+
+                    // Rename file on disk
+                    let file_storage = FileNotesStorage::new(&config_lock)?;
+                    file_storage.rename_note(&id, &new_id).await?;
+
+                    // Create updated note with new ID
+                    let renamed_note = Note {
+                        id: new_id.clone(),
+                        title: updated_note.title,
+                        content: updated_note.content,
+                        created_at: updated_note.created_at,
+                        updated_at: updated_note.updated_at,
+                        tags: updated_note.tags,
+                        position: updated_note.position,
+                    };
+
+                    // Insert into state with new ID
+                    notes_lock.insert(new_id.clone(), renamed_note.clone());
+
+                    // Save to disk with new frontmatter
+                    save_note_using_file_storage(&renamed_note, &config_lock).await?;
+
+                    log_info!("NOTES", "Renamed note via update: {} -> {} (title: {})", id, new_id, renamed_note.title);
+
+                    // Emit events for synchronization
+                    app.emit("note-deleted", &id).unwrap_or_else(|e| {
+                        log_error!("NOTES", "Failed to emit note-deleted event: {}", e);
+                    });
+                    app.emit("note-created", &renamed_note).unwrap_or_else(|e| {
+                        log_error!("NOTES", "Failed to emit note-created event: {}", e);
+                    });
+
+                    return Ok(Some(renamed_note));
+                }
+            }
+
+            // Save if content changed or metadata changed
             if content_changed {
                 log_info!("NOTES", "📝 Content changed for note: {} ({})", updated_note.title, updated_note.id);
                 save_note_using_file_storage(&updated_note, &config_lock).await?;
@@ -169,16 +234,15 @@ pub async fn update_note(
                 modified_tracker.update_content_hash(&id, &updated_note.content).await;
                 modified_tracker.clear_modified(&id).await;
             } else if title_changed || tags_changed {
-                // For title/tags only changes, still save but log differently
                 log_info!("NOTES", "📝 Metadata changed for note: {} ({})", updated_note.title, updated_note.id);
                 save_note_using_file_storage(&updated_note, &config_lock).await?;
             }
-            
+
             // Emit event to all windows for synchronization
             app.emit("note-updated", &updated_note).unwrap_or_else(|e| {
                 log_error!("NOTES", "Failed to emit note-updated event: {}", e);
             });
-            
+
             Ok(Some(updated_note))
         } else {
             log_debug!("NOTES", "No changes detected for note: {} ({})", note.title, note.id);
@@ -207,65 +271,58 @@ pub async fn rename_note(
         .ok_or_else(|| format!("Note not found: {}", id))?
         .clone();
 
+    // Check for duplicate titles (excluding current note)
+    let existing_titles: HashSet<String> = notes_lock.values()
+        .filter(|n| n.id != id)
+        .map(|n| n.title.clone())
+        .collect();
+    if existing_titles.contains(&new_title) {
+        return Err(format!("A note with the title '{}' already exists", new_title));
+    }
+
     // Generate new slug from new title, excluding current note from existing IDs
-    // This allows the note to keep its current slug if only the title display changes
     let mut existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
-    existing_ids.remove(&id); // Remove current note to allow same slug
+    existing_ids.remove(&id);
     let new_id = generate_unique_slug(&new_title, &existing_ids);
 
-    // If ID changed, need to rename file and update state
-    if new_id != id {
-        // Remove old entry from state
-        notes_lock.remove(&id);
+    // Always rename file and update state when title changes
+    // Remove old entry from state
+    notes_lock.remove(&id);
 
-        // Rename file on disk
+    // Rename file on disk if ID changed
+    if new_id != id {
         let file_storage = FileNotesStorage::new(&config_lock)?;
         file_storage.rename_note(&id, &new_id).await?;
-
-        // Create updated note with new ID
-        let updated_note = Note {
-            id: new_id.clone(),
-            title: new_title,
-            content: old_note.content,
-            created_at: old_note.created_at,
-            updated_at: chrono::Utc::now().to_rfc3339(),
-            tags: old_note.tags,
-            position: old_note.position,
-        };
-
-        // Insert into state with new ID
-        notes_lock.insert(new_id.clone(), updated_note.clone());
-
-        log_info!("NOTES", "Renamed note: {} -> {}", id, new_id);
-
-        // Emit events for synchronization
-        app.emit("note-deleted", &id).unwrap_or_else(|e| {
-            log_error!("NOTES", "Failed to emit note-deleted event: {}", e);
-        });
-        app.emit("note-created", &updated_note).unwrap_or_else(|e| {
-            log_error!("NOTES", "Failed to emit note-created event: {}", e);
-        });
-
-        Ok(updated_note)
-    } else {
-        // Title didn't change enough to affect the slug, just update title
-        drop(old_note);
-        if let Some(note) = notes_lock.get_mut(&id) {
-            note.title = new_title;
-            note.updated_at = chrono::Utc::now().to_rfc3339();
-            let updated_note = note.clone();
-
-            save_note_using_file_storage(&updated_note, &config_lock).await?;
-
-            app.emit("note-updated", &updated_note).unwrap_or_else(|e| {
-                log_error!("NOTES", "Failed to emit note-updated event: {}", e);
-            });
-
-            Ok(updated_note)
-        } else {
-            Err(format!("Note not found: {}", id))
-        }
     }
+
+    // Create updated note with new ID
+    let updated_note = Note {
+        id: new_id.clone(),
+        title: new_title,
+        content: old_note.content,
+        created_at: old_note.created_at,
+        updated_at: chrono::Utc::now().to_rfc3339(),
+        tags: old_note.tags,
+        position: old_note.position,
+    };
+
+    // Insert into state with new ID
+    notes_lock.insert(new_id.clone(), updated_note.clone());
+
+    // Save to disk with new title in frontmatter
+    save_note_using_file_storage(&updated_note, &config_lock).await?;
+
+    log_info!("NOTES", "Renamed note: {} -> {} (title: {})", id, new_id, updated_note.title);
+
+    // Emit events for synchronization
+    app.emit("note-deleted", &id).unwrap_or_else(|e| {
+        log_error!("NOTES", "Failed to emit note-deleted event: {}", e);
+    });
+    app.emit("note-created", &updated_note).unwrap_or_else(|e| {
+        log_error!("NOTES", "Failed to emit note-created event: {}", e);
+    });
+
+    Ok(updated_note)
 }
 
 /// Delete a note

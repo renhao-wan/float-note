@@ -174,17 +174,11 @@ impl FileStorageManager {
             (content.to_string(), None)
         };
         
-        // Use frontmatter data if available, otherwise generate from filename
-        let id = if let Some(ref fm) = frontmatter_data {
-            // For migration: use the slug from title, not the UUID
-            self.sanitize_filename(&fm.title)
-        } else {
-            // New format: ID is the filename without extension
-            path.file_stem()
-                .and_then(|s| s.to_str())
-                .ok_or("Invalid filename")?  
-                .to_string()
-        };
+        // ID is always the filename (without extension)
+        let id = path.file_stem()
+            .and_then(|s| s.to_str())
+            .ok_or("Invalid filename")?
+            .to_string();
         
         // Get title from frontmatter or extract from content
         let title = if let Some(ref fm) = frontmatter_data {
@@ -201,10 +195,10 @@ impl FileStorageManager {
                     actual_content.lines()
                         .find(|line| !line.trim().is_empty())
                         .map(|line| line.trim().to_string())
-                        .unwrap_or_else(|| id.replace('-', " ").to_string())
+                        .unwrap_or_else(|| "Untitled".to_string())
                 }
             } else {
-                id.replace('-', " ").to_string()
+                "Untitled".to_string()
             }
         };
         
@@ -240,19 +234,31 @@ impl FileStorageManager {
     pub async fn save_note(&self, note: &Note) -> Result<(), String> {
         // Use slug ID as filename
         let file_path = self.notes_dir.join(format!("{}.md", note.id));
-        
-        // Write pure markdown content - no frontmatter
-        let file_content = &note.content;
-        
+
+        // Build frontmatter to preserve title and metadata
+        let frontmatter = NoteFrontmatter {
+            id: note.id.clone(),
+            title: note.title.clone(),
+            created_at: note.created_at.clone(),
+            updated_at: note.updated_at.clone(),
+            tags: note.tags.clone(),
+            position: note.position,
+        };
+
+        let frontmatter_yaml = serde_yaml::to_string(&frontmatter)
+            .map_err(|e| format!("Failed to serialize frontmatter: {}", e))?;
+
+        let file_content = format!("---\n{}---\n{}", frontmatter_yaml, note.content);
+
         // Compute hash of the content we're about to write
         let content_hash = Self::compute_file_hash(&note.content);
-        
-        fs::write(&file_path, file_content)
+
+        fs::write(&file_path, &file_content)
             .map_err(|e| format!("Failed to write note file: {}", e))?;
-        
-        log_info!("FILE_STORAGE", "💾 Wrote note {} to disk: {:?} ({} bytes, content_hash={})", 
+
+        log_info!("FILE_STORAGE", "💾 Wrote note {} to disk: {:?} ({} bytes, content_hash={})",
             note.id, file_path, note.content.len(), &content_hash[..8]);
-        
+
         Ok(())
     }
     
