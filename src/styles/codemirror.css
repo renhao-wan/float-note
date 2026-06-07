@@ -8,7 +8,9 @@
 
 /* Scrollbar */
 .cm-scroller {
-  overflow: auto !important;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  scrollbar-gutter: stable !important;
 }
 
 .cm-scroller::-webkit-scrollbar {
