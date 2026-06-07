@@ -6,30 +6,9 @@
   overflow: hidden !important;
 }
 
-/* Scrollbar - match global scrollbar style */
+/* Scrollbar - use global scrollbar styles (defined in index.css) */
 .cm-scroller {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--primary) / 0.12) transparent;
   overflow-x: auto !important; /* Allow horizontal scroll only when needed */
-}
-
-.cm-scroller::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-.cm-scroller::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.cm-scroller::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.12);
-  border-radius: 3px;
-  transition: background 0.3s ease;
-}
-
-.cm-scroller::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.25);
 }
 
 /* Paper styles for CodeMirror */
