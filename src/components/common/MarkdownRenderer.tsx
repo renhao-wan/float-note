@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
+import { convertFileSrc } from '@tauri-apps/api/core';
 
 interface MarkdownRendererProps {
   content: string;
@@ -13,8 +14,38 @@ interface MarkdownRendererProps {
   title?: string;
 }
 
+// Convert relative attachment path to Tauri-compatible URL
+function resolveImagePath(src: string): string {
+  // If it's a data URL or external URL, return as-is
+  if (src.startsWith('data:') || src.startsWith('http://') || src.startsWith('https://')) {
+    return src;
+  }
+
+  // If it's a relative path to attachments, convert using Tauri's convertFileSrc
+  if (src.startsWith('./attachments/') || src.startsWith('attachments/')) {
+    // Remove leading ./ if present
+    const cleanPath = src.startsWith('./') ? src.substring(2) : src;
+    // Use Tauri's convertFileSrc to create a proper URL
+    // This will create asset://localhost/... URL
+    return convertFileSrc(cleanPath);
+  }
+
+  return src;
+}
+
 function SafeImage({ src, alt }: { src?: string; alt?: string }) {
   const [hasError, setHasError] = useState(false);
+  const [imageSrc, setImageSrc] = useState<string>('');
+
+  useEffect(() => {
+    if (!src) {
+      setImageSrc('');
+      return;
+    }
+
+    const resolved = resolveImagePath(src);
+    setImageSrc(resolved);
+  }, [src]);
 
   if (hasError) {
     return <span className="text-muted-foreground text-sm italic">图片加载失败: {alt || src}</span>;
@@ -22,7 +53,7 @@ function SafeImage({ src, alt }: { src?: string; alt?: string }) {
 
   return (
     <img
-      src={src}
+      src={imageSrc}
       alt={alt || ''}
       className="max-w-full h-auto rounded-lg my-4 shadow-lg"
       loading="lazy"

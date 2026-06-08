@@ -287,7 +287,7 @@ pub async fn save_clipboard_image(
         .map_err(|e| FloatNoteError::Storage(e))?;
 
     // Generate unique filename
-    let ext = filename.rsplit('.').next().unwrap_or("png");
+    let ext = filename.rsplit('.').next().unwrap_or("png").to_string();
     let attachment_id = Uuid::new_v4().to_string();
     let new_filename = format!("{}.{}", attachment_id, ext);
 
@@ -304,7 +304,7 @@ pub async fn save_clipboard_image(
         note_id: note_id.clone(),
         filename: new_filename.clone(),
         original_filename: filename,
-        mime_type: get_mime_type(ext),
+        mime_type: get_mime_type(&ext),
         size: image_bytes.len() as u64,
         created_at: now,
     };
