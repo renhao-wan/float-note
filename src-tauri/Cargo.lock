@@ -1053,6 +1053,7 @@ dependencies = [
  "log",
  "notify",
  "objc",
+ "once_cell",
  "regex",
  "serde",
  "serde_json",

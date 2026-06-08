@@ -259,6 +259,7 @@
     "insertLink": "插入链接"
   },
   "templates": {
+    "manage": "模板管理",
     "selectTemplate": "选择模板",
     "noTemplates": "暂无模板",
     "noCustomTemplates": "暂无自定义模板",
@@ -268,8 +269,11 @@
     "builtin": "内置模板",
     "custom": "自定义模板",
     "useTemplate": "使用模板",
+    "create": "新建模板",
     "createTemplate": "创建模板",
+    "edit": "编辑模板",
     "editTemplate": "编辑模板",
+    "delete": "删除模板",
     "name": "模板名称",
     "namePlaceholder": "输入模板名称",
     "description": "描述",
@@ -283,6 +287,7 @@
     "varDatetime": "日期时间",
     "varWeekday": "星期",
     "nameRequired": "请输入模板名称",
+    "cannotDeleteBuiltin": "不能删除内置模板",
     "confirmDelete": "确定要删除模板 \"{{name}}\" 吗？",
     "loadFailed": "加载模板失败",
     "createSuccess": "模板已创建",

@@ -131,12 +131,6 @@ export function NotesPanel({
     return truncateText(firstLine, 60); // Shorter for single line
   };
 
-  // Helper function to get shortcut key for note index
-  const getShortcutKey = (index: number): string => {
-    const keys = 'QWERTYUIOP';
-    return index < keys.length ? keys[index] : '';
-  };
-
   // Handle drag end event
   const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -322,7 +316,6 @@ export function NotesPanel({
                         isSelected={selectedNoteId === note.id}
                         isOpenInWindow={openWindowIds.has(note.id)}
                         showNotePreviews={showNotePreviews}
-                        shortcutKey={getShortcutKey(index)}
                         onSelect={onSelectNote}
                         onDelete={onDeleteNote}
                         onContextMenu={onShowContextMenu}

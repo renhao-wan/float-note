@@ -377,11 +377,11 @@ function App() {
             <div className="flex-1 flex min-h-0 overflow-hidden">
               <div className="w-64 bg-card/80 border-r border-border/30 flex flex-col h-full overflow-hidden">
                 <TemplatePanel
-                  onSelectTemplate={handleCreateFromTemplate}
+                  templates={templates}
+                  onTemplatesChange={setTemplates}
                   selectedTemplateId={selectedTemplateForPreview?.id || null}
                   onTemplateSelect={setSelectedTemplateForPreview}
                   onEditingContentChange={setEditingTemplateContent}
-                  onTemplatesChange={setTemplates}
                 />
               </div>
 

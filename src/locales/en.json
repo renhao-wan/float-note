@@ -259,6 +259,7 @@
     "insertLink": "Insert link"
   },
   "templates": {
+    "manage": "Templates",
     "selectTemplate": "Select Template",
     "noTemplates": "No templates",
     "noCustomTemplates": "No custom templates",
@@ -268,8 +269,11 @@
     "builtin": "Built-in",
     "custom": "Custom",
     "useTemplate": "Use Template",
+    "create": "New Template",
     "createTemplate": "Create Template",
+    "edit": "Edit Template",
     "editTemplate": "Edit Template",
+    "delete": "Delete Template",
     "name": "Template Name",
     "namePlaceholder": "Enter template name",
     "description": "Description",
@@ -283,6 +287,7 @@
     "varDatetime": "Date and time",
     "varWeekday": "Weekday",
     "nameRequired": "Please enter template name",
+    "cannotDeleteBuiltin": "Cannot delete built-in templates",
     "confirmDelete": "Are you sure you want to delete \"{{name}}\"?",
     "loadFailed": "Failed to load templates",
     "createSuccess": "Template created",

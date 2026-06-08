@@ -5,16 +5,21 @@ import { templatesApi } from '../../services/templates-api';
 import { toast } from '../../stores/toast-store';
 
 interface TemplatePanelProps {
-  onSelectTemplate: (template: NoteTemplate) => void;
+  templates: NoteTemplate[];
+  onTemplatesChange: (templates: NoteTemplate[]) => void;
   selectedTemplateId?: string | null;
   onTemplateSelect?: (template: NoteTemplate | null) => void;
   onEditingContentChange?: (content: { name: string; description: string; content: string } | null) => void;
-  onTemplatesChange?: (templates: NoteTemplate[]) => void;
 }
 
-export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTemplateId, onTemplateSelect, onEditingContentChange, onTemplatesChange }: TemplatePanelProps) {
+export function TemplatePanel({
+  templates,
+  onTemplatesChange,
+  selectedTemplateId,
+  onTemplateSelect,
+  onEditingContentChange
+}: TemplatePanelProps) {
   const { t } = useTranslation();
-  const [templates, setTemplates] = useState<NoteTemplate[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<NoteTemplate | null>(null);
 
@@ -22,21 +27,6 @@ export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTem
   const [formName, setFormName] = useState('');
   const [formDescription, setFormDescription] = useState('');
   const [formContent, setFormContent] = useState('');
-
-  // Load templates
-  const loadTemplates = async () => {
-    try {
-      const data = await templatesApi.getAllTemplates();
-      setTemplates(data);
-      onTemplatesChange?.(data);
-    } catch (error) {
-      console.error('[FLOATNOTE] Failed to load templates:', error);
-    }
-  };
-
-  useEffect(() => {
-    loadTemplates();
-  }, []);
 
   // Notify parent when editing content changes
   useEffect(() => {
@@ -91,17 +81,17 @@ export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTem
 
       if (editingTemplate) {
         // Update existing template
-        await templatesApi.updateTemplate(editingTemplate.id, request);
+        const updated = await templatesApi.updateTemplate(editingTemplate.id, request);
+        const newTemplates = templates.map(t => t.id === updated.id ? updated : t);
+        onTemplatesChange(newTemplates);
         toast.success(t('templates.updateSuccess'));
       } else {
         // Create new template
-        await templatesApi.createTemplate(request);
+        const created = await templatesApi.createTemplate(request);
+        onTemplatesChange([...templates, created]);
         toast.success(t('templates.createSuccess'));
       }
 
-      // Reload templates and reset form
-      const data = await templatesApi.getAllTemplates();
-      setTemplates(data);
       resetForm();
     } catch (error) {
       console.error('[FLOATNOTE] Failed to save template:', error);
@@ -113,10 +103,17 @@ export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTem
   const handleDelete = async (template: NoteTemplate) => {
     try {
       await templatesApi.deleteTemplate(template.id);
+      const newTemplates = templates.filter(t => t.id !== template.id);
+      onTemplatesChange(newTemplates);
+
+      if (editingTemplate?.id === template.id) {
+        resetForm();
+      }
+      if (selectedTemplateId === template.id) {
+        onTemplateSelect?.(null);
+      }
+
       toast.success(t('templates.deleteSuccess'));
-      // Reload templates
-      const data = await templatesApi.getAllTemplates();
-      setTemplates(data);
     } catch (error) {
       console.error('[FLOATNOTE] Failed to delete template:', error);
       toast.error(t('templates.deleteFailed'));

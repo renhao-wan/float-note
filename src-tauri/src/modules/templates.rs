@@ -1,7 +1,9 @@
+use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
 use uuid::Uuid;
 use chrono::Datelike;
+use once_cell::sync::Lazy;
 
 use crate::types::template::{NoteTemplate, CreateTemplateRequest, CreateNoteFromTemplateRequest};
 use crate::types::note::Note;
@@ -11,75 +13,15 @@ use crate::modules::file_notes_storage::FileNotesStorage;
 use crate::{log_info, log_error};
 use crate::error::FloatNoteError;
 
-/// Get the templates directory path
-fn get_templates_dir(config: &crate::types::config::AppConfig) -> Result<PathBuf, String> {
-    let notes_dir = get_configured_notes_directory(config)?;
-    let templates_dir = notes_dir.join(".floatnote").join("templates");
+/// 内置模板 ID 集合，用于快速查找
+static BUILTIN_TEMPLATE_IDS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+    ["daily-journal", "meeting-notes", "project-plan", "book-notes", "weekly-report"]
+        .into_iter().collect()
+});
 
-    // Create directory if it doesn't exist
-    if !templates_dir.exists() {
-        fs::create_dir_all(&templates_dir)
-            .map_err(|e| format!("Failed to create templates directory: {}", e))?;
-    }
-
-    Ok(templates_dir)
-}
-
-/// Get the custom templates directory path
-fn get_custom_templates_dir(config: &crate::types::config::AppConfig) -> Result<PathBuf, String> {
-    let templates_dir = get_templates_dir(config)?;
-    let custom_dir = templates_dir.join("custom");
-
-    if !custom_dir.exists() {
-        fs::create_dir_all(&custom_dir)
-            .map_err(|e| format!("Failed to create custom templates directory: {}", e))?;
-    }
-
-    Ok(custom_dir)
-}
-
-/// Load all templates (builtin + custom)
-fn load_all_templates(config: &crate::types::config::AppConfig) -> Result<Vec<NoteTemplate>, String> {
-    let mut templates = Vec::new();
-
-    // Load builtin templates
-    templates.extend(get_builtin_templates());
-
-    // Load custom templates
-    let custom_dir = get_custom_templates_dir(config)?;
-
-    if custom_dir.exists() {
-        let entries = fs::read_dir(&custom_dir)
-            .map_err(|e| format!("Failed to read custom templates directory: {}", e))?;
-
-        for entry in entries {
-            let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
-            let path = entry.path();
-
-            if path.is_file() && path.extension().map_or(false, |ext| ext == "json") {
-                match fs::read_to_string(&path) {
-                    Ok(content) => {
-                        match serde_json::from_str::<NoteTemplate>(&content) {
-                            Ok(template) => templates.push(template),
-                            Err(e) => {
-                                log_error!("TEMPLATES", "Failed to parse template {:?}: {}", path, e);
-                            }
-                        }
-                    }
-                    Err(e) => {
-                        log_error!("TEMPLATES", "Failed to read template {:?}: {}", path, e);
-                    }
-                }
-            }
-        }
-    }
-
-    Ok(templates)
-}
-
-/// Get builtin templates
-fn get_builtin_templates() -> Vec<NoteTemplate> {
-    let now = chrono::Utc::now().to_rfc3339();
+/// 缓存的内置模板列表，避免每次调用都重新创建
+static BUILTIN_TEMPLATES: Lazy<Vec<NoteTemplate>> = Lazy::new(|| {
+    let fixed_time = "2024-01-01T00:00:00+00:00".to_string();
 
     vec![
         NoteTemplate {
@@ -105,8 +47,8 @@ fn get_builtin_templates() -> Vec<NoteTemplate> {
 - [ ]
 "#.to_string(),
             is_builtin: true,
-            created_at: now.clone(),
-            updated_at: now.clone(),
+            created_at: fixed_time.clone(),
+            updated_at: fixed_time.clone(),
         },
         NoteTemplate {
             id: "meeting-notes".to_string(),
@@ -138,8 +80,8 @@ fn get_builtin_templates() -> Vec<NoteTemplate> {
 - **议题**:
 "#.to_string(),
             is_builtin: true,
-            created_at: now.clone(),
-            updated_at: now.clone(),
+            created_at: fixed_time.clone(),
+            updated_at: fixed_time.clone(),
         },
         NoteTemplate {
             id: "project-plan".to_string(),
@@ -182,8 +124,8 @@ fn get_builtin_templates() -> Vec<NoteTemplate> {
 
 "#.to_string(),
             is_builtin: true,
-            created_at: now.clone(),
-            updated_at: now.clone(),
+            created_at: fixed_time.clone(),
+            updated_at: fixed_time.clone(),
         },
         NoteTemplate {
             id: "book-notes".to_string(),
@@ -216,8 +158,8 @@ fn get_builtin_templates() -> Vec<NoteTemplate> {
 - [ ]
 "#.to_string(),
             is_builtin: true,
-            created_at: now.clone(),
-            updated_at: now.clone(),
+            created_at: fixed_time.clone(),
+            updated_at: fixed_time.clone(),
         },
         NoteTemplate {
             id: "weekly-report".to_string(),
@@ -249,10 +191,84 @@ fn get_builtin_templates() -> Vec<NoteTemplate> {
 
 "#.to_string(),
             is_builtin: true,
-            created_at: now.clone(),
-            updated_at: now,
+            created_at: fixed_time.clone(),
+            updated_at: fixed_time,
         },
     ]
+});
+
+/// 检查是否是内置模板
+fn is_builtin_template(template_id: &str) -> bool {
+    BUILTIN_TEMPLATE_IDS.contains(template_id)
+}
+
+/// Get the templates directory path
+fn get_templates_dir(config: &crate::types::config::AppConfig) -> Result<PathBuf, FloatNoteError> {
+    let notes_dir = get_configured_notes_directory(config)
+        .map_err(|e| FloatNoteError::Storage(e))?;
+    let templates_dir = notes_dir.join(".floatnote").join("templates");
+
+    // Create directory if it doesn't exist
+    if !templates_dir.exists() {
+        fs::create_dir_all(&templates_dir)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to create templates directory: {}", e)))?;
+    }
+
+    Ok(templates_dir)
+}
+
+/// Get the custom templates directory path
+fn get_custom_templates_dir(config: &crate::types::config::AppConfig) -> Result<PathBuf, FloatNoteError> {
+    let templates_dir = get_templates_dir(config)?;
+    let custom_dir = templates_dir.join("custom");
+
+    if !custom_dir.exists() {
+        fs::create_dir_all(&custom_dir)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to create custom templates directory: {}", e)))?;
+    }
+
+    Ok(custom_dir)
+}
+
+/// Load custom templates from disk
+fn load_custom_templates(config: &crate::types::config::AppConfig) -> Result<Vec<NoteTemplate>, FloatNoteError> {
+    let custom_dir = get_custom_templates_dir(config)?;
+    let mut templates = Vec::new();
+
+    if custom_dir.exists() {
+        let entries = fs::read_dir(&custom_dir)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to read custom templates directory: {}", e)))?;
+
+        for entry in entries {
+            let entry = entry.map_err(|e| FloatNoteError::Storage(format!("Failed to read directory entry: {}", e)))?;
+            let path = entry.path();
+
+            if path.is_file() && path.extension().map_or(false, |ext| ext == "json") {
+                match fs::read_to_string(&path) {
+                    Ok(content) => {
+                        match serde_json::from_str::<NoteTemplate>(&content) {
+                            Ok(template) => templates.push(template),
+                            Err(e) => {
+                                log_error!("TEMPLATES", "Failed to parse template {:?}: {}", path, e);
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        log_error!("TEMPLATES", "Failed to read template {:?}: {}", path, e);
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(templates)
+}
+
+/// Load all templates (builtin + custom)
+fn load_all_templates(config: &crate::types::config::AppConfig) -> Result<Vec<NoteTemplate>, FloatNoteError> {
+    let mut templates = BUILTIN_TEMPLATES.clone();
+    templates.extend(load_custom_templates(config)?);
+    Ok(templates)
 }
 
 /// Get all templates
@@ -261,30 +277,34 @@ pub async fn get_all_templates(
     config: tauri::State<'_, crate::ConfigState>,
 ) -> Result<Vec<NoteTemplate>, FloatNoteError> {
     let config_lock = config.lock().await;
-
-    let templates = load_all_templates(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
-
-    Ok(templates)
+    load_all_templates(&config_lock)
 }
 
-/// Get a specific template
+/// Get a specific template (optimized - doesn't load all templates)
 #[tauri::command]
 pub async fn get_template(
     template_id: String,
     config: tauri::State<'_, crate::ConfigState>,
 ) -> Result<NoteTemplate, FloatNoteError> {
+    // 先检查内置模板（使用缓存）
+    if let Some(template) = BUILTIN_TEMPLATES.iter().find(|t| t.id == template_id) {
+        return Ok(template.clone());
+    }
+
+    // 再查找自定义模板
     let config_lock = config.lock().await;
+    let custom_dir = get_custom_templates_dir(&config_lock)?;
+    let file_path = custom_dir.join(format!("{}.json", template_id));
 
-    let templates = load_all_templates(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    if file_path.exists() {
+        let content = fs::read_to_string(&file_path)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to read template: {}", e)))?;
+        let template: NoteTemplate = serde_json::from_str(&content)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to parse template: {}", e)))?;
+        return Ok(template);
+    }
 
-    let template = templates.iter()
-        .find(|t| t.id == template_id)
-        .cloned()
-        .ok_or_else(|| FloatNoteError::NotFound(format!("Template not found: {}", template_id)))?;
-
-    Ok(template)
+    Err(FloatNoteError::NotFound(format!("Template not found: {}", template_id)))
 }
 
 /// Create a custom template
@@ -297,8 +317,12 @@ pub async fn create_template(
 
     log_info!("TEMPLATES", "Creating template: {}", request.name);
 
-    let custom_dir = get_custom_templates_dir(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    // 验证模板名称不为空
+    if request.name.trim().is_empty() {
+        return Err(FloatNoteError::Validation("Template name cannot be empty".to_string()));
+    }
+
+    let custom_dir = get_custom_templates_dir(&config_lock)?;
 
     let now = chrono::Utc::now().to_rfc3339();
     let template_id = Uuid::new_v4().to_string();
@@ -333,18 +357,26 @@ pub async fn update_template(
     request: CreateTemplateRequest,
     config: tauri::State<'_, crate::ConfigState>,
 ) -> Result<NoteTemplate, FloatNoteError> {
+    // 检查是否是内置模板
+    if is_builtin_template(&template_id) {
+        return Err(FloatNoteError::Validation("Cannot modify builtin templates".to_string()));
+    }
+
     let config_lock = config.lock().await;
 
     log_info!("TEMPLATES", "Updating template: {}", template_id);
 
-    let custom_dir = get_custom_templates_dir(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    // 验证模板名称不为空
+    if request.name.trim().is_empty() {
+        return Err(FloatNoteError::Validation("Template name cannot be empty".to_string()));
+    }
 
+    let custom_dir = get_custom_templates_dir(&config_lock)?;
     let file_path = custom_dir.join(format!("{}.json", template_id));
 
     // Load existing template
     let content = fs::read_to_string(&file_path)
-        .map_err(|e| FloatNoteError::NotFound(format!("Template not found: {}", template_id)))?;
+        .map_err(|_| FloatNoteError::NotFound(format!("Template not found: {}", template_id)))?;
 
     let mut template: NoteTemplate = serde_json::from_str(&content)
         .map_err(|e| FloatNoteError::Storage(format!("Failed to parse template: {}", e)))?;
@@ -373,13 +405,16 @@ pub async fn delete_template(
     template_id: String,
     config: tauri::State<'_, crate::ConfigState>,
 ) -> Result<(), FloatNoteError> {
+    // 检查是否是内置模板
+    if is_builtin_template(&template_id) {
+        return Err(FloatNoteError::Validation("Cannot delete builtin templates".to_string()));
+    }
+
     let config_lock = config.lock().await;
 
     log_info!("TEMPLATES", "Deleting template: {}", template_id);
 
-    let custom_dir = get_custom_templates_dir(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
-
+    let custom_dir = get_custom_templates_dir(&config_lock)?;
     let file_path = custom_dir.join(format!("{}.json", template_id));
 
     if !file_path.exists() {
@@ -405,14 +440,8 @@ pub async fn create_note_from_template(
 
     log_info!("TEMPLATES", "Creating note from template: {}", request.template_id);
 
-    // Get template
-    let templates = load_all_templates(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
-
-    let template = templates.iter()
-        .find(|t| t.id == request.template_id)
-        .cloned()
-        .ok_or_else(|| FloatNoteError::NotFound(format!("Template not found: {}", request.template_id)))?;
+    // Get template (using optimized single lookup)
+    let template = get_template_internal(&request.template_id, &config_lock)?;
 
     // Process template variables
     let now = chrono::Utc::now();
@@ -458,6 +487,31 @@ pub async fn create_note_from_template(
     log_info!("TEMPLATES", "Created note from template: {} -> {}", template.name, note.id);
 
     Ok(note)
+}
+
+/// Internal function to get a single template (reused by create_note_from_template)
+fn get_template_internal(
+    template_id: &str,
+    config: &crate::types::config::AppConfig,
+) -> Result<NoteTemplate, FloatNoteError> {
+    // 先检查内置模板
+    if let Some(template) = BUILTIN_TEMPLATES.iter().find(|t| t.id == template_id) {
+        return Ok(template.clone());
+    }
+
+    // 再查找自定义模板
+    let custom_dir = get_custom_templates_dir(config)?;
+    let file_path = custom_dir.join(format!("{}.json", template_id));
+
+    if file_path.exists() {
+        let content = fs::read_to_string(&file_path)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to read template: {}", e)))?;
+        let template: NoteTemplate = serde_json::from_str(&content)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to parse template: {}", e)))?;
+        return Ok(template);
+    }
+
+    Err(FloatNoteError::NotFound(format!("Template not found: {}", template_id)))
 }
 
 /// Get weekday name in Chinese

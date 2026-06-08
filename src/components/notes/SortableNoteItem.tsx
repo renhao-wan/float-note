@@ -8,7 +8,6 @@ interface SortableNoteItemProps {
   isSelected: boolean;
   isOpenInWindow: boolean;
   showNotePreviews?: boolean;
-  shortcutKey?: string;
   onSelect: (noteId: string) => void;
   onDelete: (noteId: string) => void;
   onContextMenu: (x: number, y: number, noteId: string) => void;
@@ -22,7 +21,6 @@ export function SortableNoteItem({
   isSelected,
   isOpenInWindow,
   showNotePreviews,
-  shortcutKey,
   onSelect,
   onDelete,
   onContextMenu,
@@ -104,18 +102,6 @@ export function SortableNoteItem({
                   {note.title || 'Untitled'}
                 </h3>
                 <div className="flex items-center gap-1">
-                  {/* Note ID with fade effect */}
-                  <span className="text-[8px] font-mono text-muted-foreground opacity-50 select-none">
-                    {note.id.slice(-5)}
-                  </span>
-                  {shortcutKey && (
-                    <span
-                      className="text-[9px] text-muted-foreground/40 font-mono bg-background/50 px-1 py-0.5 rounded border border-border/20"
-                      title={`Hyper+B, ${shortcutKey} to open in detached window`}
-                    >
-                      {shortcutKey}
-                    </span>
-                  )}
                   {isOpenInWindow && (
                     <div className="w-1 h-1 rounded-full bg-primary/40 mt-1" title="Open in window" />
                   )}
