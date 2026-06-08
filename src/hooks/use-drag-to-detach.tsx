@@ -257,19 +257,9 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
               noteId: ref.noteId,
             });
 
-            // Update the detached windows store with new position
+            // Refresh the store to pick up the newly created detached window
             const { useDetachedWindowsStore } = await import('../stores/detached-windows-store');
-            const store = useDetachedWindowsStore.getState();
-
-            useDetachedWindowsStore.setState({
-              windowPositions: {
-                ...store.windowPositions,
-                [ref.noteId]: {
-                  position: [ref.lastMousePosition.x - 200, ref.lastMousePosition.y - 20],
-                  size: [800, 600],
-                }
-              }
-            });
+            await useDetachedWindowsStore.getState().refreshWindows();
           } catch (error) {
             console.error('[DRAG] Failed to finalize window:', error);
           }
