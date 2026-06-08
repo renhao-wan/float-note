@@ -1,25 +1,10 @@
 {
   "common": {
-    "save": "保存更改",
-    "cancel": "取消",
     "loading": "加载中...",
     "error": "错误",
     "success": "成功",
-    "confirm": "确认",
-    "delete": "删除",
-    "edit": "编辑",
-    "create": "创建",
-    "close": "关闭",
     "clear": "清除",
-    "back": "返回",
-    "next": "下一步",
-    "previous": "上一步",
-    "search": "搜索",
     "settings": "设置",
-    "help": "帮助",
-    "about": "关于",
-    "to": "以",
-    "persist": "持久化",
     "browse": "浏览",
     "set": "设置",
     "current": "当前"
@@ -63,9 +48,6 @@
       "navDescription": "主题、字体和视觉偏好",
       "themes": {
         "title": "主题",
-        "clickToPreview": "点击预览",
-        "applyTheme": "应用",
-        "createCustom": "自定义主题",
         "midnight-ink": "黑曜石",
         "dark-forest": "暗夜森林",
         "cosmic-dusk": "宇宙黄昏",
@@ -89,11 +71,6 @@
         "editorFont": "编辑器字体",
         "contentFont": "内容字体",
         "lineHeight": "行高",
-        "typographyPreview": "排版预览",
-        "editorView": "编辑器视图",
-        "previewMode": "预览模式",
-        "rendered": "渲染",
-        "markdown": "Markdown",
         "fonts": {
           "jetbrainsMono": "JetBrains Mono",
           "firaCode": "Fira Code",
@@ -113,46 +90,8 @@
           "outfit": "Outfit"
         }
       },
-      "visual": {
-        "title": "视觉",
-        "theme": "主题",
-        "noteBackground": "笔记背景"
-      },
       "window": {
-        "alwaysOnTop": "始终置顶",
-        "unpin": "取消置顶",
-        "pin": "置顶"
-      }
-    },
-    "shortcuts": {
-      "title": "快捷键",
-      "description": "全局和应用内键盘快捷键",
-      "navDescription": "键盘快捷键和热键",
-      "globalShortcuts": {
-        "title": "全局快捷键",
-        "description": "全局快捷键允许您在系统任何位置执行操作，即使应用在后台。",
-        "createNewNote": "新建笔记",
-        "toggleHoverMode": "切换悬停模式"
-      },
-      "inAppShortcuts": {
-        "title": "应用内快捷键",
-        "commandPalette": "命令面板",
-        "newNote": "新建笔记",
-        "togglePreview": "切换预览",
-        "openSettings": "打开设置",
-        "focusMode": "专注模式"
-      },
-      "permissions": {
-        "required": "需要辅助功能权限才能使用全局快捷键",
-        "openSettings": "打开系统设置"
-      },
-      "actions": {
-        "reRegisterShortcuts": "重新注册快捷键",
-        "registering": "注册中...",
-        "testEvent": "测试事件",
-        "testHover": "测试悬停",
-        "forceVisible": "强制显示",
-        "debugWebview": "调试 Webview"
+        "alwaysOnTop": "始终置顶"
       }
     },
     "editor": {
@@ -184,31 +123,14 @@
         "wordWrap": "自动换行",
         "wordWrapDescription": "在编辑器中换行"
       }
-    },
-    "advanced": {
-      "title": "高级",
-      "description": "高级应用设置",
-      "navDescription": "开发者和系统设置",
-      "developerMode": "开发者模式",
-      "developerModeDescription": "启用开发者工具和功能",
-      "autoUpdate": "自动更新",
-      "autoUpdateDescription": "自动下载和安装更新"
     }
   },
   "notes": {
     "create": "新建笔记",
     "delete": "删除笔记",
-    "edit": "编辑笔记",
-    "save": "保存笔记",
-    "search": "搜索笔记",
     "noNotes": "暂无笔记",
     "noNotesDescription": "点击「新建笔记」开始",
-    "searchHint": "尝试不同的搜索词",
-    "openInWindow": "在窗口中打开",
-    "wordCount": "字数",
-    "lastSaved": "最后保存",
-    "untitled": "无标题笔记",
-    "empty": "空笔记"
+    "openInWindow": "在窗口中打开"
   },
   "titlebar": {
     "title": "FloatNote",
@@ -247,60 +169,13 @@
     "hideNotes": "隐藏笔记",
     "hideSettings": "隐藏设置"
   },
-  "footer": {
-    "theme": "主题",
-    "language": "语言"
-  },
   "commandPalette": {
     "searchPlaceholder": "搜索笔记...",
-    "noResults": "未找到结果",
-    "createNote": "新建笔记",
-    "openSettings": "打开设置",
-    "togglePreview": "切换预览",
-    "toggleSidebar": "切换侧边栏"
+    "noResults": "未找到结果"
   },
   "contextMenu": {
-    "open": "打开",
     "detach": "分离窗口",
-    "delete": "删除",
-    "rename": "重命名",
-    "duplicate": "复制"
-  },
-  "dialog": {
-    "confirmDelete": "确认删除",
-    "confirmDeleteMessage": "确定要删除此笔记吗？此操作无法撤销。",
-    "confirmDeleteTitle": "删除笔记",
-    "unsavedChanges": "未保存的更改",
-    "unsavedChangesMessage": "您有未保存的更改。确定要离开吗？",
-    "saveChanges": "保存更改",
-    "discardChanges": "放弃更改"
-  },
-  "defaultTemplate": {
-    "title": "新笔记",
-    "content": "# 新笔记\n\n开始写作..."
-  },
-  "permissions": {
-    "enableGlobalShortcuts": "启用全局快捷键",
-    "accessibilityRequired": "需要系统权限",
-    "description": "FloatNote 需要系统权限来启用全局快捷键。请在系统设置中授予所需权限。",
-    "setupSteps": "设置步骤",
-    "step1": "点击下方「打开设置」",
-    "step2": "在辅助功能应用列表中找到「FloatNote」",
-    "step3": "切换开关以启用访问",
-    "step4": "重启 FloatNote 以激活快捷键",
-    "privacyNote": "隐私说明：",
-    "privacyDescription": "FloatNote 仅监控全局快捷键的特定键盘组合。不会访问或存储其他数据。",
-    "openSettings": "打开设置",
-    "later": "稍后"
-  },
-  "chordHint": {
-    "selectNote": "选择笔记",
-    "newNote": "新建笔记",
-    "search": "搜索",
-    "focusWindow": "聚焦/打开窗口",
-    "noteMode": "笔记模式",
-    "windowMode": "窗口模式",
-    "availableNotes": "可用笔记"
+    "delete": "删除"
   },
   "toast": {
     "importFileSuccess": "成功导入笔记：{{title}}",

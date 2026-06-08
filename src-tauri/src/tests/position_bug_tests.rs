@@ -25,7 +25,6 @@ mod test_utils {
             content: content.to_string(),
             created_at: now.clone(),
             updated_at: now,
-            tags: vec![],
             position,
         }
     }

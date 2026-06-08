@@ -42,10 +42,6 @@ export interface AppConfig {
     showNotePreviews?: boolean;
     appFontFamily: string;
   };
-  advanced?: {
-    developerMode?: boolean;
-    autoUpdate?: boolean;
-  };
   storage?: {
     notesDirectory?: string; // Custom directory for notes, defaults to app data directory
     useCustomDirectory?: boolean; // Whether to use custom directory or default
@@ -79,10 +75,6 @@ export const defaultConfig: AppConfig = {
     wordWrap: true, // 自动换行
     showNotePreviews: false,
     appFontFamily: 'Outfit, system-ui, sans-serif',
-  },
-  advanced: {
-    developerMode: false,
-    autoUpdate: true,
   },
   storage: {
     notesDirectory: undefined, // Will use default app data directory

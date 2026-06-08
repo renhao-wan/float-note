@@ -86,13 +86,6 @@ export function EditorArea({
         />
       </div>
 
-      {/* Note ID display - developer mode only */}
-      {config?.advanced?.developerMode && selectedNote && (
-        <div className="absolute right-5 top-full mt-1 text-[10px] font-mono text-muted-foreground/50">
-          ID: {selectedNote.id}
-        </div>
-      )}
-
       {/* Mode toggle */}
       <div className="flex items-center bg-card/30 border border-border/20 rounded-lg p-0.5 flex-shrink-0">
         <button

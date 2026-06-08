@@ -347,7 +347,6 @@ async fn parse_markdown_file(path: &Path) -> Result<Note, String> {
         content: actual_content,
         created_at: now.clone(),
         updated_at: now,
-        tags: vec![],
         position: None,
     })
 }

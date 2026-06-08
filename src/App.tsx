@@ -8,7 +8,6 @@ import {
   SettingsPanel,
   SettingsNavigation
 } from './components/settings';
-import { DevToolbar } from './components/dev/DevToolbar';
 import {
   CustomTitleBar,
   WindowWrapper,
@@ -302,9 +301,6 @@ function App() {
           config={config} 
         />
       </div>
-
-      {/* Dev toolbar - only show in development */}
-      {process.env.NODE_ENV === 'development' && !isDetachedWindow && <DevToolbar />}
 
       {/* Toast notifications */}
       <ToastContainer />

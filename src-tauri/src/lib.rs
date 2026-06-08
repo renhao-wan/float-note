@@ -31,12 +31,11 @@ pub use state::{
 pub use modules::{
     logging::*,
     commands::*,
-    storage::{get_default_notes_directory, get_configured_notes_directory, 
+    storage::{get_default_notes_directory, get_configured_notes_directory,
              get_config, update_config, get_detached_windows},
     windows::*,
     file_operations::*,
     system_commands::*,
-    test_commands::*,
 };
 
 // Re-export from types (excluding the state type aliases to avoid ambiguity)
@@ -46,34 +45,6 @@ pub use types::{
     window::{DetachedWindow, CreateDetachedWindowRequest},
 };
 
-// Import handler functions
-use handlers::{
-    reregister_global_shortcuts as reregister_global_shortcuts_handler,
-    update_app_menu as update_app_menu_handler,
-};
-
-// Wrapper commands for backward compatibility
-#[tauri::command]
-async fn update_app_menu(
-    app: tauri::AppHandle,
-    detached_windows: tauri::State<'_, DetachedWindowsState>,
-    notes: tauri::State<'_, NotesState>,
-) -> Result<(), String> {
-    update_app_menu_handler(app, detached_windows, notes).await
-}
-
-#[tauri::command]
-async fn reregister_global_shortcuts(app: tauri::AppHandle) -> Result<String, String> {
-    let results = reregister_global_shortcuts_handler(app)
-        .await
-        .map_err(|e| e.to_string())?;
-    
-    if results.iter().any(|r| r.contains("failed")) {
-        Err(results.join("; "))
-    } else {
-        Ok(results.join("; "))
-    }
-}
 
 // Main entry point
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -119,9 +90,7 @@ pub fn run() {
             update_note,
             rename_note,
             delete_note,
-            reorder_notes,
-            get_notes_directory,
-            
+
             // File operations
             import_notes_from_directory,
             import_single_file,
@@ -130,19 +99,13 @@ pub fn run() {
             set_notes_directory,
             reload_notes_from_directory,
             get_current_notes_directory,
-            
+
             // Config operations
             get_config,
             update_config,
-            
+
             // Window operations
             toggle_window_visibility,
-            set_window_opacity,
-            set_window_always_on_top,
-            toggle_all_windows_hover,
-            set_window_focus,
-            force_main_window_visible,
-            reload_main_window,
             create_detached_window,
             close_detached_window,
             focus_detached_window,
@@ -154,11 +117,7 @@ pub fn run() {
             toggle_main_window_shade,
             restore_detached_windows,
             clear_all_detached_windows,
-            recreate_missing_windows,
-            list_all_windows,
-            cleanup_stale_windows,
             cleanup_destroyed_window,
-            cleanup_stale_hybrid_windows,
 
             // Detached window opacity commands
             set_detached_window_opacity_macos,
@@ -169,9 +128,6 @@ pub fn run() {
             get_detached_window_opacity_linux,
 
             // Drag and drop operations
-            create_drag_ghost,
-            update_drag_ghost_position,
-            destroy_drag_ghost,
             create_hybrid_drag_window,
             show_hybrid_drag_window,
             update_hybrid_drag_position,
@@ -183,14 +139,6 @@ pub fn run() {
             open_directory_in_finder,
             open_directory_dialog,
             pick_file_dialog,
-
-            // Menu and shortcuts
-            update_app_menu,
-            reregister_global_shortcuts,
-
-            // Logging
-            get_log_file_path,
-            get_recent_logs,
         ])
         .on_menu_event(build_menu_handler())
         .setup(|app| {

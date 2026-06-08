@@ -3,8 +3,6 @@ export { useContextMenu } from './use-context-menu';
 export { useDragToDetach } from './use-drag-to-detach';
 export { useGlobalEventListeners } from './use-global-event-listeners';
 export { useNoteManagement } from './use-note-management';
-export { useNotes } from './use-notes';
-export { usePermissions } from './use-permissions';
 export { useSaveStatus } from './use-save-status';
 export { useModifiedState } from './use-modified-state';
 export { useTypewriterMode } from './use-typewriter-mode';

@@ -123,7 +123,6 @@ pub async fn create_note(
         content: request.content,
         created_at: now.clone(),
         updated_at: now,
-        tags: request.tags,
         position: Some(max_position + 1),
     };
 
@@ -168,18 +167,14 @@ pub async fn update_note(
 
         // Check if other fields changed
         let title_changed = request.title.as_ref().map_or(false, |t| t != &note.title);
-        let tags_changed = request.tags.as_ref().map_or(false, |t| t != &note.tags);
 
         // Only update if something actually changed
-        if content_changed || title_changed || tags_changed {
+        if content_changed || title_changed {
             if let Some(title) = request.title {
                 note.title = title;
             }
             if let Some(content) = request.content {
                 note.content = content;
-            }
-            if let Some(tags) = request.tags {
-                note.tags = tags;
             }
             note.updated_at = chrono::Utc::now().to_rfc3339();
 
@@ -200,7 +195,6 @@ pub async fn update_note(
                         content: updated_note.content,
                         created_at: updated_note.created_at,
                         updated_at: updated_note.updated_at,
-                        tags: updated_note.tags,
                         position: updated_note.position,
                     };
 
@@ -238,7 +232,7 @@ pub async fn update_note(
                 // Update the content hash after successful save
                 modified_tracker.update_content_hash(&id, &updated_note.content).await;
                 modified_tracker.clear_modified(&id).await;
-            } else if title_changed || tags_changed {
+            } else if title_changed {
                 log_info!("NOTES", "📝 Metadata changed for note: {} ({})", updated_note.title, updated_note.id);
                 save_note_using_file_storage(&updated_note, &config_lock).await?;
             }
@@ -298,7 +292,6 @@ pub async fn rename_note(
         content: old_note.content,
         created_at: old_note.created_at,
         updated_at: chrono::Utc::now().to_rfc3339(),
-        tags: old_note.tags,
         position: old_note.position,
     };
 
@@ -365,42 +358,3 @@ pub async fn delete_note(
     Ok(removed)
 }
 
-/// Update note positions for manual reordering
-#[tauri::command]
-pub async fn reorder_notes(
-    app: AppHandle,
-    note_ids: Vec<String>,
-    notes: State<'_, NotesState>,
-    config: State<'_, ConfigState>,
-) -> Result<(), String> {
-    let mut notes_lock = notes.lock().await;
-    let config_lock = config.lock().await;
-
-    // Update positions based on the order in note_ids
-    for (index, note_id) in note_ids.iter().enumerate() {
-        if let Some(note) = notes_lock.get_mut(note_id) {
-            note.position = Some(index as i32);
-        }
-    }
-
-    // Save all notes since multiple positions changed
-    save_all_notes_using_file_storage(&notes_lock, &config_lock).await?;
-
-    // Get updated notes for event emission
-    let updated_notes: Vec<Note> = note_ids.iter()
-        .filter_map(|id| notes_lock.get(id).cloned())
-        .collect();
-
-    drop(notes_lock);
-    drop(config_lock);
-
-    // Emit events for each updated note
-    for note in updated_notes {
-        app.emit("note-updated", &note).unwrap_or_else(|e| {
-            log_error!("NOTES", "Failed to emit note-updated event: {}", e);
-        });
-    }
-
-    log_info!("NOTES", "Reordered {} notes", note_ids.len());
-    Ok(())
-}

@@ -99,21 +99,19 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       console.warn('[FLOATNOTE] Failed to load notes from Tauri, falling back to demo data:', error);
       // Demo data for browser context or when Tauri fails
       const demoNotes: Note[] = [
-        { 
-          id: 'demo-1', 
+        {
+          id: 'demo-1',
           title: 'Welcome to FloatNote',
           content: '# Welcome to FloatNote\n\nThis is a demo note running in browser mode.',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          tags: []
+          updated_at: new Date().toISOString()
         },
-        { 
-          id: 'demo-2', 
-          title: 'Demo Note 2', 
+        {
+          id: 'demo-2',
+          title: 'Demo Note 2',
           content: '# Demo Note\n\nYou can see the interface, but Tauri features require the desktop app.',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          tags: []
+          updated_at: new Date().toISOString()
         }
       ];
       setNotes(demoNotes);
@@ -132,8 +130,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       const newNote = await invoke<Note>('create_note', {
         request: {
           title: 'Untitled',
-          content: '',
-          tags: []
+          content: ''
         }
       });
 
@@ -226,8 +223,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         const updatedNote = await invoke<Note>('update_note', {
           id: currentNoteId,
           request: {
-            content,
-            tags: undefined // Keep existing tags
+            content
           }
         });
 

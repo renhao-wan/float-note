@@ -91,10 +91,6 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
       storage: {
         ...config.storage,
         ...(configUpdate.storage || {})
-      },
-      advanced: {
-        ...config.advanced,
-        ...(configUpdate.advanced || {})
       }
     };
     

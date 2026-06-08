@@ -84,7 +84,6 @@ impl NoteService {
             content: request.content,
             created_at: now.clone(),
             updated_at: now,
-            tags: request.tags,
             position: None,
         };
         
@@ -117,9 +116,6 @@ impl NoteService {
         }
         if let Some(content) = request.content {
             note.content = content;
-        }
-        if let Some(tags) = request.tags {
-            note.tags = tags;
         }
         note.updated_at = chrono::Utc::now().to_rfc3339();
 
@@ -170,22 +166,15 @@ impl NoteService {
     /// Get notes statistics
     pub async fn get_stats(&self) -> Result<NoteStats, String> {
         let cache = self.notes_cache.lock().await;
-        
+
         let total_notes = cache.len();
         let total_words = cache.values()
             .map(|note| note.content.split_whitespace().count())
             .sum();
-        
-        let all_tags: Vec<String> = cache.values()
-            .flat_map(|note| note.tags.iter().cloned())
-            .collect();
-        
-        let unique_tags = all_tags.iter().collect::<std::collections::HashSet<_>>().len();
-        
+
         Ok(NoteStats {
             total_notes,
             total_words,
-            unique_tags,
         })
     }
 }
@@ -195,5 +184,4 @@ impl NoteService {
 pub struct NoteStats {
     pub total_notes: usize,
     pub total_words: usize,
-    pub unique_tags: usize,
 }

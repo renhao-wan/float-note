@@ -203,9 +203,9 @@ impl FileStorageManager {
         };
         
         // Get timestamps and metadata
-        let (created_at, updated_at, tags, position) = if let Some(fm) = frontmatter_data {
+        let (created_at, updated_at, position) = if let Some(fm) = frontmatter_data {
             // Use frontmatter data for migration
-            (fm.created_at, fm.updated_at, fm.tags, fm.position)
+            (fm.created_at, fm.updated_at, fm.position)
         } else {
             // For new files without frontmatter, use file metadata
             let metadata = fs::metadata(path).ok();
@@ -216,16 +216,15 @@ impl FileStorageManager {
                 .flatten()
                 .unwrap_or_else(chrono::Utc::now)
                 .to_rfc3339();
-            (modified.clone(), modified, vec![], None)
+            (modified.clone(), modified, None)
         };
-        
+
         Ok(Note {
             id,
             title,
             content: actual_content,
             created_at,
             updated_at,
-            tags,
             position,
         })
     }
@@ -241,7 +240,6 @@ impl FileStorageManager {
             title: note.title.clone(),
             created_at: note.created_at.clone(),
             updated_at: note.updated_at.clone(),
-            tags: note.tags.clone(),
             position: note.position,
         };
 

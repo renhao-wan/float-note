@@ -7,7 +7,6 @@ pub struct Note {
     pub content: String,
     pub created_at: String,
     pub updated_at: String,
-    pub tags: Vec<String>,
     pub position: Option<i32>, // Manual ordering position
 }
 
@@ -15,14 +14,12 @@ pub struct Note {
 pub struct CreateNoteRequest {
     pub title: String,
     pub content: String,
-    pub tags: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UpdateNoteRequest {
     pub title: Option<String>,
     pub content: Option<String>,
-    pub tags: Option<Vec<String>>,
 }
 
 // Internal type for parsing frontmatter
@@ -32,7 +29,6 @@ pub struct NoteFrontmatter {
     pub title: String,
     pub created_at: String,
     pub updated_at: String,
-    pub tags: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub position: Option<i32>,
 }

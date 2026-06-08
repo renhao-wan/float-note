@@ -17,7 +17,6 @@ fn create_test_note(id: &str, title: &str, content: &str, position: Option<i32>)
         content: content.to_string(),
         created_at: now.clone(),
         updated_at: now,
-        tags: vec![],
         position,
     }
 }
