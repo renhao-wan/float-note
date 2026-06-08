@@ -703,21 +703,19 @@ pub async fn finalize_hybrid_drag_window(
     notes: State<'_, NotesState>,
 ) -> Result<(), String> {
     log_info!("DRAG", "Finalizing hybrid drag window '{}' for note '{}'", window_label, note_id);
-    
+
     // Instead of closing and recreating, just register this window as a detached window
     if let Some(window) = app.get_webview_window(&window_label) {
         // Get current position and size
         let pos = window.outer_position().map_err(|e| e.to_string())?;
         let size = window.inner_size().map_err(|e| e.to_string())?;
-        
-        // Change the window label to the standard format
-        let _new_label = format!("note-{}", note_id);
-        
-        // Since we can't rename a window, we'll track it with its current label
-        // but treat it as a detached window
+
+        // 使用标准的 note- 前缀标签
+        let detached_label = format!("note-{}", note_id);
+
         let detached_window = DetachedWindow {
             note_id: note_id.clone(),
-            window_label: window_label.clone(), // Keep the hybrid-drag label
+            window_label: detached_label.clone(),
             position: (pos.x as f64, pos.y as f64),
             size: (size.width as f64, size.height as f64),
             always_on_top: false,
@@ -725,26 +723,26 @@ pub async fn finalize_hybrid_drag_window(
             is_shaded: false,
             original_height: None,
         };
-        
+
         // Update the window to act like a normal detached window
         window.set_title(&format!("Note - {}", note_id)).map_err(|e| e.to_string())?;
         window.set_resizable(true).map_err(|e| e.to_string())?;
         window.set_always_on_top(false).map_err(|e| e.to_string())?;
-        
-        // Save to state
+
+        // Save to state with the new label
         let mut windows_lock = detached_windows.lock().await;
-        windows_lock.insert(window_label.clone(), detached_window.clone());
+        // Remove old hybrid-drag entry if it exists
+        windows_lock.remove(&window_label);
+        // Insert with the standard note- label
+        windows_lock.insert(detached_label.clone(), detached_window.clone());
         save_detached_windows_to_disk(&windows_lock).await?;
-        
+
         drop(windows_lock);
 
-        // Note: Window position/size tracking is now handled by the frontend useWindowTracking hook
-        // with proper debouncing to avoid excessive file I/O operations
-        
         // Emit event to notify frontend
         app.emit("window-created", note_id.clone()).map_err(|e| e.to_string())?;
-        
-        log_info!("DRAG", "Window finalized in place as detached window");
+
+        log_info!("DRAG", "Window finalized as detached window with label '{}'", detached_label);
         Ok(())
     } else {
         Err("Drag window not found".to_string())
