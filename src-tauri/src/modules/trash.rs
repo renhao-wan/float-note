@@ -96,6 +96,20 @@ pub async fn move_to_trash(
             .map_err(|e| FloatNoteError::Storage(format!("Failed to move note to trash: {}", e)))?;
     }
 
+    // Move attachments to trash
+    let attachments_dir = notes_dir.join("attachments").join(&note_id);
+    if attachments_dir.exists() {
+        let trash_attachments_dir = trash_dir.join("attachments").join(&note_id);
+        // Create parent directories if they don't exist
+        if let Some(parent) = trash_attachments_dir.parent() {
+            fs::create_dir_all(parent)
+                .map_err(|e| FloatNoteError::Storage(format!("Failed to create trash attachments directory: {}", e)))?;
+        }
+        fs::rename(&attachments_dir, &trash_attachments_dir)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to move attachments to trash: {}", e)))?;
+        log_info!("TRASH", "Moved attachments to trash for note: {}", note_id);
+    }
+
     // Add to trash metadata
     let mut metadata = load_trash_metadata(&config_lock)
         .map_err(|e| FloatNoteError::Storage(e))?;
@@ -162,6 +176,20 @@ pub async fn restore_from_trash(
             .map_err(|e| FloatNoteError::Storage(format!("Failed to restore note from trash: {}", e)))?;
     }
 
+    // Restore attachments from trash
+    let trash_attachments_dir = trash_dir.join("attachments").join(&note_id);
+    if trash_attachments_dir.exists() {
+        let attachments_dir = notes_dir.join("attachments").join(&note_id);
+        // Create parent directories if they don't exist
+        if let Some(parent) = attachments_dir.parent() {
+            fs::create_dir_all(parent)
+                .map_err(|e| FloatNoteError::Storage(format!("Failed to create attachments directory: {}", e)))?;
+        }
+        fs::rename(&trash_attachments_dir, &attachments_dir)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to restore attachments from trash: {}", e)))?;
+        log_info!("TRASH", "Restored attachments from trash for note: {}", note_id);
+    }
+
     // Update trash metadata
     save_trash_metadata(&config_lock, &metadata)
         .map_err(|e| FloatNoteError::Storage(e))?;
@@ -210,6 +238,14 @@ pub async fn permanently_delete(
     if trash_file.exists() {
         fs::remove_file(&trash_file)
             .map_err(|e| FloatNoteError::Storage(format!("Failed to delete note from trash: {}", e)))?;
+    }
+
+    // Delete attachments from trash
+    let trash_attachments_dir = trash_dir.join("attachments").join(&note_id);
+    if trash_attachments_dir.exists() {
+        fs::remove_dir_all(&trash_attachments_dir)
+            .map_err(|e| FloatNoteError::Storage(format!("Failed to delete attachments from trash: {}", e)))?;
+        log_info!("TRASH", "Deleted attachments from trash for note: {}", note_id);
     }
 
     // Update trash metadata
