@@ -195,6 +195,7 @@ export function EditorArea({
           placeholder="Your thoughts, unfiltered..."
           autoFocus={true}
           textareaRef={textareaRef}
+          noteId={selectedNote.id}
           renderHeader={renderHeader}
           renderFooter={renderFooter}
           previewClassName="absolute inset-0 bg-background z-10"

@@ -1,7 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
 import { MarkdownRenderer } from '../common/MarkdownRenderer';
+
+// Convert clipboard image to base64 data URL
+function clipboardImageToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 // Shared utility function for paper styles
 export const getPaperStyleClass = (style?: string) => {
@@ -59,6 +69,7 @@ export interface NoteEditorProps {
   autoFocus?: boolean;
   className?: string;
   textareaRef?: React.RefObject<HTMLTextAreaElement>;
+  noteId?: string;
 
   // Render props for custom UI elements
   renderHeader?: () => React.ReactNode;
@@ -81,6 +92,7 @@ export function NoteEditor({
   autoFocus = false,
   className = "",
   textareaRef,
+  noteId: _noteId,
   renderHeader,
   renderFooter,
   editorClassName = "",
@@ -96,11 +108,51 @@ export function NoteEditor({
     }
   }, [content, textareaRef]);
 
+  // Handle image paste
+  const handlePaste = useCallback(async (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+
+        const file = item.getAsFile();
+        if (!file) continue;
+
+        try {
+          // Convert to base64
+          const dataUrl = await clipboardImageToBase64(file);
+
+          // Create markdown image reference
+          const timestamp = Date.now();
+          const reference = `![pasted-image-${timestamp}](${dataUrl})`;
+
+          // Get current cursor position from the hidden textarea
+          const textarea = textareaRef?.current;
+          if (textarea) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const newContent = content.substring(0, start) + reference + content.substring(end);
+            onContentChange(newContent);
+          } else {
+            // Fallback: append to content
+            onContentChange(content + '\n' + reference);
+          }
+        } catch (error) {
+          console.error('[FLOATNOTE] Failed to paste image:', error);
+        }
+
+        break;
+      }
+    }
+  }, [content, onContentChange, textareaRef]);
+
   // Shared paper style logic
   const paperStyleClass = getPaperStyleClass(config.notePaperStyle);
 
   return (
-    <div className={`flex flex-col h-full ${className}`}>
+    <div className={`flex flex-col h-full ${className}`} onPaste={handlePaste}>
       {/* Optional custom header */}
       {renderHeader && renderHeader()}
 
