@@ -101,8 +101,10 @@ export function TemplatePanel({
 
   // Delete template (direct delete without confirmation)
   const handleDelete = async (template: NoteTemplate) => {
+    console.log('[FLOATNOTE] Attempting to delete template:', template.id, template.name);
     try {
       await templatesApi.deleteTemplate(template.id);
+      console.log('[FLOATNOTE] Template deleted successfully');
       const newTemplates = templates.filter(t => t.id !== template.id);
       onTemplatesChange(newTemplates);
 

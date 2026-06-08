@@ -1,4 +1,37 @@
-# 存储格式
+# 存储架构
+
+## 目录结构
+
+所有数据存储在**笔记目录**下，默认位置：
+
+| 平台 | 路径 |
+|------|------|
+| **Windows** | `%APPDATA%/floatNote/data/` |
+| **macOS** | `~/Library/Application Support/floatNote/data/` |
+| **Linux** | `~/.local/share/floatNote/data/` |
+
+可在设置中自定义存储目录。
+
+### 完整目录结构
+
+```
+{notes_dir}/
+├── *.md                          # 笔记文件（Markdown + YAML frontmatter）
+├── config.json                   # 应用配置
+├── detached_windows.json         # 分离窗口状态
+├── spatial_positions.json        # 全局空间位置配置
+├── spatial_{note_id}.json        # 单个笔记的空间位置
+├── attachments/                  # 附件目录
+│   └── {note_id}/               # 每个笔记的附件
+│       └── image.png
+├── .trash/                       # 回收站
+│   └── {note_id}.md
+└── .floatnote/                   # 内部数据目录
+    ├── workspace.json            # 工作区状态
+    ├── links.json                # 双向链接索引
+    └── templates/                # 模板目录
+        └── custom_templates.json # 自定义模板
+```
 
 ## 笔记存储
 
@@ -38,20 +71,11 @@ position: 0
 
 标题和文件名自动同步，重命名标题会同步修改文件名。
 
-### 存储位置
-
-默认存储目录：
-- macOS: `~/Documents/FloatNote/`
-- Windows: `C:\Users\{用户名}\Documents\FloatNote\`
-- Linux: `~/Documents/FloatNote/`
-
-可在设置中自定义存储目录。
-
 ## 配置存储
 
 ### 配置文件
 
-配置存储在 `.floatnote/config.json`：
+配置存储在 `config.json`：
 
 ```json
 {
@@ -79,18 +103,7 @@ position: 0
 
 ### 窗口位置存储
 
-窗口位置存储在 `.floatnote/window-positions.json`：
-
-```json
-{
-  "main": { "x": 100, "y": 100, "width": 1000, "height": 700 },
-  "note-xxx": { "x": 200, "y": 200, "width": 600, "height": 400 }
-}
-```
-
-### 分离窗口存储
-
-分离窗口状态存储在 `.floatnote/detached-windows.json`：
+窗口位置存储在 `detached_windows.json`：
 
 ```json
 {
@@ -104,3 +117,25 @@ position: 0
   }
 }
 ```
+
+## 重新加载机制
+
+重新加载时会：
+
+1. 从文件系统读取所有 `.md` 文件
+2. 解析 YAML frontmatter 获取元数据
+3. 修复位置冲突（如果有多个笔记 position 相同）
+4. 更新内存缓存
+
+**支持外部修改**：直接在文件系统中修改 `.md` 文件，重新加载后会自动同步。
+
+## 内部数据说明
+
+| 文件 | 用途 |
+|------|------|
+| `.floatnote/workspace.json` | 工作区状态（窗口布局） |
+| `.floatnote/links.json` | 双向链接索引 |
+| `.floatnote/templates/custom_templates.json` | 用户自定义模板 |
+| `.trash/` | 回收站（已删除笔记） |
+| `attachments/` | 附件存储 |
+| `spatial_*.json` | 窗口空间位置 |

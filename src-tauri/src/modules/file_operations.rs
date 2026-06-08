@@ -1,10 +1,12 @@
 use crate::modules::file_notes_storage::FileNotesStorage;
 use crate::ModifiedStateTrackerState;
 use crate::modules::storage::{get_configured_notes_directory, save_config_to_disk};
+use crate::utils::generate_unique_slug;
 use crate::ConfigState;
 use crate::types::note::Note;
 use crate::NotesState;
 use crate::{log_error, log_info};
+use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 use tauri::{AppHandle, Emitter, State};
@@ -42,7 +44,15 @@ pub async fn import_notes_from_directory(
 
         if path.extension().and_then(|s| s.to_str()) == Some("md") {
             match parse_markdown_file(&path).await {
-                Ok(note) => {
+                Ok(mut note) => {
+                    // Check for ID conflict and generate unique ID if needed
+                    let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
+                    if existing_ids.contains(&note.id) {
+                        let new_id = generate_unique_slug(&note.title, &existing_ids);
+                        log_info!("FILE_IMPORT", "ID conflict detected: {} -> {}", note.id, new_id);
+                        note.id = new_id;
+                    }
+
                     log_info!("FILE_IMPORT", "Imported note: {} from {}", note.title, path.display());
                     notes_lock.insert(note.id.clone(), note.clone());
                     // Initialize dirty tracking for imported note
@@ -88,13 +98,21 @@ pub async fn import_single_file(
         return Err("File does not exist".to_string());
     }
 
-    let note = parse_markdown_file(path).await?;
+    let mut note = parse_markdown_file(path).await?;
 
     let mut notes_lock = notes.lock().await;
     let config_lock = config.lock().await;
 
     // Create FileNotesStorage instance
     let file_storage = FileNotesStorage::new(&config_lock)?;
+
+    // Check for ID conflict and generate unique ID if needed
+    let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
+    if existing_ids.contains(&note.id) {
+        let new_id = generate_unique_slug(&note.title, &existing_ids);
+        log_info!("FILE_IMPORT", "ID conflict detected: {} -> {}", note.id, new_id);
+        note.id = new_id;
+    }
 
     notes_lock.insert(note.id.clone(), note.clone());
 

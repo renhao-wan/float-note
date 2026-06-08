@@ -28,7 +28,7 @@ export const templatesApi = {
    * Get a specific template
    */
   async getTemplate(templateId: string): Promise<NoteTemplate> {
-    return invokeWithLogging<NoteTemplate>('get_template', { template_id: templateId });
+    return invokeWithLogging<NoteTemplate>('get_template', { templateId: templateId });
   },
 
   /**
@@ -42,14 +42,15 @@ export const templatesApi = {
    * Update a custom template
    */
   async updateTemplate(templateId: string, request: CreateTemplateRequest): Promise<NoteTemplate> {
-    return invokeWithLogging<NoteTemplate>('update_template', { template_id: templateId, request });
+    return invokeWithLogging<NoteTemplate>('update_template', { templateId: templateId, request });
   },
 
   /**
    * Delete a custom template
    */
   async deleteTemplate(templateId: string): Promise<void> {
-    return invokeWithLogging<void>('delete_template', { template_id: templateId });
+    console.log(`${LOG_PREFIX} Deleting template with ID: ${templateId}`);
+    return invokeWithLogging<void>('delete_template', { templateId: templateId });
   },
 
   /**

@@ -1,11 +1,13 @@
 use tauri::{State, AppHandle, Emitter};
 use std::fs;
 use std::path::PathBuf;
+use std::collections::HashSet;
 
 use crate::types::note::Note;
 use crate::types::trash::{TrashedNote, TrashStats};
 use crate::NotesState;
 use crate::modules::storage::get_configured_notes_directory;
+use crate::utils::generate_unique_slug;
 use crate::{log_info, log_error};
 use crate::error::FloatNoteError;
 
@@ -170,42 +172,80 @@ pub async fn restore_from_trash(
         .map_err(|e| FloatNoteError::Storage(e))?;
     let note_file = notes_dir.join(format!("{}.md", note_id));
 
-    // Move file back from trash
-    if trash_file.exists() {
-        fs::rename(&trash_file, &note_file)
-            .map_err(|e| FloatNoteError::Storage(format!("Failed to restore note from trash: {}", e)))?;
-    }
+    // Check if a note with the same ID already exists
+    let mut restored_note = trashed_note.note.clone();
+    if notes_lock.contains_key(&note_id) {
+        log_info!("TRASH", "Note ID conflict detected: {} already exists, generating new ID", note_id);
 
-    // Restore attachments from trash
-    let trash_attachments_dir = trash_dir.join("attachments").join(&note_id);
-    if trash_attachments_dir.exists() {
-        let attachments_dir = notes_dir.join("attachments").join(&note_id);
-        // Create parent directories if they don't exist
-        if let Some(parent) = attachments_dir.parent() {
-            fs::create_dir_all(parent)
-                .map_err(|e| FloatNoteError::Storage(format!("Failed to create attachments directory: {}", e)))?;
+        // Generate new unique ID
+        let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
+        let new_id = generate_unique_slug(&restored_note.title, &existing_ids);
+
+        log_info!("TRASH", "Generated new ID: {} -> {}", note_id, new_id);
+
+        // Update note with new ID
+        restored_note.id = new_id.clone();
+
+        // Update trash metadata with new path
+        let new_note_file = notes_dir.join(format!("{}.md", new_id));
+
+        // Move file back from trash with new name
+        if trash_file.exists() {
+            fs::rename(&trash_file, &new_note_file)
+                .map_err(|e| FloatNoteError::Storage(format!("Failed to restore note from trash: {}", e)))?;
         }
-        fs::rename(&trash_attachments_dir, &attachments_dir)
-            .map_err(|e| FloatNoteError::Storage(format!("Failed to restore attachments from trash: {}", e)))?;
-        log_info!("TRASH", "Restored attachments from trash for note: {}", note_id);
+
+        // Restore attachments from trash with new ID
+        let trash_attachments_dir = trash_dir.join("attachments").join(&note_id);
+        if trash_attachments_dir.exists() {
+            let attachments_dir = notes_dir.join("attachments").join(&new_id);
+            if let Some(parent) = attachments_dir.parent() {
+                fs::create_dir_all(parent)
+                    .map_err(|e| FloatNoteError::Storage(format!("Failed to create attachments directory: {}", e)))?;
+            }
+            fs::rename(&trash_attachments_dir, &attachments_dir)
+                .map_err(|e| FloatNoteError::Storage(format!("Failed to restore attachments from trash: {}", e)))?;
+            log_info!("TRASH", "Restored attachments from trash for note: {} -> {}", note_id, new_id);
+        }
+
+        // Add back to memory with new ID
+        notes_lock.insert(new_id, restored_note.clone());
+    } else {
+        // No conflict, restore normally
+        if trash_file.exists() {
+            fs::rename(&trash_file, &note_file)
+                .map_err(|e| FloatNoteError::Storage(format!("Failed to restore note from trash: {}", e)))?;
+        }
+
+        // Restore attachments from trash
+        let trash_attachments_dir = trash_dir.join("attachments").join(&note_id);
+        if trash_attachments_dir.exists() {
+            let attachments_dir = notes_dir.join("attachments").join(&note_id);
+            if let Some(parent) = attachments_dir.parent() {
+                fs::create_dir_all(parent)
+                    .map_err(|e| FloatNoteError::Storage(format!("Failed to create attachments directory: {}", e)))?;
+            }
+            fs::rename(&trash_attachments_dir, &attachments_dir)
+                .map_err(|e| FloatNoteError::Storage(format!("Failed to restore attachments from trash: {}", e)))?;
+            log_info!("TRASH", "Restored attachments from trash for note: {}", note_id);
+        }
+
+        // Add back to memory
+        notes_lock.insert(note_id, restored_note.clone());
     }
 
     // Update trash metadata
     save_trash_metadata(&config_lock, &metadata)
         .map_err(|e| FloatNoteError::Storage(e))?;
 
-    // Add back to memory
-    let note = trashed_note.note.clone();
-    notes_lock.insert(note_id.clone(), note.clone());
-
-    log_info!("TRASH", "Restored note from trash: {}", note_id);
+    log_info!("TRASH", "Restored note from trash: {}", restored_note.id);
 
     // Emit event to all windows for synchronization
-    app.emit("note-created", &note).unwrap_or_else(|e| {
+    app.emit("note-created", &restored_note).unwrap_or_else(|e| {
         log_error!("TRASH", "Failed to emit note-created event: {}", e);
     });
 
-    Ok(note)
+    Ok(restored_note)
 }
 
 /// Permanently delete a note from trash

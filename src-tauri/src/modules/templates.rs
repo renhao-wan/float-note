@@ -417,12 +417,18 @@ pub async fn delete_template(
     let custom_dir = get_custom_templates_dir(&config_lock)?;
     let file_path = custom_dir.join(format!("{}.json", template_id));
 
+    log_info!("TEMPLATES", "Template file path: {:?}", file_path);
+
     if !file_path.exists() {
+        log_error!("TEMPLATES", "Template file not found: {:?}", file_path);
         return Err(FloatNoteError::NotFound(format!("Template not found: {}", template_id)));
     }
 
     fs::remove_file(&file_path)
-        .map_err(|e| FloatNoteError::Storage(format!("Failed to delete template: {}", e)))?;
+        .map_err(|e| {
+            log_error!("TEMPLATES", "Failed to delete template file: {}", e);
+            FloatNoteError::Storage(format!("Failed to delete template: {}", e))
+        })?;
 
     log_info!("TEMPLATES", "Deleted template: {}", template_id);
 
