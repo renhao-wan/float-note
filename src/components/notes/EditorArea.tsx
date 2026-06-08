@@ -5,6 +5,8 @@ import { useConfigStore } from '../../stores/config-store';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
 import { TitleEditor } from './TitleEditor';
 import { NoteTagSelector } from '../tags/NoteTagSelector';
+import { AttachmentPanel } from '../attachments/AttachmentPanel';
+import { BacklinksPanel } from '../links/BacklinksPanel';
 
 interface SaveStatus {
   isSaving: boolean;
@@ -180,25 +182,64 @@ export function EditorArea({
     </div>
   );
 
+  // Handle inserting attachment reference into editor
+  const handleInsertReference = useCallback((reference: string) => {
+    // Insert at current cursor position
+    const textarea = textareaRef.current;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newContent = currentContent.substring(0, start) + reference + currentContent.substring(end);
+      onContentChange(newContent);
+
+      // Set cursor position after inserted text
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + reference.length, start + reference.length);
+      }, 0);
+    }
+  }, [currentContent, onContentChange, textareaRef]);
+
+  // Handle navigating to a note from backlinks
+  const handleNavigateToNote = useCallback((noteId: string) => {
+    // This will be handled by the parent component
+    // For now, we'll just log it
+    console.log('[FLOATNOTE] Navigate to note:', noteId);
+  }, []);
+
   return (
     <div className="flex-1 flex flex-col bg-background">
       {selectedNote ? (
-        <NoteEditor
-          content={currentContent}
-          onContentChange={onContentChange}
-          onSave={onSave}
-          isPreviewMode={isPreviewMode}
-          onPreviewToggle={onPreviewToggle}
-          config={noteEditorConfig}
-          vimStatus={vimStatus}
-          onVimStatusChange={setVimStatus}
-          placeholder="Your thoughts, unfiltered..."
-          autoFocus={true}
-          textareaRef={textareaRef}
-          renderHeader={renderHeader}
-          renderFooter={renderFooter}
-          previewClassName="absolute inset-0 bg-background z-10"
-        />
+        <>
+          <NoteEditor
+            content={currentContent}
+            onContentChange={onContentChange}
+            onSave={onSave}
+            isPreviewMode={isPreviewMode}
+            onPreviewToggle={onPreviewToggle}
+            config={noteEditorConfig}
+            vimStatus={vimStatus}
+            onVimStatusChange={setVimStatus}
+            placeholder="Your thoughts, unfiltered..."
+            autoFocus={true}
+            textareaRef={textareaRef}
+            renderHeader={renderHeader}
+            renderFooter={renderFooter}
+            previewClassName="absolute inset-0 bg-background z-10"
+          />
+
+          {/* Bottom panels: Attachments and Backlinks */}
+          <div className="border-t border-border/20 max-h-48 overflow-y-auto">
+            <AttachmentPanel
+              noteId={selectedNote.id}
+              onInsertReference={handleInsertReference}
+            />
+            <BacklinksPanel
+              noteId={selectedNote.id}
+              onNavigateToNote={handleNavigateToNote}
+            />
+          </div>
+        </>
       ) : (
         <div className="flex-1 flex items-center justify-center text-muted-foreground/40">
           <p style={{ fontFamily: 'var(--font-ui)' }}>{t('editor.selectNote')}</p>

@@ -40,7 +40,10 @@ import { getWordCount } from './lib/utils';
 import { getCenterPosition } from './utils/window-positioning';
 import { TrashPanel } from './components/trash';
 import { TagPanel } from './components/tags';
+import { TemplateSelector } from './components/templates';
 import type { ViewType } from './components/layout/NavigationSidebar';
+import type { NoteTemplate } from './types/template';
+import { templatesApi } from './services/templates-api';
 
 
 function App() {
@@ -51,6 +54,7 @@ function App() {
   const [currentView, setCurrentView] = useState<ViewType>('notes');
   const [selectedSettingsSection, setSelectedSettingsSection] = useState<'general' | 'appearance' | 'editor'>('general');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
 
   // 同步语言设置
   useEffect(() => {
@@ -117,6 +121,32 @@ function App() {
     onSaveComplete,
     onSaveError,
   });
+
+  // Create note from template
+  const handleCreateFromTemplate = useCallback(async (template: NoteTemplate) => {
+    try {
+      const title = template.name === '日记' ? `${new Date().toLocaleDateString()} 日记` :
+                    template.name === '周报' ? `${new Date().toLocaleDateString()} 周报` :
+                    template.name;
+
+      const newNote = await templatesApi.createNoteFromTemplate({
+        template_id: template.id,
+        title,
+      });
+
+      // Reload notes and select the new note
+      await loadNotes();
+      selectNote(newNote.id);
+      setShowTemplateSelector(false);
+    } catch (error) {
+      console.error('[FLOATNOTE] Failed to create note from template:', error);
+    }
+  }, [loadNotes, selectNote]);
+
+  // Show template selector or create new note
+  const handleCreateNewNote = useCallback(() => {
+    setShowTemplateSelector(true);
+  }, []);
 
   // Drag-to-detach functionality - stable callback to prevent re-renders
   const onDropCallback = useCallback(async (noteId: string, x: number, y: number) => {
@@ -257,7 +287,7 @@ function App() {
                 selectedNoteId={selectedNoteId}
                 loading={loading}
                 showNotePreviews={config?.appearance?.showNotePreviews}
-                onCreateNewNote={createNewNote}
+                onCreateNewNote={handleCreateNewNote}
                 onSelectNote={selectNote}
                 onDeleteNote={deleteNote}
                 onShowContextMenu={showContextMenu}
@@ -351,6 +381,14 @@ function App() {
 
       {/* Toast notifications */}
       <ToastContainer />
+
+      {/* Template selector modal */}
+      {showTemplateSelector && (
+        <TemplateSelector
+          onSelect={handleCreateFromTemplate}
+          onClose={() => setShowTemplateSelector(false)}
+        />
+      )}
     </WindowWrapper>
   );
 }
