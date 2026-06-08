@@ -61,42 +61,33 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     backgroundPattern: config.appearance?.backgroundPattern
   }), [config.appearance]);
 
-  // Real-time sync for this note
+  // Real-time sync for this note (统一使用 useNoteSync，不再重复监听)
   useNoteSync(noteId, (updatedNote) => {
     setNote(updatedNote);
     setContent(updatedNote.content);
+    modifiedState.markSaved(updatedNote.content);
   });
-
 
   useEffect(() => {
     loadNote();
-    
-    // Listen for note update events from other windows
+
+    // 只监听 note-deleted 事件（note-updated 由 useNoteSync 处理）
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
+
     const setupListeners = async () => {
-      const unlistenNoteUpdated = await listen<Note>('note-updated', (event) => {
-        if (event.payload.id === noteId) {
-          console.log('[FLOATNOTE] Detached window received note-updated event:', event.payload);
-          setNote(event.payload);
-          setContent(event.payload.content);
-          modifiedState.markSaved(event.payload.content);
-        }
-      });
-      
       const unlistenNoteDeleted = await listen<string>('note-deleted', (event) => {
         if (event.payload === noteId) {
           console.log('[FLOATNOTE] Detached window received note-deleted event, closing window');
           appWindow.close();
         }
       });
-      
+
       return () => {
-        unlistenNoteUpdated();
         unlistenNoteDeleted();
       };
     };
-    
-    let cancelled = false;
-    let cleanup: (() => void) | undefined;
+
     setupListeners().then(fn => {
       if (cancelled) {
         fn();
@@ -105,7 +96,6 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
       }
     });
 
-    // Cleanup function to clear save timeout on unmount
     return () => {
       cancelled = true;
       if (saveTimeoutRef.current) {
@@ -287,26 +277,26 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
 
     // Add event listener with capture phase to ensure we get the event first
     window.addEventListener('keydown', handleKeyDown, true);
-    
-    // Listen for window close events to clean up state
-    const handleWindowClose = async () => {
+
+    // beforeunload: 只清理本地 store 状态，不调用后端（避免与窗口关闭流程冲突）
+    const handleWindowClose = () => {
       try {
-        await closeWindow(noteId);
-      } catch (error) {
-        console.error('Failed to update window state on close:', error);
+        const store = useDetachedWindowsStore.getState();
+        useDetachedWindowsStore.setState({
+          windows: store.windows.filter((w: { note_id: string }) => w.note_id !== noteId),
+        });
+      } catch {
+        // ignore
       }
     };
 
-    // Set up beforeunload handler to clean up state
     window.addEventListener('beforeunload', handleWindowClose);
-    
-    // Log when listeners are being removed
+
     return () => {
-      console.log('[DETACHED-WINDOW] Removing keyboard event listeners for note:', noteId);
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('beforeunload', handleWindowClose);
     };
-  }, [noteId, handleCloseWindow]);
+  }, [noteId]);
 
   // Listen for config updates to sync across windows
   useEffect(() => {

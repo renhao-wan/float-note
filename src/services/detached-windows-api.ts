@@ -31,9 +31,10 @@ export class DetachedWindowsAPI {
   static async getDetachedWindows(): Promise<DetachedWindow[]> {
     const result = await invoke<{[key: string]: DetachedWindow}>('get_detached_windows');
 
-    // 返回所有窗口，不再过滤前缀
-    // hybrid-drag 窗口在 finalize 后会变成 detached 窗口
-    return Object.values(result);
+    // 只返回 note- 前缀的窗口（hybrid-drag 窗口在 finalize 后会被替换为 note- 窗口）
+    return Object.values(result).filter(window =>
+      window.window_label.startsWith('note-')
+    );
   }
 
   static async updateWindowPosition(windowLabel: string, x: number, y: number): Promise<void> {

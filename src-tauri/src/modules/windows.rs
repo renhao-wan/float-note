@@ -704,49 +704,33 @@ pub async fn finalize_hybrid_drag_window(
 ) -> Result<(), String> {
     log_info!("DRAG", "Finalizing hybrid drag window '{}' for note '{}'", window_label, note_id);
 
-    // Instead of closing and recreating, just register this window as a detached window
-    if let Some(window) = app.get_webview_window(&window_label) {
-        // Get current position and size
+    // 获取 hybrid 窗口的位置和大小
+    let (pos, size) = if let Some(window) = app.get_webview_window(&window_label) {
         let pos = window.outer_position().map_err(|e| e.to_string())?;
         let size = window.inner_size().map_err(|e| e.to_string())?;
-
-        // 使用标准的 note- 前缀标签
-        let detached_label = format!("note-{}", note_id);
-
-        let detached_window = DetachedWindow {
-            note_id: note_id.clone(),
-            window_label: detached_label.clone(),
-            position: (pos.x as f64, pos.y as f64),
-            size: (size.width as f64, size.height as f64),
-            always_on_top: false,
-            opacity: 1.0,
-            is_shaded: false,
-            original_height: None,
-        };
-
-        // Update the window to act like a normal detached window
-        window.set_title(&format!("Note - {}", note_id)).map_err(|e| e.to_string())?;
-        window.set_resizable(true).map_err(|e| e.to_string())?;
-        window.set_always_on_top(false).map_err(|e| e.to_string())?;
-
-        // Save to state with the new label
-        let mut windows_lock = detached_windows.lock().await;
-        // Remove old hybrid-drag entry if it exists
-        windows_lock.remove(&window_label);
-        // Insert with the standard note- label
-        windows_lock.insert(detached_label.clone(), detached_window.clone());
-        save_detached_windows_to_disk(&windows_lock).await?;
-
-        drop(windows_lock);
-
-        // Emit event to notify frontend
-        app.emit("window-created", note_id.clone()).map_err(|e| e.to_string())?;
-
-        log_info!("DRAG", "Window finalized as detached window with label '{}'", detached_label);
-        Ok(())
+        // 关闭 hybrid 窗口
+        let _ = window.close();
+        (pos, size)
     } else {
-        Err("Drag window not found".to_string())
-    }
+        return Err("Drag window not found".to_string());
+    };
+
+    // 等待窗口完全关闭
+    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+
+    // 创建新的 detached 窗口（使用标准 note- 标签）
+    let request = CreateDetachedWindowRequest {
+        note_id: note_id.clone(),
+        x: Some(pos.x as f64),
+        y: Some(pos.y as f64),
+        width: Some(size.width as f64),
+        height: Some(size.height as f64),
+    };
+
+    create_detached_window(request, app.clone(), detached_windows.clone(), notes.clone()).await?;
+
+    log_info!("DRAG", "Window finalized - created new detached window for note '{}'", note_id);
+    Ok(())
 }
 
 #[tauri::command]
@@ -1123,14 +1107,22 @@ pub async fn cleanup_destroyed_window(
     detached_windows: State<'_, DetachedWindowsState>,
 ) -> Result<(), String> {
     let mut windows_lock = detached_windows.lock().await;
-    
-    // Find and remove window by note_id
-    let window_label = format!("note-{}", note_id);
-    if windows_lock.remove(&window_label).is_some() {
-        log_info!("WINDOW_LIFECYCLE", "Cleaned up destroyed window state for note {}", note_id);
+
+    // 查找并移除与该 note_id 关联的所有窗口（兼容 note- 和 hybrid-drag- 前缀）
+    let labels_to_remove: Vec<String> = windows_lock.iter()
+        .filter(|(_, w)| w.note_id == note_id)
+        .map(|(label, _)| label.clone())
+        .collect();
+
+    for label in &labels_to_remove {
+        windows_lock.remove(label);
+    }
+
+    if !labels_to_remove.is_empty() {
+        log_info!("WINDOW_LIFECYCLE", "Cleaned up destroyed window state for note {} (labels: {:?})", note_id, labels_to_remove);
         save_detached_windows_to_disk(&windows_lock).await?;
     }
-    
+
     Ok(())
 }
 
