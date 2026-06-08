@@ -107,12 +107,8 @@ export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTem
     }
   };
 
-  // Delete template
+  // Delete template (direct delete without confirmation)
   const handleDelete = async (template: NoteTemplate) => {
-    if (!window.confirm(t('templates.confirmDelete', { name: template.name }))) {
-      return;
-    }
-
     try {
       await templatesApi.deleteTemplate(template.id);
       toast.success(t('templates.deleteSuccess'));
