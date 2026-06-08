@@ -192,7 +192,8 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
       // Check if we've moved enough to start dragging
       if (!ref.hasMovedEnough && (deltaX > dragThreshold || deltaY > dragThreshold)) {
         ref.hasMovedEnough = true;
-        setIsDragging(true);
+        ref.isDragging = true;  // 同步更新 ref（handleMouseUp 读取 ref 而非 state）
+        setIsDragging(true);    // 更新 React state（用于返回给消费者）
 
         // Add visual feedback and cache the element
         const draggedElement = document.querySelector(`[data-note-id="${ref.noteId}"]`);
