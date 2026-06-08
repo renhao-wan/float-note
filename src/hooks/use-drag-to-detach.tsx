@@ -257,11 +257,11 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
               noteId: ref.noteId,
             });
 
-            // Import and update the window positions store directly
-            const { useWindowPositionsStore } = await import('../stores/window-positions-store');
-            const store = useWindowPositionsStore.getState();
+            // Update the detached windows store with new position
+            const { useDetachedWindowsStore } = await import('../stores/detached-windows-store');
+            const store = useDetachedWindowsStore.getState();
 
-            useWindowPositionsStore.setState({
+            useDetachedWindowsStore.setState({
               windowPositions: {
                 ...store.windowPositions,
                 [ref.noteId]: {

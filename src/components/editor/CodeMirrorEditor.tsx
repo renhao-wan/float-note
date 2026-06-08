@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { EditorView, keymap, ViewUpdate, placeholder } from '@codemirror/view';
 import { EditorState, Extension, Compartment } from '@codemirror/state';
 import { markdown } from '@codemirror/lang-markdown';
@@ -44,11 +44,24 @@ export function CodeMirrorEditor({
   const viewRef = useRef<EditorView | null>(null);
   const onSaveRef = useRef(onSave);
   onSaveRef.current = onSave;
-  const [isVimActive, setIsVimActive] = useState(vimMode);
-  const configCompartment = useRef(new Compartment());
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const onVimStatusChangeRef = useRef(onVimStatusChange);
+  onVimStatusChangeRef.current = onVimStatusChange;
 
-  // Create the editor theme with minimal UI
-  const createTheme = () => {
+  // Compartment for theme (font, size, etc.)
+  const themeCompartment = useRef(new Compartment());
+  // Compartment for vim mode
+  const vimCompartment = useRef(new Compartment());
+  // Compartment for typewriter mode
+  const typewriterCompartment = useRef(new Compartment());
+  // Compartment for word wrap
+  const wordWrapCompartment = useRef(new Compartment());
+  // Compartment for read-only
+  const readOnlyCompartment = useRef(new Compartment());
+
+  // Create the editor theme
+  const createTheme = useCallback(() => {
     return EditorView.theme({
       '&': {
         height: '100%',
@@ -89,29 +102,24 @@ export function CodeMirrorEditor({
         color: 'var(--muted-foreground)',
         opacity: 0.4,
       },
-      // Hide gutters (line numbers)
       '.cm-gutters': {
         display: 'none',
       },
-      // Typewriter mode
       '.cm-content.typewriter-mode': {
         paddingTop: '50vh',
         paddingBottom: '50vh',
       },
-      // Selection styling
       '.cm-selectionBackground': {
         backgroundColor: 'var(--primary)' + '30',
       },
       '.cm-focused .cm-selectionBackground': {
         backgroundColor: 'var(--primary)' + '40',
       },
-      // Cursor styling - ensure visibility
       '.cm-cursor, .cm-cursor-primary': {
         visibility: 'visible !important',
         borderLeft: '2px solid #5a9e96 !important',
         caretColor: '#5a9e96 !important',
       },
-      // Search highlights
       '.cm-searchMatch': {
         backgroundColor: 'var(--primary)' + '30',
         outline: '1px solid ' + 'var(--primary)' + '50',
@@ -120,30 +128,97 @@ export function CodeMirrorEditor({
         backgroundColor: 'var(--primary)' + '60',
       },
     });
-  };
+  }, [fontSize, fontFamily, lineHeight]);
 
-  // Create extensions array
-  const createExtensions = (): Extension[] => {
+  // Create vim extensions
+  const createVimExtensions = useCallback((enabled: boolean): Extension[] => {
+    if (!enabled) return [];
+
+    return [
+      vim(),
+      EditorView.editorAttributes.of({ class: 'cm-vim-mode' }),
+      keymap.of([{
+        key: 'Delete',
+        run: (view) => {
+          const cm = getCM(view);
+          if (cm && cm.state.vim && !cm.state.vim.insertMode) return true;
+          return false;
+        }
+      }]),
+      EditorView.updateListener.of((update: ViewUpdate) => {
+        if (!update.view.hasFocus) return;
+        const cm = getCM(update.view);
+        if (!cm?.state?.vim) return;
+
+        const vimState = cm.state.vim;
+        const mode = vimState.insertMode ? 'INSERT' :
+                     vimState.visualMode ? 'VISUAL' : 'NORMAL';
+
+        onVimStatusChangeRef.current?.({ mode, subMode: vimState.status });
+
+        const editorDom = update.view.dom;
+        editorDom.classList.remove('cm-vim-insert-mode', 'cm-vim-visual-mode', 'cm-vim-normal-mode', 'cm-vim-visual-line');
+
+        if (vimState.insertMode) {
+          editorDom.classList.add('cm-vim-insert-mode');
+        } else if (vimState.visualMode) {
+          editorDom.classList.add('cm-vim-visual-mode');
+          if (vimState.visualLine) editorDom.classList.add('cm-vim-visual-line');
+        } else {
+          editorDom.classList.add('cm-vim-normal-mode');
+        }
+      }),
+    ];
+  }, []);
+
+  // Create typewriter extensions
+  const createTypewriterExtensions = useCallback((enabled: boolean): Extension[] => {
+    if (!enabled) return [];
+
+    return [
+      EditorView.contentAttributes.of({ class: 'typewriter-mode' }),
+      EditorView.updateListener.of((update: ViewUpdate) => {
+        if (update.selectionSet || update.docChanged) {
+          requestAnimationFrame(() => {
+            const head = update.view.state.selection.main.head;
+            const coords = update.view.coordsAtPos(head);
+            if (coords) {
+              const scroller = update.view.scrollDOM;
+              const scrollerRect = scroller.getBoundingClientRect();
+              const targetY = scrollerRect.height / 2;
+              const currentY = coords.top - scrollerRect.top;
+              scroller.scrollTo({
+                top: scroller.scrollTop + (currentY - targetY),
+                behavior: 'smooth',
+              });
+            }
+          });
+        }
+      }),
+    ];
+  }, []);
+
+  // Initialize editor - runs once on mount
+  useEffect(() => {
+    if (!editorRef.current || viewRef.current) return;
+
     const extensions: Extension[] = [
-      configCompartment.current.of(createTheme()),
+      themeCompartment.current.of(createTheme()),
+      vimCompartment.current.of(createVimExtensions(vimMode)),
+      typewriterCompartment.current.of(createTypewriterExtensions(typewriterMode)),
+      wordWrapCompartment.current.of(wordWrap ? EditorView.lineWrapping : []),
+      readOnlyCompartment.current.of(EditorState.readOnly.of(readOnly)),
       markdown(),
-      history(), // Add history support for undo/redo
+      history(),
       keymap.of([
         ...defaultKeymap,
-        ...historyKeymap, // Add history keybindings (Cmd-Z, Cmd-Shift-Z)
+        ...historyKeymap,
         indentWithTab,
-        {
-          key: 'Cmd-s',
-          run: () => {
-            onSave?.();
-            return true;
-          },
-        },
+        { key: 'Cmd-s', run: () => { onSaveRef.current?.(); return true; } },
       ]),
       EditorView.updateListener.of((update: ViewUpdate) => {
         if (update.docChanged) {
-          const newValue = update.state.doc.toString();
-          onChange(newValue);
+          onChangeRef.current(update.state.doc.toString());
         }
       }),
       EditorView.contentAttributes.of({
@@ -151,193 +226,43 @@ export function CodeMirrorEditor({
         'aria-multiline': 'true',
         'role': 'textbox',
       }),
-      EditorState.readOnly.of(readOnly),
     ];
 
-    // Add placeholder extension if provided
     if (placeholderText) {
-      extensions.push(
-        placeholder(placeholderText)
-      );
+      extensions.push(placeholder(placeholderText));
     }
 
-    // Add vim mode if enabled
-    if (isVimActive) {
-      extensions.push(vim());
-      extensions.push(
-        EditorView.editorAttributes.of({
-          class: 'cm-vim-mode'
-        })
-      );
-      
-      // Prevent delete key in Normal mode and handle paste
-      extensions.push(
-        keymap.of([
-          {
-            key: 'Delete',
-            run: (view) => {
-              const cm = getCM(view);
-              if (cm && cm.state.vim && !cm.state.vim.insertMode) {
-                // In Normal/Visual mode, don't allow delete key
-                return true; // Consume the event, do nothing
-              }
-              return false; // Let it pass through in Insert mode
-            }
-          },
-        ])
-      );
-      
-      // Track vim mode changes
-      if (onVimStatusChange) {
-        extensions.push(
-          EditorView.updateListener.of((update: ViewUpdate) => {
-            if (update.view.hasFocus) {
-              const cm = getCM(update.view);
-              if (cm) {
-                const vimState = cm.state.vim;
-                if (vimState) {
-                  const mode = vimState.insertMode ? 'INSERT' : 
-                               vimState.visualMode ? 'VISUAL' : 
-                               'NORMAL';
-                  onVimStatusChange({ mode, subMode: vimState.status });
-                  
-                  // Update editor classes based on vim mode
-                  const editorDom = update.view.dom;
-                  editorDom.classList.remove('cm-vim-insert-mode', 'cm-vim-visual-mode', 'cm-vim-normal-mode', 'cm-vim-visual-line');
-                  
-                  if (vimState.insertMode) {
-                    editorDom.classList.add('cm-vim-insert-mode');
-                    console.log('[FLOATNOTE] Vim mode: INSERT');
-                  } else if (vimState.visualMode) {
-                    editorDom.classList.add('cm-vim-visual-mode');
-                    if (vimState.visualLine) {
-                      editorDom.classList.add('cm-vim-visual-line');
-                    }
-                    console.log('[FLOATNOTE] Vim mode: VISUAL', vimState.visualLine ? '(LINE)' : '');
-                    
-                    // Debug: Check selection state
-                    const selection = update.view.state.selection;
-                    console.log('[FLOATNOTE] Selection:', {
-                      main: selection.main,
-                      from: selection.main.from,
-                      to: selection.main.to,
-                      empty: selection.main.empty
-                    });
-                    
-                    // Force selection if in visual mode
-                    const cm = getCM(update.view);
-                    if (cm && cm.state.vim) {
-                      const vimSel = cm.state.vim.sel;
-                      if (vimSel && vimSel.anchor && vimSel.head) {
-                        console.log('[FLOATNOTE] Vim selection:', vimSel);
-                        
-                        // Calculate the actual selection positions
-                        const from = Math.min(vimSel.anchor.ch, vimSel.head.ch);
-                        const to = Math.max(vimSel.anchor.ch, vimSel.head.ch) + 1; // +1 because vim includes the character
-                        const line = vimSel.anchor.line || 0;
-                        
-                        // Get the document position
-                        const docLine = update.view.state.doc.line(line + 1); // Lines are 1-indexed
-                        const fromPos = docLine.from + from;
-                        const toPos = docLine.from + to;
-                        
-                        // Create a selection if it doesn't match
-                        if (selection.main.from !== fromPos || selection.main.to !== toPos) {
-                          console.log('[FLOATNOTE] Creating selection:', { fromPos, toPos });
-                          update.view.dispatch({
-                            selection: { anchor: fromPos, head: toPos }
-                          });
-                        }
-                      }
-                    }
-                  } else {
-                    editorDom.classList.add('cm-vim-normal-mode');
-                    console.log('[FLOATNOTE] Vim mode: NORMAL');
-                  }
-                }
-              }
-            }
-          })
-        );
-      }
-    }
-
-    // Add typewriter mode class
-    if (typewriterMode) {
-      extensions.push(
-        EditorView.contentAttributes.of({
-          class: 'typewriter-mode',
-        })
-      );
-    }
-
-    // Add word wrap extension
-    if (wordWrap) {
-      extensions.push(EditorView.lineWrapping);
-    }
-
-    return extensions;
-  };
-
-  // Initialize editor
-  useEffect(() => {
-    if (!editorRef.current || viewRef.current) return;
-
-    const startState = EditorState.create({
-      doc: value,
-      extensions: createExtensions(),
-    });
-
-    const view = new EditorView({
-      state: startState,
-      parent: editorRef.current,
-    });
-
+    const startState = EditorState.create({ doc: value, extensions });
+    const view = new EditorView({ state: startState, parent: editorRef.current });
     viewRef.current = view;
 
-    // Define vim :w command for saving (use ref to avoid stale closure)
     if (vimMode) {
-      Vim.defineEx('write', 'w', function() {
-        onSaveRef.current?.();
-      });
-      Vim.defineEx('wq', 'wq', function() {
-        onSaveRef.current?.();
-      });
+      Vim.defineEx('write', 'w', () => onSaveRef.current?.());
+      Vim.defineEx('wq', 'wq', () => onSaveRef.current?.());
     }
 
-    if (autoFocus) {
-      view.focus();
-    }
+    if (autoFocus) view.focus();
 
     return () => {
       view.destroy();
       viewRef.current = null;
     };
-  }, []); // Only run once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Set up paste listener separately so it persists
+  // Paste listener - set up once
   useEffect(() => {
     const unlistenPromise = listen('menu-paste', async () => {
-      console.log('[FLOATNOTE] Menu paste event received in editor');
       try {
         const text = await readText();
-        console.log('[FLOATNOTE] Clipboard text:', text?.substring(0, 50) + '...');
-        
         if (text && viewRef.current) {
           const view = viewRef.current;
           const cm = getCM(view);
-          
-          // If in vim normal mode, switch to insert mode first
-          if (cm && cm.state.vim && !cm.state.vim.insertMode) {
-            // Enter insert mode at cursor position
+          if (cm?.state?.vim && !cm.state.vim.insertMode) {
             view.dispatch({
-              changes: {
-                from: view.state.selection.main.head,
-                insert: text
-              }
+              changes: { from: view.state.selection.main.head, insert: text }
             });
           } else {
-            // In insert mode or non-vim mode, just insert at selection
             view.dispatch({
               changes: {
                 from: view.state.selection.main.from,
@@ -346,102 +271,78 @@ export function CodeMirrorEditor({
               }
             });
           }
-          console.log('[FLOATNOTE] Text pasted successfully');
-        } else {
-          console.error('[FLOATNOTE] No text or view available');
         }
       } catch (err) {
         console.error('[FLOATNOTE] Failed to paste:', err);
       }
     });
+    return () => { unlistenPromise.then(fn => fn()); };
+  }, []);
 
-    return () => {
-      unlistenPromise.then(unlisten => unlisten());
-    };
-  }, []); // Set up once on mount
-
-
-  // Update content when value prop changes (external updates)
+  // Update content when value prop changes
   useEffect(() => {
     const view = viewRef.current;
     if (!view) return;
-
     const currentValue = view.state.doc.toString();
     if (currentValue !== value) {
       view.dispatch({
-        changes: {
-          from: 0,
-          to: currentValue.length,
-          insert: value,
-        },
+        changes: { from: 0, to: currentValue.length, insert: value },
       });
     }
   }, [value]);
 
-  // Update vim mode
-  useEffect(() => {
-    setIsVimActive(vimMode);
-    const view = viewRef.current;
-    if (!view) return;
-
-    // Recreate the entire state with new extensions
-    const newState = EditorState.create({
-      doc: view.state.doc,
-      extensions: createExtensions(),
-    });
-    view.setState(newState);
-  }, [vimMode]);
-
-  // Update theme when appearance settings change
+  // Update theme compartment when appearance settings change
   useEffect(() => {
     const view = viewRef.current;
     if (!view) return;
-
     view.dispatch({
-      effects: configCompartment.current.reconfigure(createTheme()),
+      effects: themeCompartment.current.reconfigure(createTheme()),
     });
-  }, [fontSize, fontFamily, lineHeight, typewriterMode]);
+  }, [createTheme]);
 
-  // Handle typewriter mode scrolling
+  // Update vim compartment when vimMode changes
   useEffect(() => {
-    if (!typewriterMode || !viewRef.current) return;
-
     const view = viewRef.current;
-    const scrollToCursor = () => {
-      const head = view.state.selection.main.head;
-      const coords = view.coordsAtPos(head);
-      if (coords) {
-        const scroller = view.scrollDOM;
-        const scrollerRect = scroller.getBoundingClientRect();
-        const targetY = scrollerRect.height / 2;
-        const currentY = coords.top - scrollerRect.top;
-        const scrollTop = scroller.scrollTop + (currentY - targetY);
-        
-        scroller.scrollTo({
-          top: scrollTop,
-          behavior: 'smooth',
-        });
-      }
-    };
-
-    const updateListener = EditorView.updateListener.of((update: ViewUpdate) => {
-      if (update.selectionSet || update.docChanged) {
-        requestAnimationFrame(scrollToCursor);
-      }
+    if (!view) return;
+    view.dispatch({
+      effects: vimCompartment.current.reconfigure(createVimExtensions(vimMode)),
     });
+    if (vimMode) {
+      Vim.defineEx('write', 'w', () => onSaveRef.current?.());
+      Vim.defineEx('wq', 'wq', () => onSaveRef.current?.());
+    }
+  }, [vimMode, createVimExtensions]);
 
-    // Re-create state with typewriter mode extension
-    const currentExtensions = createExtensions();
-    const newState = EditorState.create({
-      doc: view.state.doc,
-      extensions: [...currentExtensions, updateListener],
+  // Update typewriter compartment when typewriterMode changes
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    view.dispatch({
+      effects: typewriterCompartment.current.reconfigure(createTypewriterExtensions(typewriterMode)),
     });
-    view.setState(newState);
-  }, [typewriterMode]);
+  }, [typewriterMode, createTypewriterExtensions]);
+
+  // Update word wrap compartment
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    view.dispatch({
+      effects: wordWrapCompartment.current.reconfigure(wordWrap ? EditorView.lineWrapping : []),
+    });
+  }, [wordWrap]);
+
+  // Update read-only compartment
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    view.dispatch({
+      effects: readOnlyCompartment.current.reconfigure(EditorState.readOnly.of(readOnly)),
+    });
+  }, [readOnly]);
 
   return (
-    <div 
-      ref={editorRef} 
+    <div
+      ref={editorRef}
       className={`h-full w-full overflow-x-hidden ${className}`}
       style={{
         '--primary': 'hsl(var(--primary))',

@@ -57,7 +57,7 @@
   - 文件: `src/components/notes/NotesPanel.tsx` 第 43-53 行
   - 详情: `useMemo` 内部调用 `isWindowOpen` 并修改 `openWindowIdsRef.current`，`useMemo` 应该是纯计算
 
-- [ ] **#12** `CodeMirrorEditor` 多个 `useEffect` 互相冲突地重建编辑器状态
+- [x] **#12** `CodeMirrorEditor` 多个 `useEffect` 互相冲突地重建编辑器状态
   - 文件: `src/components/editor/CodeMirrorEditor.tsx` 第 385-443 行
   - 详情: `vimMode` 和 `typewriterMode` 变化时都调用 `view.setState()` 重建状态，同时变化会产生竞态
   - **重构计划**: 使用 Compartment 机制统一管理配置变更，避免 view.setState() 全量重建
@@ -83,7 +83,7 @@
   - 文件: `src/stores/window-positions-store.ts` 第 32-35 行
   - 详情: 应使用 `DetachedWindow` 类型
 
-- [ ] **#18** `detached-windows-store` 和 `window-positions-store` 严重职责重叠
+- [x] **#18** `detached-windows-store` 和 `window-positions-store` 严重职责重叠
   - 文件: `src/stores/detached-windows-store.ts` 和 `src/stores/window-positions-store.ts`
   - 详情: 两个 store 都调用相同的 Tauri 后端命令，维护独立状态，建议合并
   - **重构计划**:

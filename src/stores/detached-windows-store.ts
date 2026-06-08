@@ -1,11 +1,20 @@
 import { create } from 'zustand';
+import { invoke } from '@tauri-apps/api/core';
 import { DetachedWindow, DetachedWindowsAPI } from '../services/detached-windows-api';
+import { WINDOW_LABEL_PREFIX } from '../types/window';
+
+/** 窗口位置信息 */
+interface WindowPosition {
+  position: [number, number];
+  size: [number, number];
+}
 
 interface DetachedWindowsState {
   windows: DetachedWindow[];
+  windowPositions: Record<string, WindowPosition>;
   loading: boolean;
   error: string | null;
-  
+
   // Actions
   loadWindows: () => Promise<void>;
   createWindow: (noteId: string, x?: number, y?: number, width?: number, height?: number) => Promise<DetachedWindow | null>;
@@ -14,26 +23,37 @@ interface DetachedWindowsState {
   refreshWindows: () => Promise<void>;
   updateWindowPosition: (windowLabel: string, x: number, y: number) => Promise<void>;
   updateWindowSize: (windowLabel: string, width: number, height: number) => Promise<void>;
+  moveWindow: (noteId: string, x: number, y: number) => void;
+  resizeWindow: (noteId: string, width: number, height: number) => void;
   isWindowOpen: (noteId: string) => boolean;
   getWindowByNoteId: (noteId: string) => DetachedWindow | undefined;
+  getPosition: (noteId: string) => WindowPosition | undefined;
   focusWindow: (noteId: string) => Promise<boolean>;
 }
 
 export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) => ({
   windows: [],
+  windowPositions: {},
   loading: false,
   error: null,
 
   loadWindows: async () => {
     set({ loading: true, error: null });
     try {
-      // Only load from Tauri in desktop context
       if (typeof window !== 'undefined' && window.__TAURI__) {
         const windows = await DetachedWindowsAPI.getDetachedWindows();
-        set({ windows, loading: false });
+
+        // 同时构建 positions map
+        const positions: Record<string, WindowPosition> = {};
+        windows.forEach(w => {
+          if (w.note_id && w.position && w.size) {
+            positions[w.note_id] = { position: w.position, size: w.size };
+          }
+        });
+
+        set({ windows, windowPositions: positions, loading: false });
       } else {
-        // Browser mode - no detached windows
-        set({ windows: [], loading: false });
+        set({ windows: [], windowPositions: {}, loading: false });
       }
     } catch (error) {
       console.error('[DETACHED-WINDOWS-STORE] Failed to load detached windows:', error);
@@ -44,10 +64,8 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
   createWindow: async (noteId: string, x?: number, y?: number, width?: number, height?: number): Promise<DetachedWindow | null> => {
     const { windows, forceCloseWindow } = get();
 
-    // If window already exists, force close it first to allow recreation
-    if (Array.isArray(windows) && windows.some(w => w.note_id === noteId)) {
+    if (windows.some(w => w.note_id === noteId)) {
       await forceCloseWindow(noteId);
-      // Wait a bit for cleanup
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
@@ -61,13 +79,12 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
         height
       });
 
-      // Refresh windows list to ensure consistency
       await get().refreshWindows();
       set({ loading: false });
 
       return newWindow;
     } catch (error) {
-      console.error('[DETACHED-WINDOWS] Failed to create detached window:', error);
+      console.error('[DETACHED-WINDOWS-STORE] Failed to create detached window:', error);
       set({ error: error instanceof Error ? error.message : String(error), loading: false });
       return null;
     }
@@ -75,20 +92,22 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
 
   closeWindow: async (noteId: string): Promise<boolean> => {
     const { windows } = get();
-    
+
     set({ loading: true, error: null });
     try {
       const success = await DetachedWindowsAPI.closeDetachedWindow(noteId);
-      
+
       if (success) {
-        set({ 
-          windows: windows.filter(w => w.note_id !== noteId), 
-          loading: false 
+        const { [noteId]: _, ...restPositions } = get().windowPositions;
+        set({
+          windows: windows.filter(w => w.note_id !== noteId),
+          windowPositions: restPositions,
+          loading: false
         });
       } else {
         set({ loading: false });
       }
-      
+
       return success;
     } catch (error) {
       console.error('[DETACHED-WINDOWS-STORE] Failed to close detached window:', error);
@@ -101,41 +120,46 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
     const { windows } = get();
 
     try {
-      // Try to close via API first
       await DetachedWindowsAPI.closeDetachedWindow(noteId);
     } catch {
       // API close failed, removing from state anyway
     }
 
-    // Always remove from local state regardless of API result
+    const { [noteId]: _, ...restPositions } = get().windowPositions;
     set({
-      windows: windows.filter(w => w.note_id !== noteId)
+      windows: windows.filter(w => w.note_id !== noteId),
+      windowPositions: restPositions,
     });
   },
 
   refreshWindows: async (): Promise<void> => {
     try {
-      // Only load from Tauri in desktop context
       if (typeof window !== 'undefined' && window.__TAURI__) {
         const windows = await DetachedWindowsAPI.getDetachedWindows();
-        set({ windows });
+
+        const positions: Record<string, WindowPosition> = {};
+        windows.forEach(w => {
+          if (w.note_id && w.position && w.size) {
+            positions[w.note_id] = { position: w.position, size: w.size };
+          }
+        });
+
+        set({ windows, windowPositions: positions });
       }
     } catch (error) {
       console.error('[DETACHED-WINDOWS-STORE] Failed to refresh windows:', error);
-      // Don't set error state to avoid triggering re-renders
     }
   },
 
   updateWindowPosition: async (windowLabel: string, x: number, y: number) => {
     const { windows } = get();
-    
+
     try {
       await DetachedWindowsAPI.updateWindowPosition(windowLabel, x, y);
-      
-      // Update local state
+
       set({
-        windows: windows.map(w => 
-          w.window_label === windowLabel 
+        windows: windows.map(w =>
+          w.window_label === windowLabel
             ? { ...w, position: [x, y] as [number, number] }
             : w
         )
@@ -148,14 +172,13 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
 
   updateWindowSize: async (windowLabel: string, width: number, height: number) => {
     const { windows } = get();
-    
+
     try {
       await DetachedWindowsAPI.updateWindowSize(windowLabel, width, height);
-      
-      // Update local state
+
       set({
-        windows: windows.map(w => 
-          w.window_label === windowLabel 
+        windows: windows.map(w =>
+          w.window_label === windowLabel
             ? { ...w, size: [width, height] as [number, number] }
             : w
         )
@@ -166,16 +189,58 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
     }
   },
 
+  // 快速移动窗口（fire-and-forget，用于拖拽场景）
+  moveWindow: (noteId: string, x: number, y: number): void => {
+    const { windowPositions } = get();
+    const current = windowPositions[noteId];
+
+    if (current) {
+      set({
+        windowPositions: {
+          ...windowPositions,
+          [noteId]: { ...current, position: [x, y] }
+        }
+      });
+
+      invoke('update_detached_window_position', {
+        windowLabel: `${WINDOW_LABEL_PREFIX}${noteId}`,
+        x,
+        y
+      }).catch(() => {});
+    }
+  },
+
+  // 快速调整窗口大小（fire-and-forget，用于拖拽场景）
+  resizeWindow: (noteId: string, width: number, height: number): void => {
+    const { windowPositions } = get();
+    const current = windowPositions[noteId];
+
+    if (current) {
+      set({
+        windowPositions: {
+          ...windowPositions,
+          [noteId]: { ...current, size: [width, height] }
+        }
+      });
+
+      invoke('update_detached_window_size', {
+        windowLabel: `${WINDOW_LABEL_PREFIX}${noteId}`,
+        width,
+        height
+      }).catch(() => {});
+    }
+  },
+
   isWindowOpen: (noteId: string): boolean => {
-    const { windows } = get();
-    const isOpen = Array.isArray(windows) ? windows.some(w => w.note_id === noteId) : false;
-    // Don't log this - it's called too frequently during renders
-    return isOpen;
+    return get().windows.some(w => w.note_id === noteId);
   },
 
   getWindowByNoteId: (noteId: string): DetachedWindow | undefined => {
-    const { windows } = get();
-    return windows.find(w => w.note_id === noteId);
+    return get().windows.find(w => w.note_id === noteId);
+  },
+
+  getPosition: (noteId: string): WindowPosition | undefined => {
+    return get().windowPositions[noteId];
   },
 
   focusWindow: async (noteId: string): Promise<boolean> => {
