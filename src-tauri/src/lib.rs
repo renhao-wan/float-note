@@ -163,6 +163,7 @@ pub fn run() {
             get_attachment_path,
             paste_image_from_clipboard,
             save_clipboard_image,
+            read_image_as_base64,
 
             // Link operations
             rebuild_link_index,

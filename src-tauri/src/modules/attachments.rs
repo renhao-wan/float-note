@@ -259,6 +259,47 @@ pub async fn paste_image_from_clipboard(
     Err(FloatNoteError::Storage("Clipboard paste not yet implemented. Please use file upload instead.".to_string()))
 }
 
+/// Read an image file and return as base64 data URL
+#[tauri::command]
+pub async fn read_image_as_base64(
+    path: String,
+    config: tauri::State<'_, crate::ConfigState>,
+) -> Result<String, FloatNoteError> {
+    let config_lock = config.lock().await;
+
+    // Get the notes directory
+    let notes_dir = get_configured_notes_directory(&config_lock)
+        .map_err(|e| FloatNoteError::Storage(e))?;
+
+    // Build the full file path
+    let file_path = notes_dir.join(&path);
+
+    // Check if file exists
+    if !file_path.exists() {
+        return Err(FloatNoteError::NotFound(format!("Image file not found: {}", path)));
+    }
+
+    // Read the file
+    let image_bytes = fs::read(&file_path)
+        .map_err(|e| FloatNoteError::Storage(format!("Failed to read image: {}", e)))?;
+
+    // Determine MIME type from extension
+    let ext = file_path.extension().and_then(|e| e.to_str()).unwrap_or("png");
+    let mime_type = match ext.to_lowercase().as_str() {
+        "jpg" | "jpeg" => "image/jpeg",
+        "png" => "image/png",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        _ => "image/png",
+    };
+
+    // Encode as base64
+    let base64_data = base64::encode(&image_bytes);
+
+    // Return as data URL
+    Ok(format!("data:{};base64,{}", mime_type, base64_data))
+}
+
 /// Save a clipboard image (base64 encoded) to the attachments directory
 #[tauri::command]
 pub async fn save_clipboard_image(

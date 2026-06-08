@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
-import { readFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { invoke } from '@tauri-apps/api/core';
 
 interface MarkdownRendererProps {
   content: string;
@@ -13,6 +13,23 @@ interface MarkdownRendererProps {
   onDoubleClick?: () => void;
   title?: string;
 }
+
+// Load image from local file system using Rust command
+async function loadLocalImage(path: string): Promise<string> {
+  try {
+    console.log('[FLOATNOTE] Loading image from path:', path);
+    // Call Rust command to read the image file and return as base64
+    const base64Data = await invoke<string>('read_image_as_base64', { path });
+    console.log('[FLOATNOTE] Image loaded successfully, data length:', base64Data.length);
+    return base64Data;
+  } catch (error) {
+    console.error('[FLOATNOTE] Failed to load image:', error);
+    throw error;
+  }
+}
+
+// Cache for loaded images
+const imageCache = new Map<string, string>();
 
 function SafeImage({ src, alt }: { src?: string; alt?: string }) {
   const [hasError, setHasError] = useState(false);
@@ -30,24 +47,30 @@ function SafeImage({ src, alt }: { src?: string; alt?: string }) {
       return;
     }
 
-    // If it's a relative path to attachments, read the file and convert to data URL
+    // If it's a relative path to attachments, load from local file system
     if (src.startsWith('./attachments/') || src.startsWith('attachments/')) {
-      const loadLocalImage = async () => {
+      // Check cache first
+      const cached = imageCache.get(src);
+      if (cached) {
+        setImageSrc(cached);
+        return;
+      }
+
+      const loadImage = async () => {
         try {
           // Remove leading ./ if present
           const cleanPath = src.startsWith('./') ? src.substring(2) : src;
-          // Read the file from AppLocalData directory
-          const data = await readFile(cleanPath, { baseDir: BaseDirectory.AppLocalData });
-          // Convert to blob URL
-          const blob = new Blob([data]);
-          const url = URL.createObjectURL(blob);
-          setImageSrc(url);
+          // Load image using Rust command
+          const base64Data = await loadLocalImage(cleanPath);
+          // Cache the result
+          imageCache.set(src, base64Data);
+          setImageSrc(base64Data);
         } catch (error) {
           console.error('[FLOATNOTE] Failed to load local image:', error);
           setHasError(true);
         }
       };
-      loadLocalImage();
+      loadImage();
       return;
     }
 
@@ -56,6 +79,10 @@ function SafeImage({ src, alt }: { src?: string; alt?: string }) {
 
   if (hasError) {
     return <span className="text-muted-foreground text-sm italic">图片加载失败: {alt || src}</span>;
+  }
+
+  if (!imageSrc) {
+    return <span className="text-muted-foreground text-sm italic">加载中...</span>;
   }
 
   return (
