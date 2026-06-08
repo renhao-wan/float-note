@@ -5,7 +5,6 @@ import { useConfigStore } from '../../stores/config-store';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
 import { TitleEditor } from './TitleEditor';
 import { NoteTagSelector } from '../tags/NoteTagSelector';
-import { BacklinksPanel } from '../links/BacklinksPanel';
 
 interface SaveStatus {
   isSaving: boolean;
@@ -181,40 +180,25 @@ export function EditorArea({
     </div>
   );
 
-  // Handle navigating to a note from backlinks
-  const handleNavigateToNote = useCallback((noteId: string) => {
-    console.log('[FLOATNOTE] Navigate to note:', noteId);
-  }, []);
-
   return (
     <div className="flex-1 flex flex-col bg-background">
       {selectedNote ? (
-        <>
-          <NoteEditor
-            content={currentContent}
-            onContentChange={onContentChange}
-            onSave={onSave}
-            isPreviewMode={isPreviewMode}
-            onPreviewToggle={onPreviewToggle}
-            config={noteEditorConfig}
-            vimStatus={vimStatus}
-            onVimStatusChange={setVimStatus}
-            placeholder="Your thoughts, unfiltered..."
-            autoFocus={true}
-            textareaRef={textareaRef}
-            renderHeader={renderHeader}
-            renderFooter={renderFooter}
-            previewClassName="absolute inset-0 bg-background z-10"
-          />
-
-          {/* Backlinks panel */}
-          <div className="border-t border-border/20">
-            <BacklinksPanel
-              noteId={selectedNote.id}
-              onNavigateToNote={handleNavigateToNote}
-            />
-          </div>
-        </>
+        <NoteEditor
+          content={currentContent}
+          onContentChange={onContentChange}
+          onSave={onSave}
+          isPreviewMode={isPreviewMode}
+          onPreviewToggle={onPreviewToggle}
+          config={noteEditorConfig}
+          vimStatus={vimStatus}
+          onVimStatusChange={setVimStatus}
+          placeholder="Your thoughts, unfiltered..."
+          autoFocus={true}
+          textareaRef={textareaRef}
+          renderHeader={renderHeader}
+          renderFooter={renderFooter}
+          previewClassName="absolute inset-0 bg-background z-10"
+        />
       ) : (
         <div className="flex-1 flex items-center justify-center text-muted-foreground/40">
           <p style={{ fontFamily: 'var(--font-ui)' }}>{t('editor.selectNote')}</p>
