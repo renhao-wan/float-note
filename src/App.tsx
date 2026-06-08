@@ -40,7 +40,7 @@ import { getWordCount } from './lib/utils';
 import { getCenterPosition } from './utils/window-positioning';
 import { TrashPanel } from './components/trash';
 import { TagPanel } from './components/tags';
-import { TemplateSelector } from './components/templates';
+import { TemplateSelector, TemplatePanel } from './components/templates';
 import type { ViewType } from './components/layout/NavigationSidebar';
 import type { NoteTemplate } from './types/template';
 import { templatesApi } from './services/templates-api';
@@ -234,6 +234,15 @@ function App() {
     }
   }, [currentView, sidebarVisible]);
 
+  const handleTemplatesClick = useCallback(() => {
+    if (currentView === 'templates') {
+      setSidebarVisible(!sidebarVisible);
+    } else {
+      setCurrentView('templates');
+      setSidebarVisible(true);
+    }
+  }, [currentView, sidebarVisible]);
+
   const handleTrashClick = useCallback(() => {
     if (currentView === 'trash') {
       setSidebarVisible(!sidebarVisible);
@@ -298,6 +307,7 @@ function App() {
             sidebarVisible={sidebarVisible}
             onNotesClick={handleNotesClick}
             onTagsClick={handleTagsClick}
+            onTemplatesClick={handleTemplatesClick}
             onTrashClick={handleTrashClick}
             onSettingsClick={handleSettingsClick}
           />
@@ -367,6 +377,14 @@ function App() {
                 selectedTag={selectedTag}
                 onTagSelect={setSelectedTag}
                 notes={notes}
+              />
+            </div>
+          ) : currentView === 'templates' ? (
+            /* Templates view */
+            <div className="flex-1 flex min-h-0 overflow-hidden">
+              <TemplatePanel
+                onSelectTemplate={handleCreateFromTemplate}
+                onCreateEmpty={handleCreateEmptyNote}
               />
             </div>
           ) : currentView === 'trash' ? (

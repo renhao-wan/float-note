@@ -1,13 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { getModifierSymbol } from '../../lib/platform';
 
-export type ViewType = 'notes' | 'tags' | 'trash' | 'settings';
+export type ViewType = 'notes' | 'tags' | 'templates' | 'trash' | 'settings';
 
 interface NavigationSidebarProps {
   currentView: ViewType;
   sidebarVisible: boolean;
   onNotesClick: () => void;
   onTagsClick: () => void;
+  onTemplatesClick: () => void;
   onTrashClick: () => void;
   onSettingsClick: () => void;
 }
@@ -17,6 +18,7 @@ export function NavigationSidebar({
   sidebarVisible,
   onNotesClick,
   onTagsClick,
+  onTemplatesClick,
   onTrashClick,
   onSettingsClick
 }: NavigationSidebarProps) {
@@ -56,6 +58,25 @@ export function NavigationSidebar({
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
             <line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+        </button>
+
+        {/* Templates view icon */}
+        <button
+          onClick={onTemplatesClick}
+          className={`w-6 h-6 flex items-center justify-center m-0.5 rounded-md transition-all duration-200 ${
+            currentView === 'templates'
+              ? 'bg-primary text-primary-foreground shadow-glow'
+              : 'text-muted-foreground hover:text-primary hover:bg-primary/15'
+          }`}
+          title={sidebarVisible && currentView === 'templates' ? t('sidebar.hideTemplates') : t('sidebar.templates')}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <line x1="10" y1="9" x2="8" y2="9"/>
           </svg>
         </button>
 
