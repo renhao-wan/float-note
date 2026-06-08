@@ -33,6 +33,9 @@ pub use modules::{
     commands::*,
     tags::*,
     trash::*,
+    attachments::*,
+    links::*,
+    templates::*,
     storage::{get_default_notes_directory, get_configured_notes_directory,
              get_config, update_config, get_detached_windows},
     windows::*,
@@ -151,6 +154,27 @@ pub fn run() {
             empty_trash,
             get_trash_stats,
             list_trashed_notes,
+
+            // Attachment operations
+            upload_attachment,
+            delete_attachment,
+            get_note_attachments,
+            get_attachment_path,
+            paste_image_from_clipboard,
+
+            // Link operations
+            rebuild_link_index,
+            get_backlinks,
+            get_outgoing_links,
+            search_notes_for_link,
+
+            // Template operations
+            get_all_templates,
+            get_template,
+            create_template,
+            update_template,
+            delete_template,
+            create_note_from_template,
 
             // System operations
             open_system_settings,

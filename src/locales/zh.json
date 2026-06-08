@@ -232,5 +232,42 @@
     "emptyTrashSuccess": "回收站已清空",
     "emptyTrashFailed": "清空回收站失败",
     "selectNote": "选择一个笔记查看详情"
+  },
+  "attachments": {
+    "title": "附件",
+    "empty": "暂无附件",
+    "upload": "上传文件",
+    "paste": "粘贴图片",
+    "delete": "删除",
+    "confirmDelete": "确定要删除附件 \"{{name}}\" 吗？",
+    "uploadSuccess": "已上传: {{name}}",
+    "uploadFailed": "上传失败",
+    "pasteSuccess": "已粘贴图片",
+    "pasteFailed": "粘贴失败",
+    "deleteSuccess": "附件已删除",
+    "deleteFailed": "删除失败"
+  },
+  "links": {
+    "backlinks": "反向链接",
+    "noBacklinks": "没有反向链接",
+    "outgoingLinks": "出站链接",
+    "noOutgoingLinks": "没有出站链接",
+    "searchPlaceholder": "搜索笔记...",
+    "insertLink": "插入链接"
+  },
+  "templates": {
+    "selectTemplate": "选择模板",
+    "noTemplates": "暂无模板",
+    "builtin": "内置模板",
+    "custom": "自定义模板",
+    "useTemplate": "使用模板",
+    "loadFailed": "加载模板失败",
+    "createSuccess": "模板已创建",
+    "createFailed": "创建模板失败",
+    "updateSuccess": "模板已更新",
+    "updateFailed": "更新模板失败",
+    "deleteSuccess": "模板已删除",
+    "deleteFailed": "删除模板失败",
+    "createFromTemplate": "从模板创建"
   }
 }

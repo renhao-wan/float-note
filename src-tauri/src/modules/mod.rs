@@ -10,3 +10,6 @@ pub mod logging;
 pub mod modified_state_tracker;
 pub mod tags;
 pub mod trash;
+pub mod attachments;
+pub mod links;
+pub mod templates;

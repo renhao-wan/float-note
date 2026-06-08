@@ -232,5 +232,42 @@
     "emptyTrashSuccess": "Trash emptied",
     "emptyTrashFailed": "Failed to empty trash",
     "selectNote": "Select a note to view details"
+  },
+  "attachments": {
+    "title": "Attachments",
+    "empty": "No attachments",
+    "upload": "Upload file",
+    "paste": "Paste image",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete \"{{name}}\"?",
+    "uploadSuccess": "Uploaded: {{name}}",
+    "uploadFailed": "Upload failed",
+    "pasteSuccess": "Image pasted",
+    "pasteFailed": "Paste failed",
+    "deleteSuccess": "Attachment deleted",
+    "deleteFailed": "Delete failed"
+  },
+  "links": {
+    "backlinks": "Backlinks",
+    "noBacklinks": "No backlinks",
+    "outgoingLinks": "Outgoing Links",
+    "noOutgoingLinks": "No outgoing links",
+    "searchPlaceholder": "Search notes...",
+    "insertLink": "Insert link"
+  },
+  "templates": {
+    "selectTemplate": "Select Template",
+    "noTemplates": "No templates",
+    "builtin": "Built-in",
+    "custom": "Custom",
+    "useTemplate": "Use Template",
+    "loadFailed": "Failed to load templates",
+    "createSuccess": "Template created",
+    "createFailed": "Failed to create template",
+    "updateSuccess": "Template updated",
+    "updateFailed": "Failed to update template",
+    "deleteSuccess": "Template deleted",
+    "deleteFailed": "Failed to delete template",
+    "createFromTemplate": "Create from template"
   }
 }
