@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
-import { convertFileSrc } from '@tauri-apps/api/core';
+import { readFile, BaseDirectory } from '@tauri-apps/plugin-fs';
 
 interface MarkdownRendererProps {
   content: string;
@@ -12,25 +12,6 @@ interface MarkdownRendererProps {
   className?: string;
   onDoubleClick?: () => void;
   title?: string;
-}
-
-// Convert relative attachment path to Tauri-compatible URL
-function resolveImagePath(src: string): string {
-  // If it's a data URL or external URL, return as-is
-  if (src.startsWith('data:') || src.startsWith('http://') || src.startsWith('https://')) {
-    return src;
-  }
-
-  // If it's a relative path to attachments, convert using Tauri's convertFileSrc
-  if (src.startsWith('./attachments/') || src.startsWith('attachments/')) {
-    // Remove leading ./ if present
-    const cleanPath = src.startsWith('./') ? src.substring(2) : src;
-    // Use Tauri's convertFileSrc to create a proper URL
-    // This will create asset://localhost/... URL
-    return convertFileSrc(cleanPath);
-  }
-
-  return src;
 }
 
 function SafeImage({ src, alt }: { src?: string; alt?: string }) {
@@ -43,8 +24,34 @@ function SafeImage({ src, alt }: { src?: string; alt?: string }) {
       return;
     }
 
-    const resolved = resolveImagePath(src);
-    setImageSrc(resolved);
+    // If it's a data URL or external URL, use as-is
+    if (src.startsWith('data:') || src.startsWith('http://') || src.startsWith('https://')) {
+      setImageSrc(src);
+      return;
+    }
+
+    // If it's a relative path to attachments, read the file and convert to data URL
+    if (src.startsWith('./attachments/') || src.startsWith('attachments/')) {
+      const loadLocalImage = async () => {
+        try {
+          // Remove leading ./ if present
+          const cleanPath = src.startsWith('./') ? src.substring(2) : src;
+          // Read the file from AppLocalData directory
+          const data = await readFile(cleanPath, { baseDir: BaseDirectory.AppLocalData });
+          // Convert to blob URL
+          const blob = new Blob([data]);
+          const url = URL.createObjectURL(blob);
+          setImageSrc(url);
+        } catch (error) {
+          console.error('[FLOATNOTE] Failed to load local image:', error);
+          setHasError(true);
+        }
+      };
+      loadLocalImage();
+      return;
+    }
+
+    setImageSrc(src);
   }, [src]);
 
   if (hasError) {
