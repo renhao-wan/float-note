@@ -7,9 +7,11 @@ import { toast } from '../../stores/toast-store';
 interface TemplatePanelProps {
   onSelectTemplate: (template: NoteTemplate) => void;
   onCreateEmpty: () => void;
+  selectedTemplateId?: string | null;
+  onTemplateSelect?: (template: NoteTemplate | null) => void;
 }
 
-export function TemplatePanel({ onSelectTemplate, onCreateEmpty }: TemplatePanelProps) {
+export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, onCreateEmpty, selectedTemplateId, onTemplateSelect }: TemplatePanelProps) {
   const { t } = useTranslation();
   const [templates, setTemplates] = useState<NoteTemplate[]>([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -238,14 +240,18 @@ export function TemplatePanel({ onSelectTemplate, onCreateEmpty }: TemplatePanel
             <div>
               <button
                 onClick={onCreateEmpty}
-                className="w-full text-left p-3 rounded-lg border border-border/30 hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                className={`w-full text-left p-2.5 rounded-lg transition-colors ${
+                  selectedTemplateId === 'blank'
+                    ? 'bg-primary/10 border border-primary/30'
+                    : 'hover:bg-primary/5 border border-transparent'
+                }`}
               >
                 <div className="flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/60">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/60">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14,2 14,8 20,8"/>
                   </svg>
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-sm text-foreground/80">
                     {t('templates.blankNote')}
                   </span>
                 </div>
@@ -258,14 +264,18 @@ export function TemplatePanel({ onSelectTemplate, onCreateEmpty }: TemplatePanel
                 <h3 className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wide mb-2 px-1">
                   {t('templates.builtin')}
                 </h3>
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   {builtinTemplates.map((template) => (
                     <button
                       key={template.id}
-                      onClick={() => onSelectTemplate(template)}
-                      className="w-full text-left p-2.5 rounded-lg hover:bg-primary/5 transition-colors group"
+                      onClick={() => onTemplateSelect?.(template)}
+                      className={`w-full text-left p-2.5 rounded-lg transition-colors ${
+                        selectedTemplateId === template.id
+                          ? 'bg-primary/10 border border-primary/30'
+                          : 'hover:bg-primary/5 border border-transparent'
+                      }`}
                     >
-                      <div className="text-sm text-foreground/80 group-hover:text-foreground">
+                      <div className="text-sm text-foreground/80">
                         {template.name}
                       </div>
                       {template.description && (
@@ -289,17 +299,21 @@ export function TemplatePanel({ onSelectTemplate, onCreateEmpty }: TemplatePanel
                   {t('templates.noCustomTemplates')}
                 </div>
               ) : (
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   {customTemplates.map((template) => (
                     <div
                       key={template.id}
-                      className="flex items-center justify-between p-2.5 rounded-lg hover:bg-primary/5 transition-colors group"
+                      className={`flex items-center justify-between p-2.5 rounded-lg transition-colors group ${
+                        selectedTemplateId === template.id
+                          ? 'bg-primary/10 border border-primary/30'
+                          : 'hover:bg-primary/5 border border-transparent'
+                      }`}
                     >
                       <button
-                        onClick={() => onSelectTemplate(template)}
+                        onClick={() => onTemplateSelect?.(template)}
                         className="flex-1 text-left"
                       >
-                        <div className="text-sm text-foreground/80 group-hover:text-foreground">
+                        <div className="text-sm text-foreground/80">
                           {template.name}
                         </div>
                         {template.description && (

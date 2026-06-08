@@ -56,6 +56,7 @@ function App() {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [templates, setTemplates] = useState<NoteTemplate[]>([]);
+  const [selectedTemplateForPreview, setSelectedTemplateForPreview] = useState<NoteTemplate | null>(null);
 
   // 预加载模板
   useEffect(() => {
@@ -157,19 +158,16 @@ function App() {
     }
   }, [loadNotes, selectNote]);
 
-  // Create new note directly
-  const handleCreateNewNote = useCallback(async () => {
-    try {
-      await createNewNote();
-    } catch (error) {
-      console.error('[FLOATNOTE] Failed to create new note:', error);
-    }
-  }, [createNewNote]);
+  // Show template selector when creating new note
+  const handleCreateNewNote = useCallback(() => {
+    setShowTemplateSelector(true);
+  }, []);
 
-  // Create empty note (from template panel)
+  // Create empty note (from template selector or template panel)
   const handleCreateEmptyNote = useCallback(async () => {
     try {
       await createNewNote();
+      setShowTemplateSelector(false);
     } catch (error) {
       console.error('[FLOATNOTE] Failed to create new note:', error);
     }
@@ -383,26 +381,67 @@ function App() {
               />
             </div>
           ) : currentView === 'templates' ? (
-            /* Templates view - Template panel + Editor */
+            /* Templates view - Template panel + Preview */
             <div className="flex-1 flex min-h-0 overflow-hidden">
               <div className="w-64 bg-card/80 border-r border-border/30 flex flex-col h-full overflow-hidden">
                 <TemplatePanel
                   onSelectTemplate={handleCreateFromTemplate}
                   onCreateEmpty={handleCreateEmptyNote}
+                  selectedTemplateId={selectedTemplateForPreview?.id || null}
+                  onTemplateSelect={setSelectedTemplateForPreview}
                 />
               </div>
 
-              {/* Editor area for template preview */}
-              <div className="flex-1 flex items-center justify-center bg-background">
-                <div className="text-center text-muted-foreground/30">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mx-auto mb-4">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14,2 14,8 20,8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                  </svg>
-                  <p className="text-sm">{t('templates.selectTemplate')}</p>
-                </div>
+              {/* Template preview area */}
+              <div className="flex-1 flex flex-col bg-background min-h-0 overflow-hidden">
+                {selectedTemplateForPreview ? (
+                  <div className="flex-1 overflow-y-auto p-6">
+                    {/* Template header */}
+                    <div className="mb-6">
+                      <h1 className="text-2xl font-semibold text-foreground mb-2">
+                        {selectedTemplateForPreview.name}
+                      </h1>
+                      {selectedTemplateForPreview.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {selectedTemplateForPreview.description}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 mt-3">
+                        <button
+                          onClick={() => handleCreateFromTemplate(selectedTemplateForPreview)}
+                          className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                          {t('templates.useTemplate')}
+                        </button>
+                        <span className="text-xs text-muted-foreground/50 font-mono">
+                          {selectedTemplateForPreview.is_builtin ? t('templates.builtin') : t('templates.custom')}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Template content preview */}
+                    <div className="bg-card/30 rounded-lg p-4 border border-border/20">
+                      <h3 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide mb-3">
+                        {t('templates.content')}
+                      </h3>
+                      <pre className="whitespace-pre-wrap font-mono text-sm text-foreground/80 leading-relaxed">
+                        {selectedTemplateForPreview.content}
+                      </pre>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center text-muted-foreground/30">
+                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mx-auto mb-4">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="9" y1="9" x2="15" y2="9"/>
+                        <line x1="9" y1="13" x2="15" y2="13"/>
+                        <line x1="9" y1="17" x2="12" y2="17"/>
+                      </svg>
+                      <p className="text-sm">{t('templates.selectToPreview')}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ) : currentView === 'trash' ? (

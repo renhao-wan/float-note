@@ -290,6 +290,7 @@
     "updateFailed": "Failed to update template",
     "deleteSuccess": "Template deleted",
     "deleteFailed": "Failed to delete template",
-    "createFromTemplate": "Create from template"
+    "createFromTemplate": "Create from template",
+    "selectToPreview": "Select a template to preview"
   }
 }
