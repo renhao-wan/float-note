@@ -135,7 +135,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         }
       });
 
-      // Add the new note to the list - backend already handles positioning
+      // Add the new note to the list and select it
       setNotes(prev => {
         const updated = [...prev, newNote];
         // Sort by position (backend-assigned), with None values at the end
@@ -152,10 +152,11 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         notesRef.current = sorted;
         return sorted;
       });
-      // Update ref immediately to prevent race conditions
+
+      // Update ref and state to select the new note
       selectedNoteIdRef.current = newNote.id;
       setSelectedNoteId(newNote.id);
-      setCurrentContent('');
+      setCurrentContent(newNote.content || '');
     } catch (error) {
       console.error('[FLOATNOTE] Failed to create note:', error);
     }
