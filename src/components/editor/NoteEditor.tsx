@@ -2,12 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
 import { MarkdownRenderer } from '../common/MarkdownRenderer';
-
-// Convert File to Uint8Array
-async function fileToUint8Array(file: File): Promise<Uint8Array> {
-  const arrayBuffer = await file.arrayBuffer();
-  return new Uint8Array(arrayBuffer);
-}
+import { invoke } from '@tauri-apps/api/core';
 
 // Shared utility function for paper styles
 export const getPaperStyleClass = (style?: string) => {
@@ -119,18 +114,23 @@ export function NoteEditor({
         if (!file) continue;
 
         try {
-          // Save to temp file using Tauri fs API
-          const { writeFile, BaseDirectory } = await import('@tauri-apps/plugin-fs');
-          const imageBytes = await fileToUint8Array(file);
-          const ext = file.name.split('.').pop() || 'png';
-          const timestamp = Date.now();
-          const tempFilename = `clipboard-${timestamp}.${ext}`;
+          // Convert image to base64
+          const reader = new FileReader();
+          const base64Data = await new Promise<string>((resolve, reject) => {
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
 
-          // Write to app local data directory
-          await writeFile(`attachments/${_noteId}/${tempFilename}`, imageBytes, { baseDir: BaseDirectory.AppLocalData });
+          // Call Rust command to save image
+          const result = await invoke<{ filename: string }>('save_clipboard_image', {
+            noteId: _noteId,
+            imageData: base64Data,
+            filename: file.name || 'clipboard.png',
+          });
 
-          // Create markdown image reference with relative path
-          const reference = `![${tempFilename}](./attachments/${_noteId}/${tempFilename})`;
+          // Create markdown image reference
+          const reference = `![${result.filename}](./attachments/${_noteId}/${result.filename})`;
 
           // Get current cursor position from the hidden textarea
           const textarea = textareaRef?.current;

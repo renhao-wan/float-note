@@ -7,6 +7,12 @@ use crate::modules::storage::get_configured_notes_directory;
 use crate::log_info;
 use crate::error::FloatNoteError;
 
+/// Response for save_clipboard_image
+#[derive(serde::Serialize)]
+pub struct SaveImageResponse {
+    pub filename: String,
+}
+
 /// Get the attachments directory for a note
 fn get_attachments_dir(config: &crate::types::config::AppConfig, note_id: &str) -> Result<PathBuf, String> {
     let notes_dir = get_configured_notes_directory(config)?;
@@ -251,4 +257,72 @@ pub async fn paste_image_from_clipboard(
     // This requires platform-specific implementation for macOS/Windows/Linux
     // For now, return an error indicating this feature is not yet implemented
     Err(FloatNoteError::Storage("Clipboard paste not yet implemented. Please use file upload instead.".to_string()))
+}
+
+/// Save a clipboard image (base64 encoded) to the attachments directory
+#[tauri::command]
+pub async fn save_clipboard_image(
+    note_id: String,
+    image_data: String,
+    filename: String,
+    config: tauri::State<'_, crate::ConfigState>,
+) -> Result<SaveImageResponse, FloatNoteError> {
+    let config_lock = config.lock().await;
+
+    log_info!("ATTACHMENTS", "Saving clipboard image for note: {}", note_id);
+
+    // Extract base64 data (remove data:image/xxx;base64, prefix)
+    let base64_data = if image_data.contains(',') {
+        image_data.split(',').nth(1).unwrap_or(&image_data)
+    } else {
+        &image_data
+    };
+
+    // Decode base64
+    let image_bytes = base64::decode(base64_data)
+        .map_err(|e| FloatNoteError::Storage(format!("Failed to decode base64: {}", e)))?;
+
+    // Get attachments directory
+    let attachments_dir = get_attachments_dir(&config_lock, &note_id)
+        .map_err(|e| FloatNoteError::Storage(e))?;
+
+    // Generate unique filename
+    let ext = filename.rsplit('.').next().unwrap_or("png");
+    let attachment_id = Uuid::new_v4().to_string();
+    let new_filename = format!("{}.{}", attachment_id, ext);
+
+    let file_path = attachments_dir.join(&new_filename);
+
+    // Save file
+    fs::write(&file_path, &image_bytes)
+        .map_err(|e| FloatNoteError::Storage(format!("Failed to save image: {}", e)))?;
+
+    // Create attachment record
+    let now = chrono::Utc::now().to_rfc3339();
+    let attachment = Attachment {
+        id: attachment_id,
+        note_id: note_id.clone(),
+        filename: new_filename.clone(),
+        original_filename: filename,
+        mime_type: get_mime_type(ext),
+        size: image_bytes.len() as u64,
+        created_at: now,
+    };
+
+    // Load existing metadata
+    let mut metadata = load_metadata(&config_lock, &note_id)
+        .map_err(|e| FloatNoteError::Storage(e))?;
+
+    // Add new attachment
+    metadata.push(attachment);
+
+    // Save metadata
+    save_metadata(&config_lock, &note_id, &metadata)
+        .map_err(|e| FloatNoteError::Storage(e))?;
+
+    log_info!("ATTACHMENTS", "Saved clipboard image: {} for note: {}", new_filename, note_id);
+
+    Ok(SaveImageResponse {
+        filename: new_filename,
+    })
 }

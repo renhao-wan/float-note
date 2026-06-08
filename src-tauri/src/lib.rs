@@ -162,6 +162,7 @@ pub fn run() {
             get_note_attachments,
             get_attachment_path,
             paste_image_from_clipboard,
+            save_clipboard_image,
 
             // Link operations
             rebuild_link_index,
