@@ -41,6 +41,7 @@ import { getCenterPosition } from './utils/window-positioning';
 import { TrashPanel } from './components/trash';
 import { TagPanel } from './components/tags';
 import { TemplateSelector, TemplatePanel } from './components/templates';
+import { MarkdownRenderer } from './components/common/MarkdownRenderer';
 import type { ViewType } from './components/layout/NavigationSidebar';
 import type { NoteTemplate } from './types/template';
 import { templatesApi } from './services/templates-api';
@@ -57,6 +58,7 @@ function App() {
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [templates, setTemplates] = useState<NoteTemplate[]>([]);
   const [selectedTemplateForPreview, setSelectedTemplateForPreview] = useState<NoteTemplate | null>(null);
+  const [editingTemplateContent, setEditingTemplateContent] = useState<{ name: string; description: string; content: string } | null>(null);
 
   // 预加载模板
   useEffect(() => {
@@ -378,15 +380,40 @@ function App() {
                   onSelectTemplate={handleCreateFromTemplate}
                   selectedTemplateId={selectedTemplateForPreview?.id || null}
                   onTemplateSelect={setSelectedTemplateForPreview}
+                  onEditingContentChange={setEditingTemplateContent}
                 />
               </div>
 
               {/* Template preview area */}
               <div className="flex-1 flex flex-col bg-background min-h-0 overflow-hidden">
-                {selectedTemplateForPreview ? (
-                  <div className="flex-1 overflow-y-auto p-6">
-                    {/* Template header */}
-                    <div className="mb-6">
+                {editingTemplateContent ? (
+                  /* Editing preview - real-time */
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="px-6 pt-6 pb-4 border-b border-border/20">
+                      <h1 className="text-2xl font-semibold text-foreground mb-2">
+                        {editingTemplateContent.name || t('templates.untitled')}
+                      </h1>
+                      {editingTemplateContent.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {editingTemplateContent.description}
+                        </p>
+                      )}
+                      <span className="text-xs text-primary/60 font-mono mt-2 inline-block">
+                        {t('templates.editing')}
+                      </span>
+                    </div>
+                    <div className="p-6">
+                      <MarkdownRenderer
+                        content={editingTemplateContent.content || ''}
+                        syntaxHighlighting={true}
+                        className="prose max-w-none content-font text-foreground"
+                      />
+                    </div>
+                  </div>
+                ) : selectedTemplateForPreview ? (
+                  /* Selected template preview */
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="px-6 pt-6 pb-4 border-b border-border/20">
                       <h1 className="text-2xl font-semibold text-foreground mb-2">
                         {selectedTemplateForPreview.name}
                       </h1>
@@ -399,18 +426,16 @@ function App() {
                         {selectedTemplateForPreview.is_builtin ? t('templates.builtin') : t('templates.custom')}
                       </span>
                     </div>
-
-                    {/* Template content preview */}
-                    <div className="bg-card/30 rounded-lg p-4 border border-border/20">
-                      <h3 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide mb-3">
-                        {t('templates.content')}
-                      </h3>
-                      <pre className="whitespace-pre-wrap font-mono text-sm text-foreground/80 leading-relaxed">
-                        {selectedTemplateForPreview.content}
-                      </pre>
+                    <div className="p-6">
+                      <MarkdownRenderer
+                        content={selectedTemplateForPreview.content || ''}
+                        syntaxHighlighting={true}
+                        className="prose max-w-none content-font text-foreground"
+                      />
                     </div>
                   </div>
                 ) : (
+                  /* Empty state */
                   <div className="flex-1 flex items-center justify-center">
                     <div className="text-center text-muted-foreground/30">
                       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mx-auto mb-4">

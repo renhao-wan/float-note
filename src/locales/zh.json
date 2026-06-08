@@ -291,6 +291,8 @@
     "deleteSuccess": "模板已删除",
     "deleteFailed": "删除模板失败",
     "createFromTemplate": "从模板创建",
-    "selectToPreview": "选择一个模板查看预览"
+    "selectToPreview": "选择一个模板查看预览",
+    "editing": "编辑中",
+    "untitled": "未命名模板"
   }
 }

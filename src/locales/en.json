@@ -291,6 +291,8 @@
     "deleteSuccess": "Template deleted",
     "deleteFailed": "Failed to delete template",
     "createFromTemplate": "Create from template",
-    "selectToPreview": "Select a template to preview"
+    "selectToPreview": "Select a template to preview",
+    "editing": "Editing",
+    "untitled": "Untitled Template"
   }
 }

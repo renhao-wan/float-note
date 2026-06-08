@@ -8,9 +8,10 @@ interface TemplatePanelProps {
   onSelectTemplate: (template: NoteTemplate) => void;
   selectedTemplateId?: string | null;
   onTemplateSelect?: (template: NoteTemplate | null) => void;
+  onEditingContentChange?: (content: { name: string; description: string; content: string } | null) => void;
 }
 
-export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTemplateId, onTemplateSelect }: TemplatePanelProps) {
+export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTemplateId, onTemplateSelect, onEditingContentChange }: TemplatePanelProps) {
   const { t } = useTranslation();
   const [templates, setTemplates] = useState<NoteTemplate[]>([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -34,6 +35,19 @@ export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTem
   useEffect(() => {
     loadTemplates();
   }, []);
+
+  // Notify parent when editing content changes
+  useEffect(() => {
+    if (isCreating && onEditingContentChange) {
+      onEditingContentChange({
+        name: formName,
+        description: formDescription,
+        content: formContent,
+      });
+    } else if (!isCreating && onEditingContentChange) {
+      onEditingContentChange(null);
+    }
+  }, [isCreating, formName, formDescription, formContent, onEditingContentChange]);
 
   // Reset form
   const resetForm = () => {
