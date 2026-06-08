@@ -258,6 +258,9 @@
   "templates": {
     "selectTemplate": "Select Template",
     "noTemplates": "No templates",
+    "quickStart": "Quick Start",
+    "blankNote": "Blank Note",
+    "blankNoteDescription": "Start from scratch",
     "builtin": "Built-in",
     "custom": "Custom",
     "useTemplate": "Use Template",

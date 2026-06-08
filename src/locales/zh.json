@@ -258,6 +258,9 @@
   "templates": {
     "selectTemplate": "选择模板",
     "noTemplates": "暂无模板",
+    "quickStart": "快速开始",
+    "blankNote": "空白笔记",
+    "blankNoteDescription": "从空白开始",
     "builtin": "内置模板",
     "custom": "自定义模板",
     "useTemplate": "使用模板",

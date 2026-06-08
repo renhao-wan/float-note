@@ -143,10 +143,16 @@ function App() {
     }
   }, [loadNotes, selectNote]);
 
-  // Create new note directly (without template selector)
-  const handleCreateNewNote = useCallback(async () => {
+  // Show template selector
+  const handleCreateNewNote = useCallback(() => {
+    setShowTemplateSelector(true);
+  }, []);
+
+  // Create empty note (without template)
+  const handleCreateEmptyNote = useCallback(async () => {
     try {
       await createNewNote();
+      setShowTemplateSelector(false);
     } catch (error) {
       console.error('[FLOATNOTE] Failed to create new note:', error);
     }
@@ -390,6 +396,7 @@ function App() {
       {showTemplateSelector && (
         <TemplateSelector
           onSelect={handleCreateFromTemplate}
+          onCreateEmpty={handleCreateEmptyNote}
           onClose={() => setShowTemplateSelector(false)}
         />
       )}
