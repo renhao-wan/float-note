@@ -55,6 +55,20 @@ function App() {
   const [selectedSettingsSection, setSelectedSettingsSection] = useState<'general' | 'appearance' | 'editor'>('general');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [templates, setTemplates] = useState<NoteTemplate[]>([]);
+
+  // 预加载模板
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const data = await templatesApi.getAllTemplates();
+        setTemplates(data);
+      } catch (error) {
+        console.error('[FLOATNOTE] Failed to load templates:', error);
+      }
+    };
+    loadTemplates();
+  }, []);
 
   // 同步语言设置
   useEffect(() => {
@@ -395,6 +409,7 @@ function App() {
       {/* Template selector modal */}
       {showTemplateSelector && (
         <TemplateSelector
+          templates={templates}
           onSelect={handleCreateFromTemplate}
           onCreateEmpty={handleCreateEmptyNote}
           onClose={() => setShowTemplateSelector(false)}

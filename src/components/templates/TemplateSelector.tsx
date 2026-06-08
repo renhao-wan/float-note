@@ -1,37 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NoteTemplate } from '../../types/template';
-import { templatesApi } from '../../services/templates-api';
-import { toast } from '../../stores/toast-store';
 
 interface TemplateSelectorProps {
+  templates: NoteTemplate[];
   onSelect: (template: NoteTemplate) => void;
   onCreateEmpty: () => void;
   onClose: () => void;
 }
 
-export function TemplateSelector({ onSelect, onCreateEmpty, onClose }: TemplateSelectorProps) {
+export function TemplateSelector({ templates, onSelect, onCreateEmpty, onClose }: TemplateSelectorProps) {
   const { t } = useTranslation();
-  const [templates, setTemplates] = useState<NoteTemplate[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate | null>(null);
-
-  // Load templates on mount
-  useEffect(() => {
-    const loadTemplates = async () => {
-      try {
-        const data = await templatesApi.getAllTemplates();
-        setTemplates(data);
-      } catch (error) {
-        console.error('[FLOATNOTE] Failed to load templates:', error);
-        toast.error(t('templates.loadFailed'));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadTemplates();
-  }, [t]);
 
   const handleSelect = () => {
     if (selectedTemplate) {
@@ -64,13 +44,8 @@ export function TemplateSelector({ onSelect, onCreateEmpty, onClose }: TemplateS
 
         {/* Template list */}
         <div className="flex-1 overflow-y-auto p-4">
-          {isLoading ? (
-            <div className="text-center text-muted-foreground/60 py-8">
-              {t('common.loading')}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {/* Empty note option */}
+          <div className="space-y-4">
+            {/* Empty note option */}
               <div>
                 <h3 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide mb-2">
                   {t('templates.quickStart')}
@@ -174,7 +149,6 @@ export function TemplateSelector({ onSelect, onCreateEmpty, onClose }: TemplateS
                 </div>
               )}
             </div>
-          )}
         </div>
 
         {/* Footer */}
