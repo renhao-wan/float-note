@@ -21,12 +21,13 @@ interface UseNoteManagementReturn {
   saveNoteImmediately: () => Promise<void>;
   deleteNote: (noteId: string) => Promise<void>;
   renameNote: (noteId: string, newTitle: string) => Promise<boolean>;
+  updateNoteTags: (noteId: string, tags: string[]) => Promise<void>;
   extractTitleFromContent: (content: string) => string;
 
   // Setters for external control
   setCurrentContent: (content: string) => void;
   setSelectedNoteId: (id: string | null) => void;
-
+  setNotes: (notes: Note[] | ((prev: Note[]) => Note[])) => void;
 }
 
 interface UseNoteManagementOptions {
@@ -352,6 +353,30 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     }
   }, [selectNote]);
 
+  // Update note tags
+  const updateNoteTags = useCallback(async (noteId: string, tags: string[]): Promise<void> => {
+    try {
+      const updatedNote = await invoke<Note>('update_note_tags', {
+        request: { noteId, tags }
+      });
+
+      // Update local state
+      setNotes(prev => {
+        const updated = prev.map(note =>
+          note.id === noteId ? updatedNote : note
+        );
+        notesRef.current = updated;
+        return updated;
+      });
+
+      // Notify other windows about the update
+      noteSyncService.noteUpdated(updatedNote);
+    } catch (error) {
+      console.error('[FLOATNOTE] Failed to update note tags:', error);
+      throw error;
+    }
+  }, []);
+
   // Load notes on mount and listen for data-loaded event
   useEffect(() => {
     loadNotes();
@@ -401,10 +426,12 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     saveNoteImmediately,
     deleteNote,
     renameNote,
+    updateNoteTags,
     extractTitleFromContent,
 
     // Setters for external control
     setCurrentContent,
     setSelectedNoteId,
+    setNotes,
   };
 }

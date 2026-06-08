@@ -31,6 +31,8 @@ pub use state::{
 pub use modules::{
     logging::*,
     commands::*,
+    tags::*,
+    trash::*,
     storage::{get_default_notes_directory, get_configured_notes_directory,
              get_config, update_config, get_detached_windows},
     windows::*,
@@ -90,6 +92,7 @@ pub fn run() {
             update_note,
             rename_note,
             delete_note,
+            reorder_notes,
 
             // File operations
             import_notes_from_directory,
@@ -133,6 +136,21 @@ pub fn run() {
             update_hybrid_drag_position,
             close_hybrid_drag_window,
             finalize_hybrid_drag_window,
+
+            // Tag operations
+            get_all_tags,
+            update_note_tags,
+            delete_tag,
+            get_notes_by_tag,
+            create_tag,
+
+            // Trash operations
+            move_to_trash,
+            restore_from_trash,
+            permanently_delete,
+            empty_trash,
+            get_trash_stats,
+            list_trashed_notes,
 
             // System operations
             open_system_settings,

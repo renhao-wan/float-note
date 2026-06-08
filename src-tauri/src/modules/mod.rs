@@ -8,3 +8,5 @@ pub mod system_commands;
 pub mod windows;
 pub mod logging;
 pub mod modified_state_tracker;
+pub mod tags;
+pub mod trash;

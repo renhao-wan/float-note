@@ -104,7 +104,9 @@ function App() {
     saveNoteImmediately,
     deleteNote,
     renameNote,
+    updateNoteTags: _updateNoteTags,
     setCurrentContent,
+    setNotes,
   } = useNoteManagement({
     onSaveStart,
     onSaveComplete,
@@ -236,6 +238,7 @@ function App() {
                 onShowContextMenu={showContextMenu}
                 onStartDrag={startDrag}
                 isWindowOpen={isWindowOpen}
+                onNotesReordered={setNotes}
               />
 
               <EditorArea

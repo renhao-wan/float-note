@@ -20,6 +20,12 @@ pub enum FloatNoteError {
     #[error("Note not found: {id}")]
     NoteNotFound { id: String },
 
+    #[error("Not found: {0}")]
+    NotFound(String),
+
+    #[error("Validation error: {0}")]
+    Validation(String),
+
     #[error("Configuration error: {0}")]
     Config(String),
 

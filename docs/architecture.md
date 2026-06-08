@@ -32,7 +32,8 @@ float-note/
 │   │   │   ├── EditorArea.tsx
 │   │   │   └── TitleEditor.tsx
 │   │   ├── settings/             # 设置面板
-│   │   │   ├── GeneralSettings.tsx
+│   │   │   ├── SettingsPanel.tsx
+│   │   │   ├── SettingsNavigation.tsx
 │   │   │   └── ThemeSelector.tsx
 │   │   └── windows/              # 窗口管理
 │   │       ├── DetachedNoteWindow.tsx

@@ -39,6 +39,10 @@ export const notesApi = {
     return invokeWithLogging<boolean>('delete_note', { id });
   },
 
+  async reorderNotes(noteIds: string[]): Promise<Note[]> {
+    return invokeWithLogging<Note[]>('reorder_notes', { request: { note_ids: noteIds } });
+  },
+
   // File import/export operations
   async importNotesFromDirectory(directoryPath: string): Promise<Note[]> {
     return invokeWithLogging<Note[]>('import_notes_from_directory', { directoryPath });

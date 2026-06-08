@@ -124,6 +124,7 @@ pub async fn create_note(
         created_at: now.clone(),
         updated_at: now,
         position: Some(max_position + 1),
+        tags: None,
     };
 
     notes_lock.insert(note.id.clone(), note.clone());
@@ -196,6 +197,7 @@ pub async fn update_note(
                         created_at: updated_note.created_at,
                         updated_at: updated_note.updated_at,
                         position: updated_note.position,
+                        tags: updated_note.tags,
                     };
 
                     // Perform disk operations first, before modifying in-memory state
@@ -293,6 +295,7 @@ pub async fn rename_note(
         created_at: old_note.created_at,
         updated_at: chrono::Utc::now().to_rfc3339(),
         position: old_note.position,
+        tags: old_note.tags,
     };
 
     // Perform disk operations first, before modifying in-memory state
@@ -328,7 +331,7 @@ pub async fn rename_note(
 #[tauri::command]
 pub async fn delete_note(
     app: AppHandle,
-    id: String, 
+    id: String,
     notes: State<'_, NotesState>,
     config: State<'_, ConfigState>,
     modified_tracker: State<'_, ModifiedStateTracker>,
@@ -336,17 +339,17 @@ pub async fn delete_note(
     let mut notes_lock = notes.lock().await;
     let config_lock = config.lock().await;
     let removed = notes_lock.remove(&id).is_some();
-    
+
     if removed {
         // Delete using file storage (this handles everything including index updates)
         let file_storage = FileNotesStorage::new(&config_lock)?;
         file_storage.delete_note(&id).await?;
-        
+
         // Remove from modified tracker
         modified_tracker.remove_note(&id).await;
-        
+
         log_info!("NOTES", "Deleted note: {}", id);
-        
+
         // Emit event to all windows for synchronization
         app.emit("note-deleted", &id).unwrap_or_else(|e| {
             log_error!("NOTES", "Failed to emit note-deleted event: {}", e);
@@ -354,7 +357,64 @@ pub async fn delete_note(
     } else {
         log_error!("NOTES", "Attempted to delete non-existent note: {}", id);
     }
-    
+
     Ok(removed)
+}
+
+/// Request to reorder notes
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub struct ReorderNotesRequest {
+    /// Note IDs in the new order
+    pub note_ids: Vec<String>,
+}
+
+/// Reorder notes by updating their position values
+#[tauri::command]
+pub async fn reorder_notes(
+    app: AppHandle,
+    request: ReorderNotesRequest,
+    notes: State<'_, NotesState>,
+    config: State<'_, ConfigState>,
+) -> Result<Vec<Note>, String> {
+    let mut notes_lock = notes.lock().await;
+    let config_lock = config.lock().await;
+
+    log_info!("NOTES", "Reordering {} notes", request.note_ids.len());
+
+    // Update position for each note based on the new order
+    let mut updated_notes = Vec::new();
+    for (index, note_id) in request.note_ids.iter().enumerate() {
+        if let Some(note) = notes_lock.get_mut(note_id) {
+            note.position = Some(index as i32);
+            note.updated_at = chrono::Utc::now().to_rfc3339();
+            updated_notes.push(note.clone());
+        } else {
+            log_error!("NOTES", "Note not found during reorder: {}", note_id);
+            return Err(format!("Note not found: {}", note_id));
+        }
+    }
+
+    // Save all updated notes to disk
+    save_all_notes_using_file_storage(&notes_lock, &config_lock).await?;
+
+    log_info!("NOTES", "Successfully reordered {} notes", updated_notes.len());
+
+    // Emit event to all windows for synchronization
+    app.emit("notes-reordered", &updated_notes).unwrap_or_else(|e| {
+        log_error!("NOTES", "Failed to emit notes-reordered event: {}", e);
+    });
+
+    // Return all notes sorted by new position
+    let mut all_notes: Vec<Note> = notes_lock.values().cloned().collect();
+    all_notes.sort_by(|a, b| {
+        match (a.position, b.position) {
+            (Some(pos_a), Some(pos_b)) => pos_a.cmp(&pos_b),
+            (Some(_), None) => std::cmp::Ordering::Less,
+            (None, Some(_)) => std::cmp::Ordering::Greater,
+            (None, None) => std::cmp::Ordering::Equal,
+        }
+    });
+
+    Ok(all_notes)
 }
 

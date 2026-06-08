@@ -1,9 +1,26 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
 import { ResizablePanel } from '../windows/ResizablePanel';
 import { markdownToPlainText, truncateText } from '../../lib/utils';
 import { Note } from '../../types';
 import { getModifierSymbol } from '../../lib/platform';
+import { SortableNoteItem } from './SortableNoteItem';
+import { notesApi } from '../../services/tauri-api';
 
 interface NotesPanelProps {
   sidebarVisible: boolean;
@@ -17,6 +34,7 @@ interface NotesPanelProps {
   onShowContextMenu: (x: number, y: number, noteId: string) => void;
   onStartDrag: (e: React.MouseEvent, noteId: string) => void;
   isWindowOpen: (noteId: string) => boolean;
+  onNotesReordered?: (notes: Note[]) => void;
 }
 
 export function NotesPanel({
@@ -30,12 +48,26 @@ export function NotesPanel({
   onDeleteNote,
   onShowContextMenu,
   onStartDrag,
-  isWindowOpen
+  isWindowOpen,
+  onNotesReordered,
 }: NotesPanelProps) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [isReordering, setIsReordering] = useState(false);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // Require 5px movement before activating
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Debounce search input
   const handleSearchChange = (value: string) => {
@@ -90,6 +122,54 @@ export function NotesPanel({
     return index < keys.length ? keys[index] : '';
   };
 
+  // Handle drag end event
+  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    console.log('[FLOATNOTE] DragEnd event:', { activeId: active.id, overId: over?.id });
+
+    if (!over || active.id === over.id) {
+      console.log('[FLOATNOTE] Drag cancelled - same position or no target');
+      return;
+    }
+
+    // Find positions in the full notes array
+    const activeNoteId = active.id as string;
+    const overNoteId = over.id as string;
+
+    const activeFullIndex = notes.findIndex((note) => note.id === activeNoteId);
+    const overFullIndex = notes.findIndex((note) => note.id === overNoteId);
+
+    console.log('[FLOATNOTE] Drag indices:', { activeFullIndex, overFullIndex });
+
+    if (activeFullIndex === -1 || overFullIndex === -1) {
+      console.log('[FLOATNOTE] Drag cancelled - note not found');
+      return;
+    }
+
+    // Create new order using the full notes array
+    const newOrder = arrayMove(notes, activeFullIndex, overFullIndex);
+    const noteIds = newOrder.map(note => note.id);
+
+    console.log('[FLOATNOTE] New order:', noteIds);
+
+    // Call API to persist the new order
+    setIsReordering(true);
+    try {
+      console.log('[FLOATNOTE] Calling reorderNotes API...');
+      const reorderedNotes = await notesApi.reorderNotes(noteIds);
+      console.log('[FLOATNOTE] API returned:', reorderedNotes.length, 'notes');
+      if (onNotesReordered) {
+        console.log('[FLOATNOTE] Calling onNotesReordered callback');
+        onNotesReordered(reorderedNotes);
+      }
+    } catch (error) {
+      console.error('[FLOATNOTE] Failed to reorder notes:', error);
+    } finally {
+      setIsReordering(false);
+    }
+  }, [notes, onNotesReordered]);
+
   if (!sidebarVisible) {
     return (
       <div className="w-0 h-full overflow-hidden" data-notes-sidebar />
@@ -128,7 +208,7 @@ export function NotesPanel({
                 </svg>
               </button>
             </div>
-            
+
             {/* Search */}
             <div className="relative">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground/60">
@@ -180,94 +260,41 @@ export function NotesPanel({
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col">
-                {filteredNotes.map((note, index) => {
-                  return (
-                  <div
-                    key={note.id}
-                    data-note-id={note.id}
-                    className={`group relative cursor-pointer transition-all duration-200 ${
-                      selectedNoteId === note.id
-                        ? 'bg-primary/8 border-l-2 border-l-primary ml-0 pl-4 pr-4 py-3 shadow-glow'
-                        : 'hover:bg-primary/4 border-l-2 border-l-transparent ml-1 pl-3 pr-4 py-3'
-                    } ${index > 0 ? 'border-t border-border/8' : ''}`}
-                    onClick={() => onSelectNote(note.id)}
-                    onContextMenu={(e) => onShowContextMenu(e.clientX, e.clientY, note.id)}
-                    onMouseDown={(e) => {
-                      // Drag-to-detach on entire note item (left mouse button only)
-                      if (e.button === 0) {
-                        onStartDrag(e, note.id);
-                      }
-                    }}
-                  >
-                    <div className="flex items-start gap-2">
-                      {/* Drag indicator */}
-                      <div className="opacity-0 group-hover:opacity-30 transition-opacity pt-0.5">
-                        <svg width="8" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
-                          <circle cx="9" cy="5" r="1"/>
-                          <circle cx="9" cy="12" r="1"/>
-                          <circle cx="9" cy="19" r="1"/>
-                          <circle cx="15" cy="5" r="1"/>
-                          <circle cx="15" cy="12" r="1"/>
-                          <circle cx="15" cy="19" r="1"/>
-                        </svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start gap-2">
-                          <h3 className={`text-sm font-medium leading-tight transition-colors flex-1 ${
-                            selectedNoteId === note.id
-                              ? 'text-primary'
-                              : 'text-foreground/80 group-hover:text-foreground'
-                          }`}>
-                            {note.title || 'Untitled'}
-                          </h3>
-                          <div className="flex items-center gap-1">
-                            {/* Note ID with fade effect - moved to right */}
-                            <span className="text-[8px] font-mono text-muted-foreground opacity-50 select-none">
-                              {note.id.slice(-5)}
-                            </span>
-                            {getShortcutKey(index) && (
-                              <span 
-                                className="text-[9px] text-muted-foreground/40 font-mono bg-background/50 px-1 py-0.5 rounded border border-border/20"
-                                title={`Hyper+B, ${getShortcutKey(index)} to open in detached window`}
-                              >
-                                {getShortcutKey(index)}
-                              </span>
-                            )}
-                            {openWindowIds.has(note.id) && (
-                              <div className="w-1 h-1 rounded-full bg-primary/40 mt-1" title={t('notes.openInWindow')} />
-                            )}
-                          </div>
-                        </div>
-                        
-                        {showNotePreviews && note.content && (
-                          <p className="text-xs text-muted-foreground/50 mt-1.5 line-clamp-1 leading-relaxed">
-                            {getFirstLine(note.content)}
-                          </p>
-                        )}
-                      </div>
-                      
-                      {/* Actions */}
-                      <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteNote(note.id);
-                          }}
-                          className="text-muted-foreground/40 hover:text-red-400 p-1 rounded transition-colors"
-                          title={t('notes.delete')}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M3 6h18"/>
-                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/>
-                            <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={filteredNotes.map(note => note.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="flex flex-col">
+                    {filteredNotes.map((note, index) => (
+                      <SortableNoteItem
+                        key={note.id}
+                        note={note}
+                        index={index}
+                        isSelected={selectedNoteId === note.id}
+                        isOpenInWindow={openWindowIds.has(note.id)}
+                        showNotePreviews={showNotePreviews}
+                        shortcutKey={getShortcutKey(index)}
+                        onSelect={onSelectNote}
+                        onDelete={onDeleteNote}
+                        onContextMenu={onShowContextMenu}
+                        onStartDrag={onStartDrag}
+                        getFirstLine={getFirstLine}
+                      />
+                    ))}
                   </div>
-                );
-                })}
+                </SortableContext>
+              </DndContext>
+            )}
+
+            {/* Reordering indicator */}
+            {isReordering && (
+              <div className="px-4 py-2 text-center text-muted-foreground/60 text-xs">
+                Saving order...
               </div>
             )}
           </div>

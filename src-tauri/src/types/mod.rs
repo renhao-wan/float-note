@@ -3,3 +3,4 @@ pub mod note;
 pub mod config;
 pub mod window;
 pub mod workspace;
+pub mod trash;

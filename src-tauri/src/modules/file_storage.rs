@@ -203,9 +203,9 @@ impl FileStorageManager {
         };
         
         // Get timestamps and metadata
-        let (created_at, updated_at, position) = if let Some(fm) = frontmatter_data {
+        let (created_at, updated_at, position, tags) = if let Some(fm) = frontmatter_data {
             // Use frontmatter data for migration
-            (fm.created_at, fm.updated_at, fm.position)
+            (fm.created_at, fm.updated_at, fm.position, fm.tags)
         } else {
             // For new files without frontmatter, use file metadata
             let metadata = fs::metadata(path).ok();
@@ -216,7 +216,7 @@ impl FileStorageManager {
                 .flatten()
                 .unwrap_or_else(chrono::Utc::now)
                 .to_rfc3339();
-            (modified.clone(), modified, None)
+            (modified.clone(), modified, None, None)
         };
 
         Ok(Note {
@@ -226,6 +226,7 @@ impl FileStorageManager {
             created_at,
             updated_at,
             position,
+            tags,
         })
     }
     
@@ -241,6 +242,7 @@ impl FileStorageManager {
             created_at: note.created_at.clone(),
             updated_at: note.updated_at.clone(),
             position: note.position,
+            tags: note.tags.clone(),
         };
 
         let frontmatter_yaml = serde_yaml::to_string(&frontmatter)
