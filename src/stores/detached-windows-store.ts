@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { invoke } from '@tauri-apps/api/core';
 import { DetachedWindow, DetachedWindowsAPI } from '../services/detached-windows-api';
-import { WINDOW_LABEL_PREFIX } from '../types/window';
+import { WINDOW_LABEL_PREFIX } from '../types/window-constants';
 
 /** 窗口位置信息 */
 interface WindowPosition {
