@@ -326,7 +326,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     }
   }, []);
 
-  // Delete a note
+  // Delete a note (move to trash)
   const deleteNote = useCallback(async (noteId: string) => {
     try {
       // Use notesRef to avoid dependency on notes array
@@ -337,7 +337,8 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         ? remainingNotes[Math.min(currentIndex, remainingNotes.length - 1)]
         : null;
 
-      await invoke('delete_note', { id: noteId });
+      // Move to trash instead of permanent delete
+      await invoke('move_to_trash', { noteId });
 
       // 更新笔记列表
       setNotes(remainingNotes);
@@ -349,7 +350,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         selectNote(nextNote?.id || null);
       }
     } catch (error) {
-      console.error('[FLOATNOTE] Failed to delete note:', error);
+      console.error('[FLOATNOTE] Failed to move note to trash:', error);
     }
   }, [selectNote]);
 
@@ -357,7 +358,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   const updateNoteTags = useCallback(async (noteId: string, tags: string[]): Promise<void> => {
     try {
       const updatedNote = await invoke<Note>('update_note_tags', {
-        request: { noteId, tags }
+        request: { note_id: noteId, tags }
       });
 
       // Update local state

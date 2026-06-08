@@ -4,6 +4,7 @@ import { Note } from '../../types';
 import { useConfigStore } from '../../stores/config-store';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
 import { TitleEditor } from './TitleEditor';
+import { NoteTagSelector } from '../tags/NoteTagSelector';
 
 interface SaveStatus {
   isSaving: boolean;
@@ -33,6 +34,7 @@ interface EditorAreaProps {
   onTitleChange?: (newTitle: string) => Promise<boolean>;
   onSave?: () => void;
   onPreviewToggle: () => void;
+  onTagsChange?: (noteId: string, tags: string[]) => Promise<void>;
 }
 
 export function EditorArea({
@@ -47,7 +49,8 @@ export function EditorArea({
   onContentChange,
   onTitleChange,
   onSave,
-  onPreviewToggle
+  onPreviewToggle,
+  onTagsChange
 }: EditorAreaProps) {
   const { t } = useTranslation();
   const { config } = useConfigStore();
@@ -76,47 +79,57 @@ export function EditorArea({
 
   // Header component with mode toggle
   const renderHeader = () => (
-    <div className="flex items-center justify-between px-5 py-3 border-b border-border/15 relative">
-      <div className="flex-1 min-w-0 mr-4">
-        <TitleEditor
-          title={selectedNote?.title || ''}
-          onTitleChange={handleTitleChange}
-          placeholder="Untitled"
-          className="text-lg font-medium text-foreground/85 truncate"
-        />
+    <div className="px-5 py-3 border-b border-border/15">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex-1 min-w-0 mr-4">
+          <TitleEditor
+            title={selectedNote?.title || ''}
+            onTitleChange={handleTitleChange}
+            placeholder="Untitled"
+            className="text-lg font-medium text-foreground/85 truncate"
+          />
+        </div>
+
+        {/* Mode toggle */}
+        <div className="flex items-center bg-card/30 border border-border/20 rounded-lg p-0.5 flex-shrink-0">
+          <button
+            onClick={() => onPreviewToggle()}
+            className={`px-2.5 py-1 flex items-center gap-1.5 rounded-md transition-all duration-150 text-xs font-medium ${
+              !isPreviewMode
+                ? 'bg-primary/15 text-primary shadow-sm'
+                : 'text-muted-foreground/50 hover:text-foreground/70'
+            }`}
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            {t('editor.edit')}
+          </button>
+          <button
+            onClick={() => onPreviewToggle()}
+            className={`px-2.5 py-1 flex items-center gap-1.5 rounded-md transition-all duration-150 text-xs font-medium ${
+              isPreviewMode
+                ? 'bg-primary/15 text-primary shadow-sm'
+                : 'text-muted-foreground/50 hover:text-foreground/70'
+            }`}
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            {t('editor.preview')}
+          </button>
+        </div>
       </div>
 
-      {/* Mode toggle */}
-      <div className="flex items-center bg-card/30 border border-border/20 rounded-lg p-0.5 flex-shrink-0">
-        <button
-          onClick={() => onPreviewToggle()}
-          className={`px-2.5 py-1 flex items-center gap-1.5 rounded-md transition-all duration-150 text-xs font-medium ${
-            !isPreviewMode
-              ? 'bg-primary/15 text-primary shadow-sm'
-              : 'text-muted-foreground/50 hover:text-foreground/70'
-          }`}
-        >
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-            <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-          </svg>
-          {t('editor.edit')}
-        </button>
-        <button
-          onClick={() => onPreviewToggle()}
-          className={`px-2.5 py-1 flex items-center gap-1.5 rounded-md transition-all duration-150 text-xs font-medium ${
-            isPreviewMode
-              ? 'bg-primary/15 text-primary shadow-sm'
-              : 'text-muted-foreground/50 hover:text-foreground/70'
-          }`}
-        >
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-            <circle cx="12" cy="12" r="3"/>
-          </svg>
-          {t('editor.preview')}
-        </button>
-      </div>
+      {/* Tag selector */}
+      {selectedNote && onTagsChange && (
+        <NoteTagSelector
+          note={selectedNote}
+          onTagsChange={onTagsChange}
+        />
+      )}
     </div>
   );
 

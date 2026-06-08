@@ -38,6 +38,9 @@ import {
 import { getThemeById } from './types';
 import { getWordCount } from './lib/utils';
 import { getCenterPosition } from './utils/window-positioning';
+import { TrashPanel } from './components/trash';
+import { TagPanel } from './components/tags';
+import type { ViewType } from './components/layout/NavigationSidebar';
 
 
 function App() {
@@ -45,8 +48,9 @@ function App() {
   const { config } = useConfigStore();
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isPreviewMode, setIsPreviewMode] = useState(false); // Start in edit mode
-  const [currentView, setCurrentView] = useState<'notes' | 'settings'>('notes');
+  const [currentView, setCurrentView] = useState<ViewType>('notes');
   const [selectedSettingsSection, setSelectedSettingsSection] = useState<'general' | 'appearance' | 'editor'>('general');
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   // 同步语言设置
   useEffect(() => {
@@ -105,6 +109,7 @@ function App() {
     deleteNote,
     renameNote,
     updateNoteTags: _updateNoteTags,
+    loadNotes,
     setCurrentContent,
     setNotes,
   } = useNoteManagement({
@@ -166,6 +171,24 @@ function App() {
     }
   }, [currentView, sidebarVisible]);
 
+  const handleTagsClick = useCallback(() => {
+    if (currentView === 'tags') {
+      setSidebarVisible(!sidebarVisible);
+    } else {
+      setCurrentView('tags');
+      setSidebarVisible(true);
+    }
+  }, [currentView, sidebarVisible]);
+
+  const handleTrashClick = useCallback(() => {
+    if (currentView === 'trash') {
+      setSidebarVisible(!sidebarVisible);
+    } else {
+      setCurrentView('trash');
+      setSidebarVisible(true);
+    }
+  }, [currentView, sidebarVisible]);
+
   const handleSettingsClick = useCallback(() => {
     if (currentView === 'settings') {
       setSidebarVisible(!sidebarVisible);
@@ -220,9 +243,11 @@ function App() {
             currentView={currentView}
             sidebarVisible={sidebarVisible}
             onNotesClick={handleNotesClick}
+            onTagsClick={handleTagsClick}
+            onTrashClick={handleTrashClick}
             onSettingsClick={handleSettingsClick}
           />
-        {/* Main content area (notes or settings) */}
+        {/* Main content area (notes, tags, trash, or settings) */}
         <div className="flex-1 flex flex-col bg-background min-h-0 overflow-hidden">
           {currentView === 'notes' ? (
             <div className="flex-1 flex min-h-0 overflow-hidden">
@@ -278,6 +303,25 @@ function App() {
                 }}
                 onSave={saveNoteImmediately}
                 onPreviewToggle={() => setIsPreviewMode(!isPreviewMode)}
+                onTagsChange={_updateNoteTags}
+              />
+            </div>
+          ) : currentView === 'tags' ? (
+            /* Tags view - Tag list | Notes by tag | Preview */
+            <div className="flex-1 flex min-h-0 overflow-hidden">
+              <TagPanel
+                selectedTag={selectedTag}
+                onTagSelect={setSelectedTag}
+                notes={notes}
+              />
+            </div>
+          ) : currentView === 'trash' ? (
+            /* Trash view */
+            <div className="flex-1 flex min-h-0 overflow-hidden">
+              <TrashPanel
+                onNoteRestored={() => {
+                  loadNotes();
+                }}
               />
             </div>
           ) : (
@@ -288,7 +332,7 @@ function App() {
                 selectedSection={selectedSettingsSection}
                 onSectionChange={setSelectedSettingsSection}
               />
-              
+
               {/* Settings content area */}
               <div className="flex-1 flex flex-col bg-background min-h-0 overflow-hidden">
                 <SettingsPanel selectedSection={selectedSettingsSection} />

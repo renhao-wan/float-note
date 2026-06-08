@@ -95,7 +95,7 @@ export const useTrashStore = create<TrashState>((set, get) => ({
       await trashApi.emptyTrash();
       set({
         trashedNotes: [],
-        trashStats: { totalCount: 0, totalSize: 0 },
+        trashStats: { total_count: 0, total_size: 0 },
         isLoading: false,
       });
     } catch (error) {

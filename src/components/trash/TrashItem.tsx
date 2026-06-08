@@ -4,16 +4,18 @@ import { markdownToPlainText, truncateText } from '../../lib/utils';
 
 interface TrashItemProps {
   trashedNote: TrashedNote;
+  isSelected?: boolean;
+  onSelect?: (noteId: string) => void;
   onRestore: (noteId: string) => void;
   onPermanentDelete: (noteId: string) => void;
 }
 
-export function TrashItem({ trashedNote, onRestore, onPermanentDelete }: TrashItemProps) {
+export function TrashItem({ trashedNote, isSelected, onSelect, onRestore, onPermanentDelete }: TrashItemProps) {
   const { t } = useTranslation();
-  const { note, deletedAt } = trashedNote;
+  const { note, deleted_at } = trashedNote;
 
   // Format deletion date
-  const deletedDate = new Date(deletedAt).toLocaleDateString(undefined, {
+  const deletedDate = new Date(deleted_at).toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -24,11 +26,20 @@ export function TrashItem({ trashedNote, onRestore, onPermanentDelete }: TrashIt
   const preview = truncateText(plainText, 80);
 
   return (
-    <div className="group p-3 hover:bg-primary/5 rounded-lg transition-colors">
+    <div
+      className={`group p-3 rounded-lg transition-colors cursor-pointer ${
+        isSelected
+          ? 'bg-primary/10 border-l-2 border-l-primary'
+          : 'hover:bg-primary/5 border-l-2 border-l-transparent'
+      }`}
+      onClick={() => onSelect?.(note.id)}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           {/* Title */}
-          <h4 className="text-sm font-medium text-foreground/80 truncate">
+          <h4 className={`text-sm font-medium truncate ${
+            isSelected ? 'text-primary' : 'text-foreground/80'
+          }`}>
             {note.title || 'Untitled'}
           </h4>
 
@@ -53,7 +64,10 @@ export function TrashItem({ trashedNote, onRestore, onPermanentDelete }: TrashIt
         {/* Actions */}
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            onClick={() => onRestore(note.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onRestore(note.id);
+            }}
             className="p-1.5 text-muted-foreground/60 hover:text-green-500 hover:bg-green-500/10 rounded transition-colors"
             title={t('trash.restore')}
           >
@@ -63,7 +77,10 @@ export function TrashItem({ trashedNote, onRestore, onPermanentDelete }: TrashIt
             </svg>
           </button>
           <button
-            onClick={() => onPermanentDelete(note.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onPermanentDelete(note.id);
+            }}
             className="p-1.5 text-muted-foreground/60 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors"
             title={t('trash.permanentDelete')}
           >

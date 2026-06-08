@@ -7,7 +7,11 @@
     "settings": "Settings",
     "browse": "Browse",
     "set": "Set",
-    "current": "Current"
+    "current": "Current",
+    "create": "Create",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete"
   },
   "settings": {
     "general": {
@@ -130,7 +134,9 @@
     "delete": "Delete Note",
     "noNotes": "No notes yet",
     "noNotesDescription": "Click \"New Note\" to get started",
-    "openInWindow": "Open in window"
+    "openInWindow": "Open in window",
+    "searchHint": "Try different search terms",
+    "notesCount": "{{count}} notes"
   },
   "titlebar": {
     "title": "FloatNote",
@@ -161,12 +167,17 @@
     "previewMode": "Preview mode",
     "placeholder": "Start writing...",
     "errorSaving": "Error saving",
-    "selectNote": "Select a note to start editing"
+    "selectNote": "Select a note to start editing",
+    "emptyContent": "(Empty content)"
   },
   "sidebar": {
     "notes": "Notes",
+    "tags": "Tags",
+    "trash": "Trash",
     "settings": "Settings",
     "hideNotes": "Hide notes",
+    "hideTags": "Hide tags",
+    "hideTrash": "Hide trash",
     "hideSettings": "Hide settings"
   },
   "commandPalette": {
@@ -189,5 +200,37 @@
     "reloadNotesSuccess": "Successfully loaded {{count}} notes",
     "reloadNotesFailed": "Failed to reload notes: {{error}}",
     "openDirectoryFailed": "Failed to open directory: {{error}}"
+  },
+  "tags": {
+    "allNotes": "All Notes",
+    "noTags": "No tags yet",
+    "addTag": "Add tag",
+    "tagName": "Tag name",
+    "createTag": "Create tag",
+    "tagExists": "Tag already exists",
+    "tagCreated": "Tag created",
+    "createFailed": "Failed to create tag",
+    "tagDeleted": "Tag deleted",
+    "deleteFailed": "Failed to delete tag",
+    "selectTag": "Select a tag to view notes",
+    "selectNote": "Select a note to preview"
+  },
+  "trash": {
+    "empty": "Trash is empty",
+    "emptyDescription": "Deleted notes will appear here",
+    "restore": "Restore",
+    "permanentDelete": "Permanently delete",
+    "emptyTrash": "Empty trash",
+    "notesCount": "{{count}} notes",
+    "deletedAt": "Deleted at",
+    "confirmPermanentDelete": "Are you sure you want to permanently delete this note? This action cannot be undone.",
+    "confirmEmptyTrash": "Are you sure you want to empty the trash? All notes will be permanently deleted.",
+    "restoreSuccess": "Note restored",
+    "restoreFailed": "Failed to restore note",
+    "permanentDeleteSuccess": "Note permanently deleted",
+    "permanentDeleteFailed": "Failed to permanently delete",
+    "emptyTrashSuccess": "Trash emptied",
+    "emptyTrashFailed": "Failed to empty trash",
+    "selectNote": "Select a note to view details"
   }
 }

@@ -1,10 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { getModifierSymbol } from '../../lib/platform';
 
+export type ViewType = 'notes' | 'tags' | 'trash' | 'settings';
+
 interface NavigationSidebarProps {
-  currentView: 'notes' | 'settings';
+  currentView: ViewType;
   sidebarVisible: boolean;
   onNotesClick: () => void;
+  onTagsClick: () => void;
+  onTrashClick: () => void;
   onSettingsClick: () => void;
 }
 
@@ -12,6 +16,8 @@ export function NavigationSidebar({
   currentView,
   sidebarVisible,
   onNotesClick,
+  onTagsClick,
+  onTrashClick,
   onSettingsClick
 }: NavigationSidebarProps) {
   const { t } = useTranslation();
@@ -34,6 +40,39 @@ export function NavigationSidebar({
             <line x1="16" y1="13" x2="8" y2="13"/>
             <line x1="16" y1="17" x2="8" y2="17"/>
             <line x1="10" y1="9" x2="8" y2="9"/>
+          </svg>
+        </button>
+
+        {/* Tags view icon */}
+        <button
+          onClick={onTagsClick}
+          className={`w-6 h-6 flex items-center justify-center m-0.5 rounded-md transition-all duration-200 ${
+            currentView === 'tags'
+              ? 'bg-primary text-primary-foreground shadow-glow'
+              : 'text-muted-foreground hover:text-primary hover:bg-primary/15'
+          }`}
+          title={sidebarVisible && currentView === 'tags' ? t('sidebar.hideTags') : t('sidebar.tags')}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+            <line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+        </button>
+
+        {/* Trash view icon */}
+        <button
+          onClick={onTrashClick}
+          className={`w-6 h-6 flex items-center justify-center m-0.5 rounded-md transition-all duration-200 ${
+            currentView === 'trash'
+              ? 'bg-primary text-primary-foreground shadow-glow'
+              : 'text-muted-foreground hover:text-primary hover:bg-primary/15'
+          }`}
+          title={sidebarVisible && currentView === 'trash' ? t('sidebar.hideTrash') : t('sidebar.trash')}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M3 6h18"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
           </svg>
         </button>
       </div>

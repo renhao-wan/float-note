@@ -21,6 +21,7 @@ import { Note } from '../../types';
 import { getModifierSymbol } from '../../lib/platform';
 import { SortableNoteItem } from './SortableNoteItem';
 import { notesApi } from '../../services/tauri-api';
+import { useTagsStore } from '../../stores/tags-store';
 
 interface NotesPanelProps {
   sidebarVisible: boolean;
@@ -28,6 +29,9 @@ interface NotesPanelProps {
   selectedNoteId: string | null;
   loading: boolean;
   showNotePreviews?: boolean;
+  showTagFilter?: boolean;
+  selectedTag?: string | null;
+  onTagSelect?: (tagName: string | null) => void;
   onCreateNewNote: () => void;
   onSelectNote: (noteId: string) => void;
   onDeleteNote: (noteId: string) => void;
@@ -43,6 +47,9 @@ export function NotesPanel({
   selectedNoteId,
   loading,
   showNotePreviews,
+  showTagFilter = false,
+  selectedTag = null,
+  onTagSelect,
   onCreateNewNote,
   onSelectNote,
   onDeleteNote,
@@ -56,6 +63,14 @@ export function NotesPanel({
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isReordering, setIsReordering] = useState(false);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const { tags, loadTags } = useTagsStore();
+
+  // Load tags if tag filter is enabled
+  useEffect(() => {
+    if (showTagFilter) {
+      loadTags();
+    }
+  }, [showTagFilter, loadTags]);
 
   // Drag and drop sensors
   const sensors = useSensors(
@@ -235,6 +250,35 @@ export function NotesPanel({
                 </button>
               )}
             </div>
+
+            {/* Tag filter */}
+            {showTagFilter && tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                <button
+                  onClick={() => onTagSelect?.(null)}
+                  className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
+                    selectedTag === null
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background/60 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('tags.allNotes')}
+                </button>
+                {tags.map((tag) => (
+                  <button
+                    key={tag.name}
+                    onClick={() => onTagSelect?.(tag.name === selectedTag ? null : tag.name)}
+                    className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
+                      selectedTag === tag.name
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-background/60 text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {tag.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Notes List */}

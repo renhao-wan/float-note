@@ -118,9 +118,10 @@ export function NoteTagSelector({ note, onTagsChange }: NoteTagSelectorProps) {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               onBlur={() => {
-                if (!inputValue) {
-                  setIsEditing(false);
-                }
+                // Clear input and exit editing when focus is lost
+                setInputValue('');
+                setSuggestions([]);
+                setIsEditing(false);
               }}
               placeholder={t('tags.addTag')}
               className="text-[10px] px-1.5 py-0.5 bg-background/60 border border-border/30 rounded-full outline-none focus:border-primary/40 w-20 font-mono"

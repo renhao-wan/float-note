@@ -2,11 +2,11 @@ import { Note } from './note';
 
 export interface TrashedNote {
   note: Note;
-  deletedAt: string;
-  originalPath: string;
+  deleted_at: string;
+  original_path: string;
 }
 
 export interface TrashStats {
-  totalCount: number;
-  totalSize: number;
+  total_count: number;
+  total_size: number;
 }
