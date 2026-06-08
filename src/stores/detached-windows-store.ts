@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { invoke } from '@tauri-apps/api/core';
 import { DetachedWindow, DetachedWindowsAPI } from '../services/detached-windows-api';
-import { WINDOW_LABEL_PREFIX } from '../types/window-constants';
 
 /** 窗口位置信息 */
 interface WindowPosition {
@@ -191,7 +190,7 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
 
   // 快速移动窗口（fire-and-forget，用于拖拽场景）
   moveWindow: (noteId: string, x: number, y: number): void => {
-    const { windowPositions } = get();
+    const { windowPositions, windows } = get();
     const current = windowPositions[noteId];
 
     if (current) {
@@ -202,17 +201,21 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
         }
       });
 
-      invoke('update_detached_window_position', {
-        windowLabel: `${WINDOW_LABEL_PREFIX}${noteId}`,
-        x,
-        y
-      }).catch(() => {});
+      // 使用实际的窗口标签（可能是 note- 或 hybrid-drag-）
+      const window = windows.find(w => w.note_id === noteId);
+      if (window) {
+        invoke('update_detached_window_position', {
+          windowLabel: window.window_label,
+          x,
+          y
+        }).catch(() => {});
+      }
     }
   },
 
   // 快速调整窗口大小（fire-and-forget，用于拖拽场景）
   resizeWindow: (noteId: string, width: number, height: number): void => {
-    const { windowPositions } = get();
+    const { windowPositions, windows } = get();
     const current = windowPositions[noteId];
 
     if (current) {
@@ -223,11 +226,15 @@ export const useDetachedWindowsStore = create<DetachedWindowsState>((set, get) =
         }
       });
 
-      invoke('update_detached_window_size', {
-        windowLabel: `${WINDOW_LABEL_PREFIX}${noteId}`,
-        width,
-        height
-      }).catch(() => {});
+      // 使用实际的窗口标签（可能是 note- 或 hybrid-drag-）
+      const window = windows.find(w => w.note_id === noteId);
+      if (window) {
+        invoke('update_detached_window_size', {
+          windowLabel: window.window_label,
+          width,
+          height
+        }).catch(() => {});
+      }
     }
   },
 
