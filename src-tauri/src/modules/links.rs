@@ -4,10 +4,9 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use crate::types::link::{NoteLink, Backlink, LinkSuggestion};
-use crate::types::note::Note;
 use crate::NotesState;
 use crate::modules::storage::get_configured_notes_directory;
-use crate::{log_info, log_error};
+use crate::log_info;
 use crate::error::FloatNoteError;
 
 /// Link index stored in .floatnote/links.json

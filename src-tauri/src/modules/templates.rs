@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 use uuid::Uuid;
+use chrono::Datelike;
 
 use crate::types::template::{NoteTemplate, CreateTemplateRequest, CreateNoteFromTemplateRequest};
 use crate::types::note::Note;
@@ -449,7 +450,8 @@ pub async fn create_note_from_template(
     notes_lock.insert(note.id.clone(), note.clone());
 
     // Save to disk
-    let file_storage = FileNotesStorage::new(&config_lock)?;
+    let file_storage = FileNotesStorage::new(&config_lock)
+        .map_err(|e| FloatNoteError::Storage(e))?;
     file_storage.save_note(&note).await
         .map_err(|e| FloatNoteError::Storage(e))?;
 

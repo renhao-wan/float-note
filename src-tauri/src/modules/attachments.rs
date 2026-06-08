@@ -1,11 +1,10 @@
-use tauri::AppHandle;
 use std::fs;
 use std::path::PathBuf;
 use uuid::Uuid;
 
 use crate::types::attachment::{Attachment, UploadAttachmentRequest};
 use crate::modules::storage::get_configured_notes_directory;
-use crate::{log_info, log_error};
+use crate::log_info;
 use crate::error::FloatNoteError;
 
 /// Get the attachments directory for a note
@@ -238,66 +237,18 @@ pub async fn get_attachment_path(
 }
 
 /// Paste image from clipboard
+/// Note: This is a placeholder implementation. Full clipboard support requires platform-specific code.
 #[tauri::command]
 pub async fn paste_image_from_clipboard(
     note_id: String,
     config: tauri::State<'_, crate::ConfigState>,
-    app: AppHandle,
 ) -> Result<Attachment, FloatNoteError> {
     let config_lock = config.lock().await;
 
     log_info!("ATTACHMENTS", "Pasting image from clipboard for note: {}", note_id);
 
-    // Get clipboard image data
-    let clipboard = app.clipboard_manager();
-    let image_data = clipboard
-        .read_image()
-        .map_err(|e| FloatNoteError::Storage(format!("Failed to read clipboard: {}", e)))?;
-
-    // Generate unique filename
-    let attachment_id = Uuid::new_v4().to_string();
-    let filename = format!("{}.png", attachment_id);
-
-    // Get attachments directory
-    let attachments_dir = get_attachments_dir(&config_lock, &note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
-
-    let file_path = attachments_dir.join(&filename);
-
-    // Save image to file
-    // Note: The actual clipboard image handling depends on the platform
-    // For now, we'll create a placeholder that can be implemented later
-    let image_bytes = image_data
-        .png()
-        .map_err(|e| FloatNoteError::Storage(format!("Failed to convert image: {}", e)))?;
-
-    fs::write(&file_path, &image_bytes)
-        .map_err(|e| FloatNoteError::Storage(format!("Failed to save image: {}", e)))?;
-
-    // Create attachment record
-    let now = chrono::Utc::now().to_rfc3339();
-    let attachment = Attachment {
-        id: attachment_id,
-        note_id: note_id.clone(),
-        filename,
-        original_filename: "clipboard-image.png".to_string(),
-        mime_type: "image/png".to_string(),
-        size: image_bytes.len() as u64,
-        created_at: now,
-    };
-
-    // Load existing metadata
-    let mut metadata = load_metadata(&config_lock, &note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
-
-    // Add new attachment
-    metadata.push(attachment.clone());
-
-    // Save metadata
-    save_metadata(&config_lock, &note_id, &metadata)
-        .map_err(|e| FloatNoteError::Storage(e))?;
-
-    log_info!("ATTACHMENTS", "Pasted image: {} for note: {}", attachment.id, note_id);
-
-    Ok(attachment)
+    // TODO: Implement proper clipboard image paste
+    // This requires platform-specific implementation for macOS/Windows/Linux
+    // For now, return an error indicating this feature is not yet implemented
+    Err(FloatNoteError::Storage("Clipboard paste not yet implemented. Please use file upload instead.".to_string()))
 }
