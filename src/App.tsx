@@ -381,6 +381,7 @@ function App() {
                   selectedTemplateId={selectedTemplateForPreview?.id || null}
                   onTemplateSelect={setSelectedTemplateForPreview}
                   onEditingContentChange={setEditingTemplateContent}
+                  onTemplatesChange={setTemplates}
                 />
               </div>
 

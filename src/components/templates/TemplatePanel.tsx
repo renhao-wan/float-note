@@ -9,9 +9,10 @@ interface TemplatePanelProps {
   selectedTemplateId?: string | null;
   onTemplateSelect?: (template: NoteTemplate | null) => void;
   onEditingContentChange?: (content: { name: string; description: string; content: string } | null) => void;
+  onTemplatesChange?: (templates: NoteTemplate[]) => void;
 }
 
-export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTemplateId, onTemplateSelect, onEditingContentChange }: TemplatePanelProps) {
+export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTemplateId, onTemplateSelect, onEditingContentChange, onTemplatesChange }: TemplatePanelProps) {
   const { t } = useTranslation();
   const [templates, setTemplates] = useState<NoteTemplate[]>([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -27,6 +28,7 @@ export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTem
     try {
       const data = await templatesApi.getAllTemplates();
       setTemplates(data);
+      onTemplatesChange?.(data);
     } catch (error) {
       console.error('[FLOATNOTE] Failed to load templates:', error);
     }
