@@ -2,7 +2,6 @@ import React, { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
 import { MarkdownRenderer } from '../common/MarkdownRenderer';
-import { attachmentsApi } from '../../services/attachments-api';
 
 // Convert File to Uint8Array
 async function fileToUint8Array(file: File): Promise<Uint8Array> {
@@ -127,17 +126,11 @@ export function NoteEditor({
           const timestamp = Date.now();
           const tempFilename = `clipboard-${timestamp}.${ext}`;
 
-          // Write to temp directory
-          await writeFile(tempFilename, imageBytes, { baseDir: BaseDirectory.Temp });
-
-          // Upload attachment using the temp file
-          const attachment = await attachmentsApi.uploadAttachment({
-            note_id: _noteId,
-            file_path: tempFilename,
-          });
+          // Write to app local data directory
+          await writeFile(`attachments/${_noteId}/${tempFilename}`, imageBytes, { baseDir: BaseDirectory.AppLocalData });
 
           // Create markdown image reference with relative path
-          const reference = `![${attachment.original_filename}](./attachments/${_noteId}/${attachment.filename})`;
+          const reference = `![${tempFilename}](./attachments/${_noteId}/${tempFilename})`;
 
           // Get current cursor position from the hidden textarea
           const textarea = textareaRef?.current;
