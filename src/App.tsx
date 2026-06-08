@@ -143,10 +143,14 @@ function App() {
     }
   }, [loadNotes, selectNote]);
 
-  // Show template selector or create new note
-  const handleCreateNewNote = useCallback(() => {
-    setShowTemplateSelector(true);
-  }, []);
+  // Create new note directly (without template selector)
+  const handleCreateNewNote = useCallback(async () => {
+    try {
+      await createNewNote();
+    } catch (error) {
+      console.error('[FLOATNOTE] Failed to create new note:', error);
+    }
+  }, [createNewNote]);
 
   // Drag-to-detach functionality - stable callback to prevent re-renders
   const onDropCallback = useCallback(async (noteId: string, x: number, y: number) => {
