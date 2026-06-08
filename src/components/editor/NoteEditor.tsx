@@ -2,15 +2,12 @@ import React, { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
 import { MarkdownRenderer } from '../common/MarkdownRenderer';
+import { attachmentsApi } from '../../services/attachments-api';
 
-// Convert clipboard image to base64 data URL
-function clipboardImageToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+// Convert File to Uint8Array
+async function fileToUint8Array(file: File): Promise<Uint8Array> {
+  const arrayBuffer = await file.arrayBuffer();
+  return new Uint8Array(arrayBuffer);
 }
 
 // Shared utility function for paper styles
@@ -110,6 +107,8 @@ export function NoteEditor({
 
   // Handle image paste
   const handlePaste = useCallback(async (e: React.ClipboardEvent) => {
+    if (!_noteId) return;
+
     const items = e.clipboardData?.items;
     if (!items) return;
 
@@ -121,12 +120,24 @@ export function NoteEditor({
         if (!file) continue;
 
         try {
-          // Convert to base64
-          const dataUrl = await clipboardImageToBase64(file);
-
-          // Create markdown image reference
+          // Save to temp file using Tauri fs API
+          const { writeFile, BaseDirectory } = await import('@tauri-apps/plugin-fs');
+          const imageBytes = await fileToUint8Array(file);
+          const ext = file.name.split('.').pop() || 'png';
           const timestamp = Date.now();
-          const reference = `![pasted-image-${timestamp}](${dataUrl})`;
+          const tempFilename = `clipboard-${timestamp}.${ext}`;
+
+          // Write to temp directory
+          await writeFile(tempFilename, imageBytes, { baseDir: BaseDirectory.Temp });
+
+          // Upload attachment using the temp file
+          const attachment = await attachmentsApi.uploadAttachment({
+            note_id: _noteId,
+            file_path: tempFilename,
+          });
+
+          // Create markdown image reference with relative path
+          const reference = `![${attachment.original_filename}](./attachments/${_noteId}/${attachment.filename})`;
 
           // Get current cursor position from the hidden textarea
           const textarea = textareaRef?.current;
@@ -146,7 +157,7 @@ export function NoteEditor({
         break;
       }
     }
-  }, [content, onContentChange, textareaRef]);
+  }, [_noteId, content, onContentChange, textareaRef]);
 
   // Shared paper style logic
   const paperStyleClass = getPaperStyleClass(config.notePaperStyle);
