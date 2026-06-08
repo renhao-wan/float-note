@@ -395,17 +395,9 @@ function App() {
                           {selectedTemplateForPreview.description}
                         </p>
                       )}
-                      <div className="flex items-center gap-2 mt-3">
-                        <button
-                          onClick={() => handleCreateFromTemplate(selectedTemplateForPreview)}
-                          className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                        >
-                          {t('templates.useTemplate')}
-                        </button>
-                        <span className="text-xs text-muted-foreground/50 font-mono">
-                          {selectedTemplateForPreview.is_builtin ? t('templates.builtin') : t('templates.custom')}
-                        </span>
-                      </div>
+                      <span className="text-xs text-muted-foreground/50 font-mono mt-2 inline-block">
+                        {selectedTemplateForPreview.is_builtin ? t('templates.builtin') : t('templates.custom')}
+                      </span>
                     </div>
 
                     {/* Template content preview */}
