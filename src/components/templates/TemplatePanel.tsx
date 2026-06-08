@@ -82,8 +82,9 @@ export function TemplatePanel({ onSelectTemplate, onCreateEmpty }: TemplatePanel
         toast.success(t('templates.createSuccess'));
       }
 
-      // Reload templates
-      await loadTemplates();
+      // Reload templates and reset form
+      const data = await templatesApi.getAllTemplates();
+      setTemplates(data);
       resetForm();
     } catch (error) {
       console.error('[FLOATNOTE] Failed to save template:', error);
@@ -100,7 +101,9 @@ export function TemplatePanel({ onSelectTemplate, onCreateEmpty }: TemplatePanel
     try {
       await templatesApi.deleteTemplate(template.id);
       toast.success(t('templates.deleteSuccess'));
-      await loadTemplates();
+      // Reload templates
+      const data = await templatesApi.getAllTemplates();
+      setTemplates(data);
     } catch (error) {
       console.error('[FLOATNOTE] Failed to delete template:', error);
       toast.error(t('templates.deleteFailed'));

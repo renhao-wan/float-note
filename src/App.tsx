@@ -157,16 +157,19 @@ function App() {
     }
   }, [loadNotes, selectNote]);
 
-  // Show template selector
-  const handleCreateNewNote = useCallback(() => {
-    setShowTemplateSelector(true);
-  }, []);
+  // Create new note directly
+  const handleCreateNewNote = useCallback(async () => {
+    try {
+      await createNewNote();
+    } catch (error) {
+      console.error('[FLOATNOTE] Failed to create new note:', error);
+    }
+  }, [createNewNote]);
 
-  // Create empty note (without template)
+  // Create empty note (from template panel)
   const handleCreateEmptyNote = useCallback(async () => {
     try {
       await createNewNote();
-      setShowTemplateSelector(false);
     } catch (error) {
       console.error('[FLOATNOTE] Failed to create new note:', error);
     }
@@ -380,12 +383,27 @@ function App() {
               />
             </div>
           ) : currentView === 'templates' ? (
-            /* Templates view */
+            /* Templates view - Template panel + Editor */
             <div className="flex-1 flex min-h-0 overflow-hidden">
-              <TemplatePanel
-                onSelectTemplate={handleCreateFromTemplate}
-                onCreateEmpty={handleCreateEmptyNote}
-              />
+              <div className="w-64 bg-card/80 border-r border-border/30 flex flex-col h-full overflow-hidden">
+                <TemplatePanel
+                  onSelectTemplate={handleCreateFromTemplate}
+                  onCreateEmpty={handleCreateEmptyNote}
+                />
+              </div>
+
+              {/* Editor area for template preview */}
+              <div className="flex-1 flex items-center justify-center bg-background">
+                <div className="text-center text-muted-foreground/30">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mx-auto mb-4">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                  <p className="text-sm">{t('templates.selectTemplate')}</p>
+                </div>
+              </div>
             </div>
           ) : currentView === 'trash' ? (
             /* Trash view */
