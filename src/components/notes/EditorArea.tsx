@@ -5,7 +5,6 @@ import { useConfigStore } from '../../stores/config-store';
 import { NoteEditor, VimModeIndicator, type VimStatus, type EditorConfig } from '../editor/NoteEditor';
 import { TitleEditor } from './TitleEditor';
 import { NoteTagSelector } from '../tags/NoteTagSelector';
-import { AttachmentPanel } from '../attachments/AttachmentPanel';
 import { BacklinksPanel } from '../links/BacklinksPanel';
 
 interface SaveStatus {
@@ -182,28 +181,8 @@ export function EditorArea({
     </div>
   );
 
-  // Handle inserting attachment reference into editor
-  const handleInsertReference = useCallback((reference: string) => {
-    // Insert at current cursor position
-    const textarea = textareaRef.current;
-    if (textarea) {
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const newContent = currentContent.substring(0, start) + reference + currentContent.substring(end);
-      onContentChange(newContent);
-
-      // Set cursor position after inserted text
-      setTimeout(() => {
-        textarea.focus();
-        textarea.setSelectionRange(start + reference.length, start + reference.length);
-      }, 0);
-    }
-  }, [currentContent, onContentChange, textareaRef]);
-
   // Handle navigating to a note from backlinks
   const handleNavigateToNote = useCallback((noteId: string) => {
-    // This will be handled by the parent component
-    // For now, we'll just log it
     console.log('[FLOATNOTE] Navigate to note:', noteId);
   }, []);
 
@@ -226,14 +205,11 @@ export function EditorArea({
             renderHeader={renderHeader}
             renderFooter={renderFooter}
             previewClassName="absolute inset-0 bg-background z-10"
+            noteId={selectedNote.id}
           />
 
-          {/* Bottom panels: Attachments and Backlinks */}
-          <div className="border-t border-border/20 max-h-48 overflow-y-auto">
-            <AttachmentPanel
-              noteId={selectedNote.id}
-              onInsertReference={handleInsertReference}
-            />
+          {/* Backlinks panel */}
+          <div className="border-t border-border/20">
             <BacklinksPanel
               noteId={selectedNote.id}
               onNavigateToNote={handleNavigateToNote}
