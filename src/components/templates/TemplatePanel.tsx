@@ -6,12 +6,11 @@ import { toast } from '../../stores/toast-store';
 
 interface TemplatePanelProps {
   onSelectTemplate: (template: NoteTemplate) => void;
-  onCreateEmpty: () => void;
   selectedTemplateId?: string | null;
   onTemplateSelect?: (template: NoteTemplate | null) => void;
 }
 
-export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, onCreateEmpty, selectedTemplateId, onTemplateSelect }: TemplatePanelProps) {
+export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, selectedTemplateId, onTemplateSelect }: TemplatePanelProps) {
   const { t } = useTranslation();
   const [templates, setTemplates] = useState<NoteTemplate[]>([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -236,28 +235,6 @@ export function TemplatePanel({ onSelectTemplate: _onSelectTemplate, onCreateEmp
         ) : (
           /* Template List */
           <div className="space-y-4">
-            {/* Quick actions */}
-            <div>
-              <button
-                onClick={onCreateEmpty}
-                className={`w-full text-left p-2.5 rounded-lg transition-colors ${
-                  selectedTemplateId === 'blank'
-                    ? 'bg-primary/10 border border-primary/30'
-                    : 'hover:bg-primary/5 border border-transparent'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/60">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14,2 14,8 20,8"/>
-                  </svg>
-                  <span className="text-sm text-foreground/80">
-                    {t('templates.blankNote')}
-                  </span>
-                </div>
-              </button>
-            </div>
-
             {/* Builtin templates */}
             {builtinTemplates.length > 0 && (
               <div>

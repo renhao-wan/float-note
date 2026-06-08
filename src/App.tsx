@@ -163,16 +163,6 @@ function App() {
     setShowTemplateSelector(true);
   }, []);
 
-  // Create empty note (from template selector or template panel)
-  const handleCreateEmptyNote = useCallback(async () => {
-    try {
-      await createNewNote();
-      setShowTemplateSelector(false);
-    } catch (error) {
-      console.error('[FLOATNOTE] Failed to create new note:', error);
-    }
-  }, [createNewNote]);
-
   // Drag-to-detach functionality - stable callback to prevent re-renders
   const onDropCallback = useCallback(async (noteId: string, x: number, y: number) => {
     if (!isWindowOpen(noteId)) {
@@ -386,7 +376,6 @@ function App() {
               <div className="w-64 bg-card/80 border-r border-border/30 flex flex-col h-full overflow-hidden">
                 <TemplatePanel
                   onSelectTemplate={handleCreateFromTemplate}
-                  onCreateEmpty={handleCreateEmptyNote}
                   selectedTemplateId={selectedTemplateForPreview?.id || null}
                   onTemplateSelect={setSelectedTemplateForPreview}
                 />
@@ -486,7 +475,6 @@ function App() {
         <TemplateSelector
           templates={templates}
           onSelect={handleCreateFromTemplate}
-          onCreateEmpty={handleCreateEmptyNote}
           onClose={() => setShowTemplateSelector(false)}
         />
       )}
