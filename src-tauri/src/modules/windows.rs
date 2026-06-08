@@ -708,23 +708,17 @@ pub async fn finalize_hybrid_drag_window(
         let pos = window.outer_position().map_err(|e| e.to_string())?;
         let size = window.inner_size().map_err(|e| e.to_string())?;
 
-        // 将 hybrid 窗口转为普通 detached 窗口（保留原标签）
+        // 将 hybrid 窗口注册为 detached 窗口（不修改任何窗口属性，避免触发重建）
         let detached_window = DetachedWindow {
             note_id: note_id.clone(),
             window_label: window_label.clone(),
             position: (pos.x as f64, pos.y as f64),
             size: (size.width as f64, size.height as f64),
-            always_on_top: false,
+            always_on_top: true,  // 保持与 hybrid 窗口一致
             opacity: 1.0,
             is_shaded: false,
             original_height: None,
         };
-
-        // 更新窗口属性
-        window.set_title(&format!("Note - {}", note_id)).map_err(|e| e.to_string())?;
-        window.set_resizable(true).map_err(|e| e.to_string())?;
-        window.set_decorations(true).map_err(|e| e.to_string())?;
-        window.set_always_on_top(false).map_err(|e| e.to_string())?;
 
         // 保存到状态
         let mut windows_lock = detached_windows.lock().await;
@@ -736,6 +730,7 @@ pub async fn finalize_hybrid_drag_window(
         log_info!("DRAG", "Window finalized with label '{}'", window_label);
         Ok(())
     } else {
+        log_error!("DRAG", "Hybrid window '{}' not found!", window_label);
         Err("Drag window not found".to_string())
     }
 }

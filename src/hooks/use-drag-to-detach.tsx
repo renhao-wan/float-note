@@ -243,28 +243,34 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
     const handleMouseUp = async (e: MouseEvent) => {
       const ref = dragRef.current;
 
+      console.log('[DRAG] handleMouseUp:', {
+        noteId: ref.noteId,
+        realWindowLabel: ref.realWindowLabel,
+        isDragging: ref.isDragging,
+        isOutsideSidebar: ref.isOutsideSidebar,
+      });
+
       if (ref.noteId && ref.realWindowLabel) {
         if (ref.isDragging && ref.isOutsideSidebar) {
-          // Actually dragged and dropped outside sidebar - finalize the window in place
+          console.log('[DRAG] Finalizing window...');
           try {
-            // Force save before detaching to ensure the detached window loads latest content
             if (beforeDetachRef.current) {
               await beforeDetachRef.current();
             }
 
-            await invoke('finalize_hybrid_drag_window', {
+            const result = await invoke('finalize_hybrid_drag_window', {
               windowLabel: ref.realWindowLabel,
               noteId: ref.noteId,
             });
+            console.log('[DRAG] Finalize result:', result);
 
-            // Refresh the store to pick up the newly created detached window
             const { useDetachedWindowsStore } = await import('../stores/detached-windows-store');
             await useDetachedWindowsStore.getState().refreshWindows();
+            console.log('[DRAG] Windows refreshed');
           } catch (error) {
             console.error('[DRAG] Failed to finalize window:', error);
           }
         } else {
-          // Either didn't drag or dropped inside sidebar - close the window
           if (ref.isDragging && !ref.isOutsideSidebar) {
             showDragCancelEffect(e.clientX, e.clientY);
           }
@@ -275,7 +281,6 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
         }
       }
 
-      // Always clean up
       cleanupDrag();
       ref.realWindowLabel = null;
     };

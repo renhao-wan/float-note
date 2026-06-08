@@ -278,23 +278,12 @@ export function DetachedNoteWindow({ noteId }: DetachedNoteWindowProps) {
     // Add event listener with capture phase to ensure we get the event first
     window.addEventListener('keydown', handleKeyDown, true);
 
-    // beforeunload: 只清理本地 store 状态，不调用后端（避免与窗口关闭流程冲突）
-    const handleWindowClose = () => {
-      try {
-        const store = useDetachedWindowsStore.getState();
-        useDetachedWindowsStore.setState({
-          windows: store.windows.filter((w: { note_id: string }) => w.note_id !== noteId),
-        });
-      } catch {
-        // ignore
-      }
-    };
-
-    window.addEventListener('beforeunload', handleWindowClose);
+    // 注意：不使用 beforeunload 清理 store 状态
+    // 原因：在 finalize 流程中，beforeunload 可能误触发，导致窗口从 store 中被移除
+    // 窗口状态的清理由后端 close_detached_window 命令统一处理
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true);
-      window.removeEventListener('beforeunload', handleWindowClose);
     };
   }, [noteId]);
 
