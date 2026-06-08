@@ -1,34 +1,7 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
 import { MarkdownRenderer } from '../common/MarkdownRenderer';
-import { attachmentsApi } from '../../services/attachments-api';
-
-// Save a File object to a temporary file and return the path
-async function saveTempFile(file: File): Promise<string | null> {
-  try {
-    // Convert File to ArrayBuffer
-    const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    // Generate a unique filename
-    const ext = file.name.split('.').pop() || 'png';
-    const timestamp = Date.now();
-    const tempFilename = `clipboard-${timestamp}.${ext}`;
-
-    // Use Tauri's fs API to write to temp directory
-    const { writeFile, BaseDirectory } = await import('@tauri-apps/plugin-fs');
-
-    await writeFile(tempFilename, uint8Array, { baseDir: BaseDirectory.Temp });
-
-    // Return the full path
-    // Note: The actual path resolution happens on the Rust side
-    return tempFilename;
-  } catch (error) {
-    console.error('[FLOATNOTE] Failed to save temp file:', error);
-    return null;
-  }
-}
 
 // Shared utility function for paper styles
 export const getPaperStyleClass = (style?: string) => {
@@ -86,7 +59,6 @@ export interface NoteEditorProps {
   autoFocus?: boolean;
   className?: string;
   textareaRef?: React.RefObject<HTMLTextAreaElement>;
-  noteId?: string; // For image paste functionality
 
   // Render props for custom UI elements
   renderHeader?: () => React.ReactNode;
@@ -109,7 +81,6 @@ export function NoteEditor({
   autoFocus = false,
   className = "",
   textareaRef,
-  noteId,
   renderHeader,
   renderFooter,
   editorClassName = "",
@@ -125,59 +96,11 @@ export function NoteEditor({
     }
   }, [content, textareaRef]);
 
-  // Handle image paste
-  const handlePaste = useCallback(async (e: React.ClipboardEvent) => {
-    if (!noteId) return;
-
-    const items = e.clipboardData?.items;
-    if (!items) return;
-
-    for (const item of Array.from(items)) {
-      if (item.type.startsWith('image/')) {
-        e.preventDefault();
-
-        const file = item.getAsFile();
-        if (!file) continue;
-
-        try {
-          // Save to temporary file and upload
-          // In Tauri, we need to save the file first
-          const tempPath = await saveTempFile(file);
-          if (tempPath) {
-            const attachment = await attachmentsApi.uploadAttachment({
-              note_id: noteId,
-              file_path: tempPath,
-            });
-
-            // Insert markdown reference at cursor position
-            const reference = `![${attachment.original_filename}](./attachments/${noteId}/${attachment.filename})`;
-
-            // Get current cursor position from the hidden textarea
-            const textarea = textareaRef?.current;
-            if (textarea) {
-              const start = textarea.selectionStart;
-              const end = textarea.selectionEnd;
-              const newContent = content.substring(0, start) + reference + content.substring(end);
-              onContentChange(newContent);
-            } else {
-              // Fallback: append to content
-              onContentChange(content + '\n' + reference);
-            }
-          }
-        } catch (error) {
-          console.error('[FLOATNOTE] Failed to paste image:', error);
-        }
-
-        break;
-      }
-    }
-  }, [noteId, content, onContentChange, textareaRef]);
-
   // Shared paper style logic
   const paperStyleClass = getPaperStyleClass(config.notePaperStyle);
 
   return (
-    <div className={`flex flex-col h-full ${className}`} onPaste={handlePaste}>
+    <div className={`flex flex-col h-full ${className}`}>
       {/* Optional custom header */}
       {renderHeader && renderHeader()}
 

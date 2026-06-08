@@ -205,7 +205,6 @@ export function EditorArea({
             renderHeader={renderHeader}
             renderFooter={renderFooter}
             previewClassName="absolute inset-0 bg-background z-10"
-            noteId={selectedNote.id}
           />
 
           {/* Backlinks panel */}
