@@ -700,37 +700,44 @@ pub async fn finalize_hybrid_drag_window(
     window_label: String,
     note_id: String,
     detached_windows: State<'_, DetachedWindowsState>,
-    notes: State<'_, NotesState>,
+    _notes: State<'_, NotesState>,
 ) -> Result<(), String> {
     log_info!("DRAG", "Finalizing hybrid drag window '{}' for note '{}'", window_label, note_id);
 
-    // 获取 hybrid 窗口的位置和大小
-    let (pos, size) = if let Some(window) = app.get_webview_window(&window_label) {
+    if let Some(window) = app.get_webview_window(&window_label) {
         let pos = window.outer_position().map_err(|e| e.to_string())?;
         let size = window.inner_size().map_err(|e| e.to_string())?;
-        // 关闭 hybrid 窗口
-        let _ = window.close();
-        (pos, size)
+
+        // 将 hybrid 窗口转为普通 detached 窗口（保留原标签）
+        let detached_window = DetachedWindow {
+            note_id: note_id.clone(),
+            window_label: window_label.clone(),
+            position: (pos.x as f64, pos.y as f64),
+            size: (size.width as f64, size.height as f64),
+            always_on_top: false,
+            opacity: 1.0,
+            is_shaded: false,
+            original_height: None,
+        };
+
+        // 更新窗口属性
+        window.set_title(&format!("Note - {}", note_id)).map_err(|e| e.to_string())?;
+        window.set_resizable(true).map_err(|e| e.to_string())?;
+        window.set_decorations(true).map_err(|e| e.to_string())?;
+        window.set_always_on_top(false).map_err(|e| e.to_string())?;
+
+        // 保存到状态
+        let mut windows_lock = detached_windows.lock().await;
+        windows_lock.insert(window_label.clone(), detached_window);
+        save_detached_windows_to_disk(&windows_lock).await?;
+        drop(windows_lock);
+
+        app.emit("window-created", note_id.clone()).map_err(|e| e.to_string())?;
+        log_info!("DRAG", "Window finalized with label '{}'", window_label);
+        Ok(())
     } else {
-        return Err("Drag window not found".to_string());
-    };
-
-    // 等待窗口完全关闭
-    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
-
-    // 创建新的 detached 窗口（使用标准 note- 标签）
-    let request = CreateDetachedWindowRequest {
-        note_id: note_id.clone(),
-        x: Some(pos.x as f64),
-        y: Some(pos.y as f64),
-        width: Some(size.width as f64),
-        height: Some(size.height as f64),
-    };
-
-    create_detached_window(request, app.clone(), detached_windows.clone(), notes.clone()).await?;
-
-    log_info!("DRAG", "Window finalized - created new detached window for note '{}'", note_id);
-    Ok(())
+        Err("Drag window not found".to_string())
+    }
 }
 
 #[tauri::command]
