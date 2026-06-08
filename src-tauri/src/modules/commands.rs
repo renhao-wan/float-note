@@ -7,6 +7,12 @@ use crate::modules::file_notes_storage::FileNotesStorage;
 use crate::modules::modified_state_tracker::ModifiedStateTracker;
 use crate::utils::generate_unique_slug;
 use crate::{log_info, log_error, log_debug};
+use crate::error::{FloatNoteError, storage_error};
+
+// ============================================================================
+// 锁顺序约束：notes -> config -> detached_windows
+// 同时获取多个锁时必须按此顺序，否则会导致死锁
+// ============================================================================
 
 /// Helper function to save all notes using FileNotesStorage
 async fn save_all_notes_using_file_storage(
@@ -28,44 +34,40 @@ async fn save_note_using_file_storage(
 
 /// Get the current notes directory path
 #[tauri::command]
-pub async fn get_notes_directory(config: State<'_, ConfigState>) -> Result<String, String> {
+pub async fn get_notes_directory(config: State<'_, ConfigState>) -> Result<String, FloatNoteError> {
     let config_lock = config.lock().await;
-    let notes_dir = crate::modules::storage::get_configured_notes_directory(&config_lock)?;
+    let notes_dir = crate::modules::storage::get_configured_notes_directory(&config_lock)
+        .map_err(storage_error)?;
     Ok(notes_dir.to_string_lossy().to_string())
 }
 
 /// Get all notes, sorted by position (manual ordering)
 #[tauri::command]
-pub async fn get_notes(notes: State<'_, NotesState>) -> Result<Vec<Note>, String> {
+pub async fn get_notes(notes: State<'_, NotesState>) -> Result<Vec<Note>, FloatNoteError> {
     log_info!("GET_NOTES", "🔍 Frontend requested notes list");
-    
+
     let notes_lock = notes.lock().await;
     let mut notes_vec: Vec<Note> = notes_lock.values().cloned().collect();
-    
+
     log_info!("GET_NOTES", "📋 Found {} notes in memory", notes_vec.len());
-    for note in &notes_vec {
-        let id_display = if note.id.len() > 8 { &note.id[..8] } else { &note.id };
-        log_debug!("GET_NOTES", "  - {} ({}) pos={:?}", note.title, id_display, note.position);
-    }
-    
+
     // Sort by position (ascending), with None values at the end
-    // For notes without position, maintain original order (don't sort by updated_at)
     notes_vec.sort_by(|a, b| {
         match (a.position, b.position) {
             (Some(pos_a), Some(pos_b)) => pos_a.cmp(&pos_b),
             (Some(_), None) => std::cmp::Ordering::Less,
             (None, Some(_)) => std::cmp::Ordering::Greater,
-            (None, None) => std::cmp::Ordering::Equal, // Maintain original order
+            (None, None) => std::cmp::Ordering::Equal,
         }
     });
-    
+
     log_info!("GET_NOTES", "✅ Returning {} notes to frontend (sorted by position)", notes_vec.len());
     Ok(notes_vec)
 }
 
 /// Get a specific note by ID
 #[tauri::command]
-pub async fn get_note(id: String, notes: State<'_, NotesState>) -> Result<Option<Note>, String> {
+pub async fn get_note(id: String, notes: State<'_, NotesState>) -> Result<Option<Note>, FloatNoteError> {
     let notes_lock = notes.lock().await;
     Ok(notes_lock.get(&id).cloned())
 }

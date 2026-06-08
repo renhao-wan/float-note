@@ -46,6 +46,13 @@ impl From<FloatNoteError> for String {
     }
 }
 
+// Implement conversion to Tauri's InvokeError for seamless command integration
+impl From<FloatNoteError> for tauri::ipc::InvokeError {
+    fn from(err: FloatNoteError) -> Self {
+        tauri::ipc::InvokeError::from(err.to_string())
+    }
+}
+
 pub type Result<T> = std::result::Result<T, FloatNoteError>;
 pub type FloatNoteResult<T> = Result<T>;
 
@@ -59,4 +66,24 @@ macro_rules! to_string_error {
             msg
         })
     };
+}
+
+/// 辅助函数：创建存储错误
+pub fn storage_error(msg: impl Into<String>) -> FloatNoteError {
+    FloatNoteError::Storage(msg.into())
+}
+
+/// 辅助函数：创建窗口错误
+pub fn window_error(msg: impl Into<String>) -> FloatNoteError {
+    FloatNoteError::Window(msg.into())
+}
+
+/// 辅助函数：创建配置错误
+pub fn config_error(msg: impl Into<String>) -> FloatNoteError {
+    FloatNoteError::Config(msg.into())
+}
+
+/// 辅助函数：创建无效操作错误
+pub fn invalid_operation(msg: impl Into<String>) -> FloatNoteError {
+    FloatNoteError::InvalidOperation(msg.into())
 }

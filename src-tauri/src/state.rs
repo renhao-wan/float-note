@@ -7,7 +7,14 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 /// Consolidated application state using RwLock for better concurrent access
-/// TODO: 迁移到此结构体以替代下方的 type aliases（当前未使用）
+///
+/// # 锁顺序约束
+/// 当需要同时获取多个锁时，必须按以下顺序获取，否则会导致死锁：
+/// 1. notes (NotesState)
+/// 2. config (ConfigState)
+/// 3. detached_windows (DetachedWindowsState)
+///
+/// 当前实现使用独立的 Mutex（见下方 type aliases），未来应迁移到此结构体。
 #[allow(dead_code)]
 pub struct AppState {
     pub notes: Arc<RwLock<HashMap<String, Note>>>,

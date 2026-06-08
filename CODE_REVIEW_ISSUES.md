@@ -116,7 +116,7 @@
   - 文件: `src-tauri/src/modules/commands.rs` 第 290-296 行
   - 详情: 先从内存移除旧 note，再尝试磁盘重命名，失败时旧 note 已丢失
 
-- [ ] **#24** 多函数同时持有 `notes` 和 `config` 两个锁，锁顺序脆弱
+- [x] **#24** 多函数同时持有 `notes` 和 `config` 两个锁，锁顺序脆弱
   - 文件: `src-tauri/src/modules/commands.rs`
   - 详情: 目前获取顺序一致（先 notes 后 config），但未来修改可能引入死锁
   - **重构计划**:
@@ -147,7 +147,7 @@
   - 文件: `src-tauri/src/modules/file_operations.rs` 第 144 行
   - 详情: 来自前端的 `directory_path` 直接用于创建目录和写入文件，无验证
 
-- [ ] **#30** `error.rs` 定义了完善的错误类型但几乎未被使用
+- [x] **#30** `error.rs` 定义了完善的错误类型但几乎未被使用
   - 文件: `src-tauri/src/error.rs`
   - 详情: 所有 Tauri command 都返回 `Result<T, String>`，错误信息丢失上下文
   - **重构计划**:
