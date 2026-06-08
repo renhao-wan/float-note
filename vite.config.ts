@@ -61,9 +61,9 @@ const getDevConfig = () => {
       const devPorts: Record<string, number> = {
         'arach': 5173,
         'claude': 5174,
-        'default': 5175
+        'default': 5174  // 与 tauri.conf.json 的 devUrl 保持一致
       };
-      
+
       port = devPorts[developer] || devPorts.default;
     }
     
