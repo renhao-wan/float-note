@@ -216,8 +216,7 @@ fn is_builtin_template(template_id: &str) -> bool {
 
 /// Get the templates directory path
 fn get_templates_dir(config: &crate::types::config::AppConfig) -> Result<PathBuf, FloatNoteError> {
-    let notes_dir =
-        get_configured_notes_directory(config).map_err(FloatNoteError::Storage)?;
+    let notes_dir = get_configured_notes_directory(config).map_err(FloatNoteError::Storage)?;
     let templates_dir = notes_dir.join(".floatnote").join("templates");
 
     // Create directory if it doesn't exist
@@ -536,8 +535,7 @@ pub async fn create_note_from_template(
     notes_lock.insert(note.id.clone(), note.clone());
 
     // Save to disk
-    let file_storage =
-        FileNotesStorage::new(&config_lock).map_err(FloatNoteError::Storage)?;
+    let file_storage = FileNotesStorage::new(&config_lock).map_err(FloatNoteError::Storage)?;
     file_storage
         .save_note(&note)
         .await

@@ -32,8 +32,7 @@ pub async fn save_spatial_data(note_id: &str, window: &DetachedWindow) -> FloatN
 
     // Load existing spatial data
     let mut spatial_data: HashMap<String, DetachedWindow> = if spatial_file.exists() {
-        let spatial_json =
-            std::fs::read_to_string(&spatial_file).map_err(FloatNoteError::Io)?;
+        let spatial_json = std::fs::read_to_string(&spatial_file).map_err(FloatNoteError::Io)?;
         serde_json::from_str(&spatial_json).map_err(FloatNoteError::Serialization)?
     } else {
         HashMap::new()
@@ -43,8 +42,8 @@ pub async fn save_spatial_data(note_id: &str, window: &DetachedWindow) -> FloatN
     spatial_data.insert(note_id.to_string(), window.clone());
 
     // Save back to disk
-    let spatial_json = serde_json::to_string_pretty(&spatial_data)
-        .map_err(FloatNoteError::Serialization)?;
+    let spatial_json =
+        serde_json::to_string_pretty(&spatial_data).map_err(FloatNoteError::Serialization)?;
 
     std::fs::write(spatial_file, spatial_json).map_err(FloatNoteError::Io)?;
 

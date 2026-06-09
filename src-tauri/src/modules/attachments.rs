@@ -1,7 +1,7 @@
+use base64::Engine;
 use std::fs;
 use std::path::PathBuf;
 use uuid::Uuid;
-use base64::Engine;
 
 use crate::error::FloatNoteError;
 use crate::log_info;
@@ -139,8 +139,8 @@ pub async fn upload_attachment(
     let filename = format!("{}.{}", attachment_id, extension);
 
     // Get attachments directory
-    let attachments_dir = get_attachments_dir(&config_lock, &request.note_id)
-        .map_err(FloatNoteError::Storage)?;
+    let attachments_dir =
+        get_attachments_dir(&config_lock, &request.note_id).map_err(FloatNoteError::Storage)?;
 
     let dest_path = attachments_dir.join(&filename);
 
@@ -168,8 +168,7 @@ pub async fn upload_attachment(
     metadata.push(attachment.clone());
 
     // Save metadata
-    save_metadata(&config_lock, &request.note_id, &metadata)
-        .map_err(FloatNoteError::Storage)?;
+    save_metadata(&config_lock, &request.note_id, &metadata).map_err(FloatNoteError::Storage)?;
 
     log_info!(
         "ATTACHMENTS",
@@ -198,8 +197,7 @@ pub async fn delete_attachment(
     );
 
     // Load metadata
-    let mut metadata =
-        load_metadata(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
+    let mut metadata = load_metadata(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
 
     // Find attachment
     let attachment = metadata
@@ -398,8 +396,7 @@ pub async fn save_clipboard_image(
     };
 
     // Load existing metadata
-    let mut metadata =
-        load_metadata(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
+    let mut metadata = load_metadata(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
 
     // Add new attachment
     metadata.push(attachment);
