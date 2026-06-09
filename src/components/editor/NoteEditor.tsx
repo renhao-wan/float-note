@@ -81,13 +81,13 @@ export function NoteEditor({
   onVimStatusChange,
   placeholder,
   autoFocus = false,
-  className = "",
+  className = '',
   textareaRef,
   noteId: _noteId,
   renderHeader,
   renderFooter,
-  editorClassName = "",
-  previewClassName = ""
+  editorClassName = '',
+  previewClassName = '',
 }: NoteEditorProps) {
   const { t } = useTranslation();
   const resolvedPlaceholder = placeholder ?? t('editor.placeholder');
@@ -100,57 +100,66 @@ export function NoteEditor({
   }, [content, textareaRef]);
 
   // Handle image paste
-  const handlePaste = useCallback(async (e: React.ClipboardEvent) => {
-    if (!_noteId) return;
+  const handlePaste = useCallback(
+    async (e: React.ClipboardEvent) => {
+      if (!_noteId) return;
 
-    const items = e.clipboardData?.items;
-    if (!items) return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
 
-    for (const item of Array.from(items)) {
-      if (item.type.startsWith('image/')) {
-        e.preventDefault();
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
 
-        const file = item.getAsFile();
-        if (!file) continue;
+          const file = item.getAsFile();
+          if (!file) continue;
 
-        try {
-          // Convert image to base64
-          const reader = new FileReader();
-          const base64Data = await new Promise<string>((resolve, reject) => {
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
+          try {
+            // Convert image to base64
+            const reader = new FileReader();
+            const base64Data = await new Promise<string>((resolve, reject) => {
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            });
 
-          // Call Rust command to save image
-          const result = await invoke<{ filename: string }>('save_clipboard_image', {
-            noteId: _noteId,
-            imageData: base64Data,
-            filename: file.name || 'clipboard.png',
-          });
+            // Call Rust command to save image
+            const result = await invoke<{ filename: string }>(
+              'save_clipboard_image',
+              {
+                noteId: _noteId,
+                imageData: base64Data,
+                filename: file.name || 'clipboard.png',
+              }
+            );
 
-          // Create markdown image reference
-          const reference = `![${result.filename}](./attachments/${_noteId}/${result.filename})`;
+            // Create markdown image reference
+            const reference = `![${result.filename}](./attachments/${_noteId}/${result.filename})`;
 
-          // Get current cursor position from the hidden textarea
-          const textarea = textareaRef?.current;
-          if (textarea) {
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const newContent = content.substring(0, start) + reference + content.substring(end);
-            onContentChange(newContent);
-          } else {
-            // Fallback: append to content
-            onContentChange(content + '\n' + reference);
+            // Get current cursor position from the hidden textarea
+            const textarea = textareaRef?.current;
+            if (textarea) {
+              const start = textarea.selectionStart;
+              const end = textarea.selectionEnd;
+              const newContent =
+                content.substring(0, start) +
+                reference +
+                content.substring(end);
+              onContentChange(newContent);
+            } else {
+              // Fallback: append to content
+              onContentChange(content + '\n' + reference);
+            }
+          } catch (error) {
+            console.error('[FLOATNOTE] Failed to paste image:', error);
           }
-        } catch (error) {
-          console.error('[FLOATNOTE] Failed to paste image:', error);
-        }
 
-        break;
+          break;
+        }
       }
-    }
-  }, [_noteId, content, onContentChange, textareaRef]);
+    },
+    [_noteId, content, onContentChange, textareaRef]
+  );
 
   // Shared paper style logic
   const paperStyleClass = getPaperStyleClass(config.notePaperStyle);
@@ -161,11 +170,13 @@ export function NoteEditor({
       {renderHeader && renderHeader()}
 
       {/* Editor/Preview area */}
-      <div className={`flex-1 relative overflow-hidden ${
-        config.backgroundPattern && config.backgroundPattern !== 'none'
-          ? `bg-pattern-${config.backgroundPattern}`
-          : ''
-      } ${paperStyleClass} ${editorClassName}`}>
+      <div
+        className={`flex-1 relative overflow-hidden ${
+          config.backgroundPattern && config.backgroundPattern !== 'none'
+            ? `bg-pattern-${config.backgroundPattern}`
+            : ''
+        } ${paperStyleClass} ${editorClassName}`}
+      >
         {!isPreviewMode ? (
           <>
             <CodeMirrorEditor
@@ -175,7 +186,9 @@ export function NoteEditor({
               placeholder={resolvedPlaceholder}
               vimMode={config.vimMode || false}
               fontSize={config.fontSize}
-              fontFamily={config.editorFontFamily || config.fontFamily || 'system-ui'}
+              fontFamily={
+                config.editorFontFamily || config.fontFamily || 'system-ui'
+              }
               lineHeight={config.lineHeight}
               typewriterMode={config.typewriterMode || false}
               wordWrap={config.wordWrap !== false}
@@ -201,16 +214,18 @@ export function NoteEditor({
             className={`w-full h-full overflow-y-auto scrollbar-hide prose max-w-none content-font cursor-text text-foreground ${paperStyleClass} ${previewClassName}`}
             onDoubleClick={onPreviewToggle}
             title="Double-click to edit"
-            style={{ 
+            style={{
               fontSize: `${config.contentFontSize || config.fontSize || 16}px`,
-              fontFamily: config.previewFontFamily || 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+              fontFamily:
+                config.previewFontFamily ||
+                'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
               lineHeight: config.lineHeight || 1.6,
-              padding: '1.5rem'
+              padding: '1.5rem',
             }}
           />
         )}
       </div>
-      
+
       {/* Optional custom footer */}
       {renderFooter && renderFooter()}
     </div>
@@ -223,23 +238,38 @@ export interface VimModeIndicatorProps {
   className?: string;
 }
 
-export function VimModeIndicator({ vimStatus, className = "" }: VimModeIndicatorProps) {
+export function VimModeIndicator({
+  vimStatus,
+  className = '',
+}: VimModeIndicatorProps) {
   return (
-    <div className={`flex items-center gap-2 px-3 py-1 rounded-md ${
-      vimStatus.mode === 'INSERT' ? 'bg-green-500/10' : 
-      vimStatus.mode === 'VISUAL' ? 'bg-purple-500/10' : 
-      'bg-primary/10'
-    } ${className}`}>
-      <div className={`w-2 h-2 rounded-full ${
-        vimStatus.mode === 'INSERT' ? 'bg-green-500' : 
-        vimStatus.mode === 'VISUAL' ? 'bg-purple-500' : 
-        'bg-primary'
-      }`} />
-      <span className={`text-xs font-mono ${
-        vimStatus.mode === 'INSERT' ? 'text-green-500/70' : 
-        vimStatus.mode === 'VISUAL' ? 'text-purple-500/70' : 
-        'text-primary/70'
-      }`}>
+    <div
+      className={`flex items-center gap-2 px-3 py-1 rounded-md ${
+        vimStatus.mode === 'INSERT'
+          ? 'bg-green-500/10'
+          : vimStatus.mode === 'VISUAL'
+            ? 'bg-purple-500/10'
+            : 'bg-primary/10'
+      } ${className}`}
+    >
+      <div
+        className={`w-2 h-2 rounded-full ${
+          vimStatus.mode === 'INSERT'
+            ? 'bg-green-500'
+            : vimStatus.mode === 'VISUAL'
+              ? 'bg-purple-500'
+              : 'bg-primary'
+        }`}
+      />
+      <span
+        className={`text-xs font-mono ${
+          vimStatus.mode === 'INSERT'
+            ? 'text-green-500/70'
+            : vimStatus.mode === 'VISUAL'
+              ? 'text-purple-500/70'
+              : 'text-primary/70'
+        }`}
+      >
         {vimStatus.mode}
       </span>
     </div>

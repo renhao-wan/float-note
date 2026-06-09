@@ -30,9 +30,12 @@ export class MacOSTransparencyStrategy implements TransparencyStrategy {
    */
   async getOpacity(windowLabel: string): Promise<number> {
     try {
-      const opacity = await invoke<number>('get_detached_window_opacity_macos', {
-        windowLabel,
-      });
+      const opacity = await invoke<number>(
+        'get_detached_window_opacity_macos',
+        {
+          windowLabel,
+        }
+      );
       return opacity;
     } catch (error) {
       console.error('[MACOS_TRANSPARENCY] Failed to get opacity:', error);

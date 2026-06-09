@@ -30,7 +30,8 @@ export const Focus: IconComponent = FocusRaw as unknown as IconComponent;
 export const Keyboard: IconComponent = KeyboardRaw as unknown as IconComponent;
 export const Pin: IconComponent = PinRaw as unknown as IconComponent;
 export const Folder: IconComponent = FolderRaw as unknown as IconComponent;
-export const FolderOpen: IconComponent = FolderOpenRaw as unknown as IconComponent;
+export const FolderOpen: IconComponent =
+  FolderOpenRaw as unknown as IconComponent;
 export const Save: IconComponent = SaveRaw as unknown as IconComponent;
 export const Tag: IconComponent = TagRaw as unknown as IconComponent;
 export const EyeOff: IconComponent = EyeOffRaw as unknown as IconComponent;

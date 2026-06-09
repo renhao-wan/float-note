@@ -53,7 +53,7 @@ export function DragCancelEffect({ x, y, onComplete }: DragCancelEffectProps) {
       <div className="relative w-[60px] h-[60px]">
         {/* Multiple cloud particles for poof effect */}
         {[...Array(8)].map((_, i) => {
-          const angle = (i * 45) * Math.PI / 180;
+          const angle = (i * 45 * Math.PI) / 180;
           const distance = 15;
           return (
             <div
@@ -68,29 +68,37 @@ export function DragCancelEffect({ x, y, onComplete }: DragCancelEffectProps) {
             />
           );
         })}
-        
+
         {/* Center poof */}
-        <div 
+        <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ opacity: opacity * 0.8 }}
         >
           <div className="w-8 h-8 bg-white/15 rounded-full blur-md" />
         </div>
-        
+
         {/* X icon in center */}
-        <div 
+        <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ opacity }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/40">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-white/40"
+          >
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         </div>
       </div>
-      
+
       {/* Tooltip message */}
       {showTooltip && (
-        <div 
+        <div
           className="absolute left-1/2 -translate-x-1/2 -bottom-10 whitespace-nowrap"
           style={{
             opacity: showTooltip ? 1 : 0,

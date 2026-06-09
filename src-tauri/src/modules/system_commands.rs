@@ -38,29 +38,29 @@ pub async fn open_system_settings() -> Result<(), String> {
 #[tauri::command]
 pub async fn open_directory_in_finder(directory_path: String) -> Result<(), String> {
     log_info!("FINDER", "Opening directory in Finder: {}", directory_path);
-    
+
     #[cfg(target_os = "macos")]
     {
         std::process::Command::new("open")
             .arg(&directory_path)
             .spawn()
             .map_err(|e| format!("Failed to open directory in Finder: {}", e))?;
-        
+
         log_info!("FINDER", "Successfully opened directory in Finder");
         Ok(())
     }
-    
+
     #[cfg(target_os = "windows")]
     {
         std::process::Command::new("explorer")
             .arg(&directory_path)
             .spawn()
             .map_err(|e| format!("Failed to open directory in Explorer: {}", e))?;
-        
+
         log_info!("FINDER", "Successfully opened directory in Explorer");
         Ok(())
     }
-    
+
     #[cfg(not(any(target_os = "macos", target_os = "windows")))]
     {
         // Linux and other platforms - try xdg-open
@@ -68,7 +68,7 @@ pub async fn open_directory_in_finder(directory_path: String) -> Result<(), Stri
             .arg(&directory_path)
             .spawn()
             .map_err(|e| format!("Failed to open directory: {}", e))?;
-        
+
         log_info!("FINDER", "Successfully opened directory with xdg-open");
         Ok(())
     }
@@ -76,11 +76,18 @@ pub async fn open_directory_in_finder(directory_path: String) -> Result<(), Stri
 
 /// Open a native directory picker dialog
 #[tauri::command]
-pub async fn open_directory_dialog(app: AppHandle, initial_dir: Option<String>) -> Result<Option<String>, String> {
-    use tokio::sync::oneshot;
+pub async fn open_directory_dialog(
+    app: AppHandle,
+    initial_dir: Option<String>,
+) -> Result<Option<String>, String> {
     use std::path::PathBuf;
+    use tokio::sync::oneshot;
 
-    log_info!("DIRECTORY", "Opening native directory picker dialog, initial_dir: {:?}", initial_dir);
+    log_info!(
+        "DIRECTORY",
+        "Opening native directory picker dialog, initial_dir: {:?}",
+        initial_dir
+    );
 
     // Use channel for proper async handling
     let (tx, rx) = oneshot::channel();
@@ -109,20 +116,21 @@ pub async fn open_directory_dialog(app: AppHandle, initial_dir: Option<String>) 
 
     // Wait for the dialog result
     match rx.await {
-        Ok(result) => {
-            match result {
-                Some(path) => {
-                    log_info!("DIRECTORY", "Selected directory: {}", path);
-                    Ok(Some(path))
-                },
-                None => {
-                    log_info!("DIRECTORY", "User canceled directory selection");
-                    Ok(None)
-                }
+        Ok(result) => match result {
+            Some(path) => {
+                log_info!("DIRECTORY", "Selected directory: {}", path);
+                Ok(Some(path))
+            }
+            None => {
+                log_info!("DIRECTORY", "User canceled directory selection");
+                Ok(None)
             }
         },
         Err(_) => {
-            log_error!("DIRECTORY", "Dialog callback channel was closed unexpectedly");
+            log_error!(
+                "DIRECTORY",
+                "Dialog callback channel was closed unexpectedly"
+            );
             Err("Dialog was closed unexpectedly".to_string())
         }
     }
@@ -154,20 +162,21 @@ pub async fn pick_file_dialog(app: AppHandle) -> Result<Option<String>, String> 
 
     // Wait for the dialog result
     match rx.await {
-        Ok(result) => {
-            match result {
-                Some(path) => {
-                    log_info!("FILE_PICKER", "Selected file: {}", path);
-                    Ok(Some(path))
-                },
-                None => {
-                    log_info!("FILE_PICKER", "User canceled file selection");
-                    Ok(None)
-                }
+        Ok(result) => match result {
+            Some(path) => {
+                log_info!("FILE_PICKER", "Selected file: {}", path);
+                Ok(Some(path))
+            }
+            None => {
+                log_info!("FILE_PICKER", "User canceled file selection");
+                Ok(None)
             }
         },
         Err(_) => {
-            log_error!("FILE_PICKER", "Dialog callback channel was closed unexpectedly");
+            log_error!(
+                "FILE_PICKER",
+                "Dialog callback channel was closed unexpectedly"
+            );
             Err("Dialog was closed unexpectedly".to_string())
         }
     }

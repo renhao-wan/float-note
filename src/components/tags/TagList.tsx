@@ -56,7 +56,9 @@ export function TagList({ selectedTag, onTagSelect }: TagListProps) {
       {sortedTags.map((tag) => (
         <button
           key={tag.name}
-          onClick={() => onTagSelect(tag.name === selectedTag ? null : tag.name)}
+          onClick={() =>
+            onTagSelect(tag.name === selectedTag ? null : tag.name)
+          }
           className={`w-full px-3 py-1.5 text-left text-xs transition-colors rounded-md ${
             selectedTag === tag.name
               ? 'bg-primary/10 text-primary'
@@ -64,11 +66,7 @@ export function TagList({ selectedTag, onTagSelect }: TagListProps) {
           }`}
         >
           <div className="flex items-center justify-between">
-            <TagBadge
-              name={tag.name}
-              color={tag.color}
-              size="sm"
-            />
+            <TagBadge name={tag.name} color={tag.color} size="sm" />
             <span className="text-muted-foreground/50 text-[10px] font-mono">
               {tag.noteCount}
             </span>

@@ -13,35 +13,54 @@
 
 /* Paper styles for CodeMirror */
 .cm-editor.note-paper-dotted-grid .cm-content {
-  background-image: 
-    radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.04) 1px, transparent 1px);
-  background-size: calc(var(--editor-font-size) * var(--editor-line-height)) calc(var(--editor-font-size) * var(--editor-line-height));
-  background-position: calc(var(--editor-font-size) * var(--editor-line-height) * 0.5) calc(var(--editor-font-size) * var(--editor-line-height) * 0.5);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    hsl(var(--muted-foreground) / 0.04) 1px,
+    transparent 1px
+  );
+  background-size: calc(var(--editor-font-size) * var(--editor-line-height))
+    calc(var(--editor-font-size) * var(--editor-line-height));
+  background-position: calc(
+      var(--editor-font-size) * var(--editor-line-height) * 0.5
+    )
+    calc(var(--editor-font-size) * var(--editor-line-height) * 0.5);
 }
 
 .cm-editor.note-paper-lines .cm-content {
-  background-image: 
-    repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent calc(var(--editor-font-size) * var(--editor-line-height) - 1px),
-      hsl(var(--muted-foreground) / 0.04) calc(var(--editor-font-size) * var(--editor-line-height) - 1px),
-      hsl(var(--muted-foreground) / 0.04) calc(var(--editor-font-size) * var(--editor-line-height))
-    );
-  background-position: 0 calc(var(--editor-font-size) * var(--editor-line-height) * 0.5);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent calc(var(--editor-font-size) * var(--editor-line-height) - 1px),
+    hsl(var(--muted-foreground) / 0.04)
+      calc(var(--editor-font-size) * var(--editor-line-height) - 1px),
+    hsl(var(--muted-foreground) / 0.04)
+      calc(var(--editor-font-size) * var(--editor-line-height))
+  );
+  background-position: 0
+    calc(var(--editor-font-size) * var(--editor-line-height) * 0.5);
 }
 
 .cm-editor.note-paper-ruled .cm-content {
-  background-image: 
-    linear-gradient(to right, hsl(var(--red) / 0.08) 0px, hsl(var(--red) / 0.08) 1px, transparent 1px, transparent 100%),
+  background-image:
+    linear-gradient(
+      to right,
+      hsl(var(--red) / 0.08) 0px,
+      hsl(var(--red) / 0.08) 1px,
+      transparent 1px,
+      transparent 100%
+    ),
     repeating-linear-gradient(
       to bottom,
       transparent,
-      transparent calc(var(--editor-font-size) * var(--editor-line-height) - 1px),
-      hsl(var(--primary) / 0.03) calc(var(--editor-font-size) * var(--editor-line-height) - 1px),
-      hsl(var(--primary) / 0.03) calc(var(--editor-font-size) * var(--editor-line-height))
+      transparent
+        calc(var(--editor-font-size) * var(--editor-line-height) - 1px),
+      hsl(var(--primary) / 0.03)
+        calc(var(--editor-font-size) * var(--editor-line-height) - 1px),
+      hsl(var(--primary) / 0.03)
+        calc(var(--editor-font-size) * var(--editor-line-height))
     );
-  background-position: 60px calc(var(--editor-font-size) * var(--editor-line-height) * 0.5);
+  background-position: 60px
+    calc(var(--editor-font-size) * var(--editor-line-height) * 0.5);
 }
 
 /* =================================================================
@@ -50,22 +69,22 @@
 
 /* Define mode-specific color variables — warm amber palette */
 :root {
-  --cursor-normal: #d4a053;     /* Amber gold for normal mode */
-  --cursor-insert: #5a9e96;     /* Teal for insert mode */
-  --cursor-visual: #7c9a6e;     /* Sage green for visual mode */
-  --cursor-command: #d4a053;    /* Amber for command mode */
-  --cursor-replace: #d45858;    /* Warm coral for replace mode */
-  --cursor-operator: #9e8a6e;   /* Warm taupe for operator pending */
+  --cursor-normal: #d4a053; /* Amber gold for normal mode */
+  --cursor-insert: #5a9e96; /* Teal for insert mode */
+  --cursor-visual: #7c9a6e; /* Sage green for visual mode */
+  --cursor-command: #d4a053; /* Amber for command mode */
+  --cursor-replace: #d45858; /* Warm coral for replace mode */
+  --cursor-operator: #9e8a6e; /* Warm taupe for operator pending */
 }
 
 /* Fallback cursor colors for dark themes */
-[data-theme="dark"] {
-  --cursor-normal: #d4a053;     /* Amber gold */
-  --cursor-insert: #6ab0a8;     /* Lighter teal */
-  --cursor-visual: #8fb07e;     /* Lighter sage */
-  --cursor-command: #e0b060;    /* Lighter amber */
-  --cursor-replace: #e06868;    /* Lighter coral */
-  --cursor-operator: #b09a7e;   /* Lighter taupe */
+[data-theme='dark'] {
+  --cursor-normal: #d4a053; /* Amber gold */
+  --cursor-insert: #6ab0a8; /* Lighter teal */
+  --cursor-visual: #8fb07e; /* Lighter sage */
+  --cursor-command: #e0b060; /* Lighter amber */
+  --cursor-replace: #e06868; /* Lighter coral */
+  --cursor-operator: #b09a7e; /* Lighter taupe */
 }
 
 /* High contrast mode support */
@@ -113,7 +132,8 @@
 }
 
 @keyframes cursor-normal-strong-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1) translateZ(0);
     box-shadow:
@@ -134,18 +154,19 @@
 }
 
 @keyframes cursor-normal-pulse {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
-    box-shadow: 
+    box-shadow:
       0 0 12px var(--cursor-normal),
       0 0 6px var(--cursor-normal),
       inset 0 0 6px rgba(255, 255, 255, 0.2);
   }
-  50% { 
+  50% {
     opacity: 0.85;
     transform: scale(1.02);
-    box-shadow: 
+    box-shadow:
       0 0 18px var(--cursor-normal),
       0 0 9px var(--cursor-normal),
       inset 0 0 8px rgba(255, 255, 255, 0.3);
@@ -161,13 +182,17 @@
   visibility: visible !important;
   width: 2px !important;
   height: 1.3em !important;
-  background: linear-gradient(to bottom, var(--cursor-insert), color-mix(in srgb, var(--cursor-insert) 80%, white)) !important;
+  background: linear-gradient(
+    to bottom,
+    var(--cursor-insert),
+    color-mix(in srgb, var(--cursor-insert) 80%, white)
+  ) !important;
   border: none !important;
   border-radius: 1px !important;
   opacity: 1 !important;
   margin-left: 0 !important;
   margin-top: -1px !important;
-  box-shadow: 
+  box-shadow:
     0 0 8px var(--cursor-insert),
     0 0 4px var(--cursor-insert) !important;
   animation: cursor-insert-blink 1.2s ease-in-out infinite !important;
@@ -175,15 +200,17 @@
 }
 
 @keyframes cursor-insert-blink {
-  0%, 50% { 
+  0%,
+  50% {
     opacity: 1;
-    box-shadow: 
+    box-shadow:
       0 0 8px var(--cursor-insert),
       0 0 4px var(--cursor-insert);
   }
-  51%, 100% { 
+  51%,
+  100% {
     opacity: 0.4;
-    box-shadow: 
+    box-shadow:
       0 0 4px var(--cursor-insert),
       0 0 2px var(--cursor-insert);
   }
@@ -198,13 +225,17 @@
   visibility: visible !important;
   width: 0.8em !important;
   height: 2px !important;
-  background: linear-gradient(to right, var(--cursor-replace), color-mix(in srgb, var(--cursor-replace) 70%, white)) !important;
+  background: linear-gradient(
+    to right,
+    var(--cursor-replace),
+    color-mix(in srgb, var(--cursor-replace) 70%, white)
+  ) !important;
   border: none !important;
   border-radius: 1px !important;
   opacity: 1 !important;
   margin-left: 0 !important;
   margin-top: 1.1em !important;
-  box-shadow: 
+  box-shadow:
     0 0 8px var(--cursor-replace),
     0 0 4px var(--cursor-replace) !important;
   animation: cursor-replace-pulse 1.5s ease-in-out infinite !important;
@@ -212,15 +243,16 @@
 }
 
 @keyframes cursor-replace-pulse {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 1;
-    box-shadow: 
+    box-shadow:
       0 0 8px var(--cursor-replace),
       0 0 4px var(--cursor-replace);
   }
-  50% { 
+  50% {
     opacity: 0.7;
-    box-shadow: 
+    box-shadow:
       0 0 12px var(--cursor-replace),
       0 0 6px var(--cursor-replace);
   }
@@ -239,7 +271,8 @@
 /* Hide other selection mechanisms in visual mode to prevent duplicates */
 .cm-editor.cm-vim-visual-mode .cm-selectionMatch,
 .cm-editor.cm-vim-visual-mode .cm-selectedText,
-.cm-editor.cm-vim-visual-mode .cm-selectionBackground:not(.cm-selectionLayer .cm-selectionBackground) {
+.cm-editor.cm-vim-visual-mode
+  .cm-selectionBackground:not(.cm-selectionLayer .cm-selectionBackground) {
   background-color: transparent !important;
   display: none !important;
 }
@@ -267,7 +300,8 @@
 }
 
 @keyframes cursor-visual-edge-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     width: 3px;
     box-shadow:
@@ -283,19 +317,18 @@
   }
 }
 
-
-
 @keyframes cursor-visual-glow {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 0.9;
-    box-shadow: 
+    box-shadow:
       0 0 12px var(--cursor-visual),
       0 0 6px var(--cursor-visual),
       inset 0 0 4px rgba(255, 255, 255, 0.2);
   }
-  50% { 
+  50% {
     opacity: 1;
-    box-shadow: 
+    box-shadow:
       0 0 18px var(--cursor-visual),
       0 0 9px var(--cursor-visual),
       inset 0 0 6px rgba(255, 255, 255, 0.3);
@@ -311,14 +344,18 @@
   visibility: visible !important;
   width: 0.6em !important;
   height: 0.6em !important;
-  background: linear-gradient(135deg, var(--cursor-operator), color-mix(in srgb, var(--cursor-operator) 70%, white)) !important;
+  background: linear-gradient(
+    135deg,
+    var(--cursor-operator),
+    color-mix(in srgb, var(--cursor-operator) 70%, white)
+  ) !important;
   border: 2px solid rgba(255, 255, 255, 0.6) !important;
   border-radius: 2px !important;
   opacity: 1 !important;
   margin-left: 0.1em !important;
   margin-top: 0.35em !important;
   transform: rotate(45deg) !important;
-  box-shadow: 
+  box-shadow:
     0 0 10px var(--cursor-operator),
     0 0 5px var(--cursor-operator) !important;
   animation: cursor-operator-spin 2s linear infinite !important;
@@ -326,15 +363,15 @@
 }
 
 @keyframes cursor-operator-spin {
-  0% { 
+  0% {
     transform: rotate(45deg) scale(1);
     opacity: 1;
   }
-  50% { 
+  50% {
     transform: rotate(225deg) scale(1.1);
     opacity: 0.8;
   }
-  100% { 
+  100% {
     transform: rotate(405deg) scale(1);
     opacity: 1;
   }
@@ -346,7 +383,12 @@
 
 /* Normal mode selection (when dragging with mouse) */
 .cm-editor.cm-vim-mode:not(.cm-vim-visual-mode) .cm-selectionBackground {
-  background-color: rgba(59, 130, 246, 0.15) !important; /* Blue with transparency */
+  background-color: rgba(
+    59,
+    130,
+    246,
+    0.15
+  ) !important; /* Blue with transparency */
 }
 
 /* Visual line mode - Full line highlight */
@@ -365,7 +407,12 @@
 
 /* Replace mode selection */
 .cm-editor.cm-vim-replace-mode .cm-selectionBackground {
-  background-color: rgba(239, 68, 68, 0.2) !important; /* Red with transparency */
+  background-color: rgba(
+    239,
+    68,
+    68,
+    0.2
+  ) !important; /* Red with transparency */
   border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
@@ -379,7 +426,12 @@
 
 /* Insert mode selection (if any) */
 .cm-editor.cm-vim-insert-mode .cm-selectionBackground {
-  background-color: rgba(90, 158, 150, 0.15) !important; /* Teal with transparency */
+  background-color: rgba(
+    90,
+    158,
+    150,
+    0.15
+  ) !important; /* Teal with transparency */
 }
 
 /* =================================================================
@@ -469,8 +521,14 @@
 }
 
 @keyframes cursor-standard-blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0.3; }
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0.3;
+  }
 }
 
 /* Markdown syntax highlighting */
@@ -495,7 +553,9 @@
   line-height: 1.4;
 }
 
-.cm-header-4, .cm-header-5, .cm-header-6 {
+.cm-header-4,
+.cm-header-5,
+.cm-header-6 {
   font-size: 1.1em;
   font-weight: 600;
   color: hsl(var(--foreground));
@@ -617,9 +677,18 @@
 }
 
 /* Dynamic caret color based on vim mode - VERY HIGH SPECIFICITY */
-.cm-editor.cm-vim-mode:not(.cm-vim-insert-mode):not(.cm-vim-visual-mode):not(.cm-vim-replace-mode) .cm-content,
-.cm-editor.cm-vim-mode:not(.cm-vim-insert-mode):not(.cm-vim-visual-mode):not(.cm-vim-replace-mode) .cm-line,
-.cm-editor.cm-vim-mode:not(.cm-vim-insert-mode):not(.cm-vim-visual-mode):not(.cm-vim-replace-mode) * {
+.cm-editor.cm-vim-mode:not(.cm-vim-insert-mode):not(.cm-vim-visual-mode):not(
+    .cm-vim-replace-mode
+  )
+  .cm-content,
+.cm-editor.cm-vim-mode:not(.cm-vim-insert-mode):not(.cm-vim-visual-mode):not(
+    .cm-vim-replace-mode
+  )
+  .cm-line,
+.cm-editor.cm-vim-mode:not(.cm-vim-insert-mode):not(.cm-vim-visual-mode):not(
+    .cm-vim-replace-mode
+  )
+  * {
   caret-color: var(--cursor-normal) !important;
 }
 

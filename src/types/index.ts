@@ -1,9 +1,20 @@
 export type { AppConfig } from './config';
-export type { Note, CreateNoteRequest, UpdateNoteRequest, Tag, CreateTagRequest, UpdateNoteTagsRequest } from './note';
+export type {
+  Note,
+  CreateNoteRequest,
+  UpdateNoteRequest,
+  Tag,
+  CreateTagRequest,
+  UpdateNoteTagsRequest,
+} from './note';
 export type { Theme } from './theme';
 export type { TrashedNote, TrashStats } from './trash';
 export type { Attachment, UploadAttachmentRequest } from './attachment';
 export type { NoteLink, Backlink, LinkSuggestion } from './link';
-export type { NoteTemplate, CreateTemplateRequest, CreateNoteFromTemplateRequest } from './template';
+export type {
+  NoteTemplate,
+  CreateTemplateRequest,
+  CreateNoteFromTemplateRequest,
+} from './template';
 export { defaultConfig } from './config';
 export { themes, applyTheme, getThemeById } from './theme';

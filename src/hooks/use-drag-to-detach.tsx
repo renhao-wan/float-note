@@ -27,7 +27,11 @@ const showDragCancelEffect = (x: number, y: number) => {
   );
 };
 
-export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold = 5 }: UseDragToDetachOptions) {
+export function useDragToDetach({
+  onDrop: _onDrop,
+  beforeDetach,
+  dragThreshold = 5,
+}: UseDragToDetachOptions) {
   // Only isDragging is exposed to consumers; all other state stays in refs
   const [isDragging, setIsDragging] = useState(false);
 
@@ -113,7 +117,9 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
 
     // Clean up any existing hybrid drag window for this note first
     if (ref.realWindowLabel) {
-      console.log('[DRAG] Cleaning up existing hybrid window before creating new one');
+      console.log(
+        '[DRAG] Cleaning up existing hybrid window before creating new one'
+      );
       invoke('close_hybrid_drag_window', {
         windowLabel: ref.realWindowLabel,
       }).catch(() => {});
@@ -130,27 +136,37 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
       x: screenX,
       y: screenY,
       hidden: true,
-    }).then(windowLabel => {
-      ref.realWindowLabel = windowLabel;
-    }).catch(async (error) => {
-      console.error('[DRAG] Failed to pre-create window:', error);
+    })
+      .then((windowLabel) => {
+        ref.realWindowLabel = windowLabel;
+      })
+      .catch(async (error) => {
+        console.error('[DRAG] Failed to pre-create window:', error);
 
-      if (error.toString().includes('already exists')) {
-        const existingLabel = `hybrid-drag-${noteId}`;
-        try {
-          await invoke('close_hybrid_drag_window', { windowLabel: existingLabel });
-          const windowLabel = await invoke<string>('create_hybrid_drag_window', {
-            noteId,
-            x: screenX,
-            y: screenY,
-            hidden: true,
-          });
-          ref.realWindowLabel = windowLabel;
-        } catch (retryError) {
-          console.error('[DRAG] Failed to create window even after cleanup:', retryError);
+        if (error.toString().includes('already exists')) {
+          const existingLabel = `hybrid-drag-${noteId}`;
+          try {
+            await invoke('close_hybrid_drag_window', {
+              windowLabel: existingLabel,
+            });
+            const windowLabel = await invoke<string>(
+              'create_hybrid_drag_window',
+              {
+                noteId,
+                x: screenX,
+                y: screenY,
+                hidden: true,
+              }
+            );
+            ref.realWindowLabel = windowLabel;
+          } catch (retryError) {
+            console.error(
+              '[DRAG] Failed to create window even after cleanup:',
+              retryError
+            );
+          }
         }
-      }
-    });
+      });
   }, []);
 
   // Register event listeners once, use refs to access latest state
@@ -190,13 +206,18 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
       }
 
       // Check if we've moved enough to start dragging
-      if (!ref.hasMovedEnough && (deltaX > dragThreshold || deltaY > dragThreshold)) {
+      if (
+        !ref.hasMovedEnough &&
+        (deltaX > dragThreshold || deltaY > dragThreshold)
+      ) {
         ref.hasMovedEnough = true;
-        ref.isDragging = true;  // 同步更新 ref（handleMouseUp 读取 ref 而非 state）
-        setIsDragging(true);    // 更新 React state（用于返回给消费者）
+        ref.isDragging = true; // 同步更新 ref（handleMouseUp 读取 ref 而非 state）
+        setIsDragging(true); // 更新 React state（用于返回给消费者）
 
         // Add visual feedback and cache the element
-        const draggedElement = document.querySelector(`[data-note-id="${ref.noteId}"]`);
+        const draggedElement = document.querySelector(
+          `[data-note-id="${ref.noteId}"]`
+        );
         if (draggedElement) {
           draggedElement.classList.add('dragging');
           ref.draggedElement = draggedElement;
@@ -211,11 +232,13 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
             windowLabel: ref.realWindowLabel,
             x: screenX,
             y: screenY,
-          }).then(() => {
-            ref.realWindowCreated = true;
-          }).catch(err => {
-            console.error('[DRAG] Error showing window:', err);
-          });
+          })
+            .then(() => {
+              ref.realWindowCreated = true;
+            })
+            .catch((err) => {
+              console.error('[DRAG] Error showing window:', err);
+            });
         }
       }
 
@@ -265,7 +288,9 @@ export function useDragToDetach({ onDrop: _onDrop, beforeDetach, dragThreshold =
             });
             console.log('[DRAG] Finalize result:', result);
 
-            const { useDetachedWindowsStore } = await import('../stores/detached-windows-store');
+            const { useDetachedWindowsStore } = await import(
+              '../stores/detached-windows-store'
+            );
             await useDetachedWindowsStore.getState().refreshWindows();
             console.log('[DRAG] Windows refreshed');
           } catch (error) {

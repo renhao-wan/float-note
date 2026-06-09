@@ -51,12 +51,14 @@ pnpm run format
 ### 前端调试
 
 开发模式下，使用浏览器 DevTools 调试前端：
+
 - 右键 → 检查元素
 - Console 查看日志（前缀 `[FLOATNOTE]`）
 
 ### 后端调试
 
 Tauri 控制台输出 Rust 侧日志：
+
 - 使用 `log_info!`、`log_error!` 宏
 - 日志文件路径可通过 `get_log_file_path` 命令获取
 
@@ -74,11 +76,13 @@ Tauri 控制台输出 Rust 侧日志：
 ## 提交规范
 
 提交信息格式：
+
 ```
 type(scope): subject
 ```
 
 类型：
+
 - `feat` - 新功能
 - `fix` - 修复
 - `docs` - 文档

@@ -3,24 +3,23 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Emitter, State};
 use tokio::fs;
 
-use crate::types::{
-    note::Note,
-    config::AppConfig,
-    window::DetachedWindow,
-};
-use crate::{ConfigState, DetachedWindowsState};
+use crate::types::{config::AppConfig, window::DetachedWindow};
 use crate::{log_debug, log_error, log_info};
+use crate::{ConfigState, DetachedWindowsState};
 
 /// Save app configuration to disk
 pub async fn save_config_to_disk(config: &AppConfig) -> Result<(), String> {
     let notes_dir = get_notes_directory()?;
-    fs::create_dir_all(&notes_dir).await.map_err(|e| format!("Failed to create notes directory: {}", e))?;
+    fs::create_dir_all(&notes_dir)
+        .await
+        .map_err(|e| format!("Failed to create notes directory: {}", e))?;
 
     let config_file = notes_dir.join("config.json");
     let config_json = serde_json::to_string_pretty(config)
         .map_err(|e| format!("Failed to serialize config: {}", e))?;
 
-    fs::write(config_file, config_json).await
+    fs::write(config_file, config_json)
+        .await
         .map_err(|e| format!("Failed to write config to disk: {}", e))?;
 
     log_debug!("CONFIG", "Config saved to disk");
@@ -37,7 +36,8 @@ pub async fn load_config_from_disk() -> Result<AppConfig, String> {
         return Ok(AppConfig::default());
     }
 
-    let config_json = fs::read_to_string(config_file).await
+    let config_json = fs::read_to_string(config_file)
+        .await
         .map_err(|e| format!("Failed to read config from disk: {}", e))?;
 
     let config: AppConfig = serde_json::from_str(&config_json)
@@ -48,17 +48,22 @@ pub async fn load_config_from_disk() -> Result<AppConfig, String> {
 }
 
 /// Save detached windows state to disk
-pub async fn save_detached_windows_to_disk(windows: &HashMap<String, DetachedWindow>) -> Result<(), String> {
+pub async fn save_detached_windows_to_disk(
+    windows: &HashMap<String, DetachedWindow>,
+) -> Result<(), String> {
     let notes_dir = get_notes_directory()?;
-    fs::create_dir_all(&notes_dir).await.map_err(|e| format!("Failed to create notes directory: {}", e))?;
+    fs::create_dir_all(&notes_dir)
+        .await
+        .map_err(|e| format!("Failed to create notes directory: {}", e))?;
 
     let windows_file = notes_dir.join("detached_windows.json");
     let windows_json = serde_json::to_string_pretty(windows)
         .map_err(|e| format!("Failed to serialize detached windows: {}", e))?;
 
-    fs::write(windows_file, windows_json).await
+    fs::write(windows_file, windows_json)
+        .await
         .map_err(|e| format!("Failed to write detached windows to disk: {}", e))?;
-    
+
     Ok(())
 }
 
@@ -71,7 +76,8 @@ pub async fn load_detached_windows_from_disk() -> Result<HashMap<String, Detache
         return Ok(HashMap::new());
     }
 
-    let windows_json = fs::read_to_string(windows_file).await
+    let windows_json = fs::read_to_string(windows_file)
+        .await
         .map_err(|e| format!("Failed to read detached windows from disk: {}", e))?;
 
     let windows: HashMap<String, DetachedWindow> = serde_json::from_str(&windows_json)
@@ -106,7 +112,7 @@ pub fn get_configured_notes_directory(config: &AppConfig) -> Result<PathBuf, Str
             return Ok(path);
         }
     }
-    
+
     // Fall back to default directory
     get_default_notes_directory()
 }
@@ -144,14 +150,18 @@ pub async fn get_detached_windows(
     windows: State<'_, DetachedWindowsState>,
 ) -> Result<HashMap<String, DetachedWindow>, String> {
     let windows_lock = windows.lock().await;
-    log_debug!("GET_DETACHED_WINDOWS", "Returning {} windows to frontend", windows_lock.len());
-    
+    log_debug!(
+        "GET_DETACHED_WINDOWS",
+        "Returning {} windows to frontend",
+        windows_lock.len()
+    );
+
     // Filter out hybrid-drag windows - only return actual detached note windows
     let filtered_windows: HashMap<String, DetachedWindow> = windows_lock
         .iter()
         .filter(|(window_label, _)| window_label.starts_with("note-"))
         .map(|(k, v)| (k.clone(), v.clone()))
         .collect();
-    
+
     Ok(filtered_windows)
 }

@@ -59,19 +59,25 @@ export function SortableNoteItem({
         <div
           {...listeners}
           className={`w-8 flex items-center justify-center cursor-grab active:cursor-grabbing touch-none transition-colors ${
-            isSelected
-              ? 'bg-primary/8'
-              : 'hover:bg-primary/4'
+            isSelected ? 'bg-primary/8' : 'hover:bg-primary/4'
           }`}
           title="Drag to reorder"
         >
-          <svg width="8" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground opacity-30 group-hover:opacity-60 transition-opacity">
-            <circle cx="9" cy="5" r="1"/>
-            <circle cx="9" cy="12" r="1"/>
-            <circle cx="9" cy="19" r="1"/>
-            <circle cx="15" cy="5" r="1"/>
-            <circle cx="15" cy="12" r="1"/>
-            <circle cx="15" cy="19" r="1"/>
+          <svg
+            width="8"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-muted-foreground opacity-30 group-hover:opacity-60 transition-opacity"
+          >
+            <circle cx="9" cy="5" r="1" />
+            <circle cx="9" cy="12" r="1" />
+            <circle cx="9" cy="19" r="1" />
+            <circle cx="15" cy="5" r="1" />
+            <circle cx="15" cy="12" r="1" />
+            <circle cx="15" cy="19" r="1" />
           </svg>
         </div>
 
@@ -94,16 +100,21 @@ export function SortableNoteItem({
           <div className="flex items-start gap-2">
             <div className="flex-1 min-w-0">
               <div className="flex items-start gap-2">
-                <h3 className={`text-sm font-medium leading-tight transition-colors flex-1 ${
-                  isSelected
-                    ? 'text-primary'
-                    : 'text-foreground/80 group-hover:text-foreground'
-                }`}>
+                <h3
+                  className={`text-sm font-medium leading-tight transition-colors flex-1 ${
+                    isSelected
+                      ? 'text-primary'
+                      : 'text-foreground/80 group-hover:text-foreground'
+                  }`}
+                >
                   {note.title || 'Untitled'}
                 </h3>
                 <div className="flex items-center gap-1">
                   {isOpenInWindow && (
-                    <div className="w-1 h-1 rounded-full bg-primary/40 mt-1" title="Open in window" />
+                    <div
+                      className="w-1 h-1 rounded-full bg-primary/40 mt-1"
+                      title="Open in window"
+                    />
                   )}
                 </div>
               </div>
@@ -125,10 +136,17 @@ export function SortableNoteItem({
                 className="text-muted-foreground/40 hover:text-red-400 p-1 rounded transition-colors"
                 title="Delete note"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 6h18"/>
-                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/>
-                  <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
+                  <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                 </svg>
               </button>
             </div>

@@ -15,7 +15,8 @@ export interface AppConfig {
     contentFontSize?: number;
     theme: 'dark' | 'light' | 'system';
     themeId?: string; // ID of the selected theme preset
-    customTheme?: { // Custom theme overrides
+    customTheme?: {
+      // Custom theme overrides
       fonts?: {
         editor?: string;
         preview?: string;
@@ -23,7 +24,14 @@ export interface AppConfig {
       };
       colors?: Record<string, string>;
       backgroundTexture?: {
-        type: 'none' | 'paper' | 'canvas' | 'grid' | 'dots' | 'noise' | 'gradient';
+        type:
+          | 'none'
+          | 'paper'
+          | 'canvas'
+          | 'grid'
+          | 'dots'
+          | 'noise'
+          | 'gradient';
         opacity?: number;
         scale?: number;
         color?: string;

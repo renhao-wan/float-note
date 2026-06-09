@@ -7,17 +7,17 @@ use tauri::{AppHandle, Manager};
 /// Load spatial positioning data for a specific note
 pub async fn load_spatial_data(note_id: &str) -> Option<DetachedWindow> {
     use crate::modules::storage::get_default_notes_directory;
-    
+
     let notes_dir = get_default_notes_directory().ok()?;
     let spatial_file = notes_dir.join("spatial_positions.json");
-    
+
     if !spatial_file.exists() {
         return None;
     }
-    
+
     let spatial_json = std::fs::read_to_string(spatial_file).ok()?;
     let spatial_data: HashMap<String, DetachedWindow> = serde_json::from_str(&spatial_json).ok()?;
-    
+
     spatial_data.get(note_id).cloned()
 }
 
@@ -25,31 +25,29 @@ pub async fn load_spatial_data(note_id: &str) -> Option<DetachedWindow> {
 #[allow(dead_code)]
 pub async fn save_spatial_data(note_id: &str, window: &DetachedWindow) -> FloatNoteResult<()> {
     use crate::modules::storage::get_default_notes_directory;
-    
+
     let notes_dir = get_default_notes_directory()
         .map_err(|e| FloatNoteError::Storage(format!("Failed to get notes directory: {}", e)))?;
     let spatial_file = notes_dir.join("spatial_positions.json");
-    
+
     // Load existing spatial data
     let mut spatial_data: HashMap<String, DetachedWindow> = if spatial_file.exists() {
-        let spatial_json = std::fs::read_to_string(&spatial_file)
-            .map_err(|e| FloatNoteError::Io(e))?;
-        serde_json::from_str(&spatial_json)
-            .map_err(|e| FloatNoteError::Serialization(e))?
+        let spatial_json =
+            std::fs::read_to_string(&spatial_file).map_err(FloatNoteError::Io)?;
+        serde_json::from_str(&spatial_json).map_err(FloatNoteError::Serialization)?
     } else {
         HashMap::new()
     };
-    
+
     // Update with new data
     spatial_data.insert(note_id.to_string(), window.clone());
-    
+
     // Save back to disk
     let spatial_json = serde_json::to_string_pretty(&spatial_data)
-        .map_err(|e| FloatNoteError::Serialization(e))?;
-    
-    std::fs::write(spatial_file, spatial_json)
-        .map_err(|e| FloatNoteError::Io(e))?;
-    
+        .map_err(FloatNoteError::Serialization)?;
+
+    std::fs::write(spatial_file, spatial_json).map_err(FloatNoteError::Io)?;
+
     Ok(())
 }
 
@@ -109,7 +107,10 @@ pub fn apply_initial_window_settings(app: &AppHandle, config: &crate::types::con
     );
 
     if let Some(window) = app.get_webview_window("main") {
-        log_info!("STARTUP", "🪟 Found main window, forcing it to be visible...");
+        log_info!(
+            "STARTUP",
+            "🪟 Found main window, forcing it to be visible..."
+        );
 
         // Make sure window is visible
         if let Err(e) = window.show() {

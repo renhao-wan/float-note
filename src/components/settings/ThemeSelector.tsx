@@ -9,7 +9,7 @@ export function ThemeSelector() {
 
   const handleThemeClick = async (themeId: string) => {
     // 立即应用主题
-    const theme = getAllThemes().find(t => t.id === themeId);
+    const theme = getAllThemes().find((t) => t.id === themeId);
     if (theme) {
       applyTheme(theme);
     }
@@ -20,7 +20,7 @@ export function ThemeSelector() {
         appearance: {
           ...config.appearance,
           themeId: themeId,
-        }
+        },
       });
     } catch (error) {
       console.error('[THEME] Failed to save theme:', error);
@@ -29,11 +29,11 @@ export function ThemeSelector() {
 
   // Get themes sorted: dark themes first, then light themes
   const allThemes = getAllThemes();
-  const darkThemes = allThemes.filter(theme => {
+  const darkThemes = allThemes.filter((theme) => {
     const bg = theme.colors.background;
     return bg.startsWith('#0') || bg.startsWith('#1') || bg.startsWith('#2');
   });
-  const lightThemes = allThemes.filter(theme => {
+  const lightThemes = allThemes.filter((theme) => {
     const bg = theme.colors.background;
     return !bg.startsWith('#0') && !bg.startsWith('#1') && !bg.startsWith('#2');
   });

@@ -21,6 +21,7 @@ pub struct UploadAttachmentRequest {
 
 /// Response for attachment upload
 #[derive(Debug, Deserialize, Serialize)]
+#[allow(dead_code)]
 pub struct AttachmentData {
     pub attachment: Attachment,
     pub data: Vec<u8>,

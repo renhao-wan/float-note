@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::note::Note;
+use serde::{Deserialize, Serialize};
 
 /// Represents a note in the trash
 #[derive(Debug, Deserialize, Serialize, Clone)]

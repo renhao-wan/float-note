@@ -1,9 +1,9 @@
 use crate::modules::file_notes_storage::FileNotesStorage;
-use crate::ModifiedStateTrackerState;
 use crate::modules::storage::{get_configured_notes_directory, save_config_to_disk};
+use crate::types::note::Note;
 use crate::utils::generate_unique_slug;
 use crate::ConfigState;
-use crate::types::note::Note;
+use crate::ModifiedStateTrackerState;
 use crate::NotesState;
 use crate::{log_error, log_info};
 use std::collections::HashSet;
@@ -20,7 +20,11 @@ pub async fn import_notes_from_directory(
     config: State<'_, ConfigState>,
     modified_tracker: State<'_, ModifiedStateTrackerState>,
 ) -> Result<Vec<Note>, String> {
-    log_info!("FILE_IMPORT", "Importing notes from directory: {}", directory_path);
+    log_info!(
+        "FILE_IMPORT",
+        "Importing notes from directory: {}",
+        directory_path
+    );
 
     let mut imported_notes = Vec::new();
     let mut notes_lock = notes.lock().await;
@@ -35,8 +39,7 @@ pub async fn import_notes_from_directory(
     let file_storage = FileNotesStorage::new(&config_lock)?;
 
     // Read all markdown files in the directory
-    let entries = fs::read_dir(dir_path)
-        .map_err(|e| format!("Failed to read directory: {}", e))?;
+    let entries = fs::read_dir(dir_path).map_err(|e| format!("Failed to read directory: {}", e))?;
 
     for entry in entries {
         let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
@@ -49,16 +52,26 @@ pub async fn import_notes_from_directory(
                     let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
                     if existing_ids.contains(&note.id) {
                         let new_id = generate_unique_slug(&note.title, &existing_ids);
-                        log_info!("FILE_IMPORT", "ID conflict detected: {} -> {}", note.id, new_id);
+                        log_info!(
+                            "FILE_IMPORT",
+                            "ID conflict detected: {} -> {}",
+                            note.id,
+                            new_id
+                        );
                         note.id = new_id;
                     }
 
-                    log_info!("FILE_IMPORT", "Imported note: {} from {}", note.title, path.display());
+                    log_info!(
+                        "FILE_IMPORT",
+                        "Imported note: {} from {}",
+                        note.title,
+                        path.display()
+                    );
                     notes_lock.insert(note.id.clone(), note.clone());
                     // Initialize dirty tracking for imported note
                     modified_tracker.initialize_note(&note).await;
                     imported_notes.push(note);
-                },
+                }
                 Err(e) => {
                     log_error!("FILE_IMPORT", "Failed to import {}: {}", path.display(), e);
                 }
@@ -79,7 +92,11 @@ pub async fn import_notes_from_directory(
         });
     }
 
-    log_info!("FILE_IMPORT", "Successfully imported {} notes", imported_notes.len());
+    log_info!(
+        "FILE_IMPORT",
+        "Successfully imported {} notes",
+        imported_notes.len()
+    );
     Ok(imported_notes)
 }
 
@@ -110,7 +127,12 @@ pub async fn import_single_file(
     let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
     if existing_ids.contains(&note.id) {
         let new_id = generate_unique_slug(&note.title, &existing_ids);
-        log_info!("FILE_IMPORT", "ID conflict detected: {} -> {}", note.id, new_id);
+        log_info!(
+            "FILE_IMPORT",
+            "ID conflict detected: {} -> {}",
+            note.id,
+            new_id
+        );
         note.id = new_id;
     }
 
@@ -139,13 +161,12 @@ pub async fn export_note_to_file(
     notes: State<'_, NotesState>,
 ) -> Result<(), String> {
     log_info!("FILE_EXPORT", "Exporting note {} to {}", note_id, file_path);
-    
+
     let notes_lock = notes.lock().await;
-    let note = notes_lock.get(&note_id)
-        .ok_or("Note not found")?;
-    
+    let note = notes_lock.get(&note_id).ok_or("Note not found")?;
+
     write_note_to_file(note, &file_path).await?;
-    
+
     log_info!("FILE_EXPORT", "Successfully exported note to {}", file_path);
     Ok(())
 }
@@ -156,7 +177,11 @@ pub async fn export_all_notes_to_directory(
     directory_path: String,
     notes: State<'_, NotesState>,
 ) -> Result<Vec<String>, String> {
-    log_info!("FILE_EXPORT", "Exporting all notes to directory: {}", directory_path);
+    log_info!(
+        "FILE_EXPORT",
+        "Exporting all notes to directory: {}",
+        directory_path
+    );
 
     let dir_path = Path::new(&directory_path);
 
@@ -166,39 +191,54 @@ pub async fn export_all_notes_to_directory(
     }
     let canonical = dir_path.canonicalize().or_else(|_| {
         fs::create_dir_all(dir_path).map_err(|e| format!("Failed to create directory: {}", e))?;
-        dir_path.canonicalize().map_err(|e| format!("Failed to resolve path: {}", e))
+        dir_path
+            .canonicalize()
+            .map_err(|e| format!("Failed to resolve path: {}", e))
     })?;
 
     // Reject system-critical directories
     let path_str = canonical.to_string_lossy().to_lowercase();
-    let restricted = ["/windows", "/system32", "/etc", "/usr", "/bin", "/sbin", "/boot"];
+    let restricted = [
+        "/windows",
+        "/system32",
+        "/etc",
+        "/usr",
+        "/bin",
+        "/sbin",
+        "/boot",
+    ];
     for r in restricted {
-        if path_str.contains(r) && !path_str.contains("documents") && !path_str.contains("desktop") {
+        if path_str.contains(r) && !path_str.contains("documents") && !path_str.contains("desktop")
+        {
             return Err("Cannot export to system-critical directories".to_string());
         }
     }
-    
+
     let notes_lock = notes.lock().await;
     let mut exported_files = Vec::new();
-    
+
     for note in notes_lock.values() {
         // Use the note ID as the filename since it's now a slug
         let file_name = format!("{}.md", note.id);
         let file_path = dir_path.join(&file_name);
-        
+
         let file_path_str = file_path.to_string_lossy().to_string();
         match write_note_to_file(note, &file_path_str).await {
             Ok(_) => {
                 exported_files.push(file_name);
                 log_info!("FILE_EXPORT", "Exported note: {}", note.title);
-            },
+            }
             Err(e) => {
                 log_error!("FILE_EXPORT", "Failed to export {}: {}", note.title, e);
             }
         }
     }
-    
-    log_info!("FILE_EXPORT", "Successfully exported {} notes", exported_files.len());
+
+    log_info!(
+        "FILE_EXPORT",
+        "Successfully exported {} notes",
+        exported_files.len()
+    );
     Ok(exported_files)
 }
 
@@ -221,7 +261,8 @@ pub async fn set_notes_directory(
     }
 
     // Canonicalize the path to resolve symlinks and prevent path traversal
-    let canonical_path = path.canonicalize()
+    let canonical_path = path
+        .canonicalize()
         .map_err(|e| format!("Failed to resolve path: {}", e))?;
 
     // Validate the canonicalized path is still a valid directory
@@ -242,9 +283,10 @@ pub async fn set_notes_directory(
     save_config_to_disk(&config_clone).await?;
 
     // Emit event to notify all windows about config change
-    app.emit("config-updated", &config_clone).unwrap_or_else(|e| {
-        log_error!("STORAGE", "Failed to emit config-updated event: {}", e);
-    });
+    app.emit("config-updated", &config_clone)
+        .unwrap_or_else(|e| {
+            log_error!("STORAGE", "Failed to emit config-updated event: {}", e);
+        });
 
     log_info!("STORAGE", "Notes directory updated successfully");
     Ok(())
@@ -304,7 +346,11 @@ pub async fn reload_notes_from_directory(
         });
     }
 
-    log_info!("STORAGE", "Successfully loaded {} notes from directory", loaded_notes.len());
+    log_info!(
+        "STORAGE",
+        "Successfully loaded {} notes from directory",
+        loaded_notes.len()
+    );
     Ok(loaded_notes)
 }
 
@@ -320,22 +366,23 @@ pub async fn get_current_notes_directory(config: State<'_, ConfigState>) -> Resu
 
 /// Parse a markdown file into a Note
 async fn parse_markdown_file(path: &Path) -> Result<Note, String> {
-    let content = fs::read_to_string(path)
-        .map_err(|e| format!("Failed to read file: {}", e))?;
-    
+    let content = fs::read_to_string(path).map_err(|e| format!("Failed to read file: {}", e))?;
+
     // ID is the filename without extension
-    let id = path.file_stem()
+    let id = path
+        .file_stem()
         .and_then(|s| s.to_str())
-        .ok_or("Invalid filename")?  
+        .ok_or("Invalid filename")?
         .to_string();
-    
+
     // Extract title from first heading or use filename
     let title = if let Some(first_line) = content.lines().next() {
         if first_line.starts_with('#') {
             first_line.trim_start_matches('#').trim().to_string()
         } else {
             // If no heading, use first non-empty line or filename
-            content.lines()
+            content
+                .lines()
                 .find(|line| !line.trim().is_empty())
                 .map(|line| line.trim().to_string())
                 .unwrap_or_else(|| id.replace('-', " ").to_string())
@@ -343,11 +390,15 @@ async fn parse_markdown_file(path: &Path) -> Result<Note, String> {
     } else {
         id.replace('-', " ").to_string()
     };
-    
+
     // Handle migration: if content has frontmatter, extract just the body
     // Support both Unix (\n) and Windows (\r\n) line endings
     let actual_content = if content.starts_with("---\n") || content.starts_with("---\r\n") {
-        let separator = if content.starts_with("---\r\n") { "---\r\n" } else { "---\n" };
+        let separator = if content.starts_with("---\r\n") {
+            "---\r\n"
+        } else {
+            "---\n"
+        };
         let parts: Vec<&str> = content.splitn(3, separator).collect();
         if parts.len() >= 3 {
             parts[2].to_string()
@@ -357,7 +408,7 @@ async fn parse_markdown_file(path: &Path) -> Result<Note, String> {
     } else {
         content
     };
-    
+
     let now = chrono::Utc::now().to_rfc3339();
     Ok(Note {
         id,
@@ -370,13 +421,10 @@ async fn parse_markdown_file(path: &Path) -> Result<Note, String> {
     })
 }
 
-
 /// Write a note to a markdown file
 async fn write_note_to_file(note: &Note, file_path: &str) -> Result<(), String> {
     // Write pure markdown content - no frontmatter
-    fs::write(file_path, &note.content)
-        .map_err(|e| format!("Failed to write file: {}", e))?;
-    
+    fs::write(file_path, &note.content).map_err(|e| format!("Failed to write file: {}", e))?;
+
     Ok(())
 }
-

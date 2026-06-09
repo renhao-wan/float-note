@@ -102,7 +102,9 @@ pub fn default_appearance() -> AppearanceConfig {
         content_font_size: Some(16.0),
         theme: "dark".to_string(),
         editor_font_family: "system-ui".to_string(),
-        preview_font_family: Some("Inter, -apple-system, BlinkMacSystemFont, sans-serif".to_string()),
+        preview_font_family: Some(
+            "Inter, -apple-system, BlinkMacSystemFont, sans-serif".to_string(),
+        ),
         line_height: 1.6,
         accent_color: "#3b82f6".to_string(),
         background_pattern: Some("none".to_string()),

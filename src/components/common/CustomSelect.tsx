@@ -12,7 +12,12 @@ interface CustomSelectProps {
   className?: string;
 }
 
-export function CustomSelect({ value, options, onChange, className = '' }: CustomSelectProps) {
+export function CustomSelect({
+  value,
+  options,
+  onChange,
+  className = '',
+}: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -20,12 +25,12 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
   // 查找匹配的选项（精确匹配或包含匹配）
   const selectedOption = useMemo(() => {
     // 优先精确匹配
-    const exact = options.find(opt => opt.value === value);
+    const exact = options.find((opt) => opt.value === value);
     if (exact) return exact;
 
     // 模糊匹配：检查 value 是否包含选项值，或选项值是否包含 value
-    return options.find(opt =>
-      value.includes(opt.value) || opt.value.includes(value)
+    return options.find(
+      (opt) => value.includes(opt.value) || opt.value.includes(value)
     );
   }, [value, options]);
 
@@ -43,7 +48,10 @@ export function CustomSelect({ value, options, onChange, className = '' }: Custo
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+      if (
+        selectRef.current &&
+        !selectRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };

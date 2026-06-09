@@ -1,13 +1,20 @@
 import { invoke } from '@tauri-apps/api/core';
 import { Note } from '../types/note';
-import { NoteTemplate, CreateTemplateRequest, CreateNoteFromTemplateRequest } from '../types/template';
+import {
+  NoteTemplate,
+  CreateTemplateRequest,
+  CreateNoteFromTemplateRequest,
+} from '../types/template';
 
 const LOG_PREFIX = '[FLOATNOTE]';
 
 /**
  * 统一的 invoke 包装函数，添加错误处理和日志
  */
-async function invokeWithLogging<T>(command: string, args?: Record<string, unknown>): Promise<T> {
+async function invokeWithLogging<T>(
+  command: string,
+  args?: Record<string, unknown>
+): Promise<T> {
   try {
     return await invoke<T>(command, args);
   } catch (error) {
@@ -28,7 +35,9 @@ export const templatesApi = {
    * Get a specific template
    */
   async getTemplate(templateId: string): Promise<NoteTemplate> {
-    return invokeWithLogging<NoteTemplate>('get_template', { templateId: templateId });
+    return invokeWithLogging<NoteTemplate>('get_template', {
+      templateId: templateId,
+    });
   },
 
   /**
@@ -41,8 +50,14 @@ export const templatesApi = {
   /**
    * Update a custom template
    */
-  async updateTemplate(templateId: string, request: CreateTemplateRequest): Promise<NoteTemplate> {
-    return invokeWithLogging<NoteTemplate>('update_template', { templateId: templateId, request });
+  async updateTemplate(
+    templateId: string,
+    request: CreateTemplateRequest
+  ): Promise<NoteTemplate> {
+    return invokeWithLogging<NoteTemplate>('update_template', {
+      templateId: templateId,
+      request,
+    });
   },
 
   /**
@@ -50,13 +65,17 @@ export const templatesApi = {
    */
   async deleteTemplate(templateId: string): Promise<void> {
     console.log(`${LOG_PREFIX} Deleting template with ID: ${templateId}`);
-    return invokeWithLogging<void>('delete_template', { templateId: templateId });
+    return invokeWithLogging<void>('delete_template', {
+      templateId: templateId,
+    });
   },
 
   /**
    * Create a note from a template
    */
-  async createNoteFromTemplate(request: CreateNoteFromTemplateRequest): Promise<Note> {
+  async createNoteFromTemplate(
+    request: CreateNoteFromTemplateRequest
+  ): Promise<Note> {
     return invokeWithLogging<Note>('create_note_from_template', { request });
   },
 };

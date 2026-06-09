@@ -34,12 +34,12 @@ export interface TransparencyStrategy {
 export interface TransparencyConfig {
   /** 透明度范围 */
   range: {
-    min: number;  // 0.2
-    max: number;  // 1.0
+    min: number; // 0.2
+    max: number; // 1.0
     step: number; // 0.1
   };
   /** 默认透明度 */
-  defaultOpacity: number;  // 0.9
+  defaultOpacity: number; // 0.9
 }
 
 /**
@@ -48,5 +48,5 @@ export interface TransparencyConfig {
 export interface WindowOpacityState {
   windowLabel: string;
   opacity: number;
-  isCustom: boolean;  // 是否覆盖全局默认值
+  isCustom: boolean; // 是否覆盖全局默认值
 }

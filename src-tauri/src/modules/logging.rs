@@ -1,7 +1,7 @@
 use chrono::Local;
+use dirs;
 use std::io::Write;
 use std::path::PathBuf;
-use dirs;
 
 // Initialize file logging
 pub fn init_file_logging() -> Result<PathBuf, String> {
@@ -9,31 +9,38 @@ pub fn init_file_logging() -> Result<PathBuf, String> {
     let app_data_dir = dirs::data_dir()
         .ok_or("Could not find data directory")?
         .join("com.float-note.dev");
-    
+
     let logs_dir = app_data_dir.join("logs");
     std::fs::create_dir_all(&logs_dir)
         .map_err(|e| format!("Failed to create logs directory: {}", e))?;
-    
+
     let log_file = logs_dir.join("float-note.log");
-    
+
     // Initialize env_logger to write to file
     let log_file_clone = log_file.clone();
     env_logger::Builder::from_default_env()
-        .target(env_logger::Target::Pipe(Box::new(std::fs::File::create(&log_file_clone)
-            .map_err(|e| format!("Failed to create log file: {}", e))?)))
+        .target(env_logger::Target::Pipe(Box::new(
+            std::fs::File::create(&log_file_clone)
+                .map_err(|e| format!("Failed to create log file: {}", e))?,
+        )))
         .format(|buf, record| {
-            writeln!(buf, "[FLOATNOTE] [{}] [{}] [{}] {}",
+            writeln!(
+                buf,
+                "[FLOATNOTE] [{}] [{}] [{}] {}",
                 Local::now().format("%Y-%m-%d %H:%M:%S%.3f"),
                 record.level(),
                 record.target(),
-                record.args())
+                record.args()
+            )
         })
         .init();
-    
-    println!("[FLOATNOTE] [{}] [LOGGING] Log file initialized at: {}", 
+
+    println!(
+        "[FLOATNOTE] [{}] [LOGGING] Log file initialized at: {}",
         Local::now().format("%Y-%m-%d %H:%M:%S%.3f"),
-        log_file.display());
-    
+        log_file.display()
+    );
+
     Ok(log_file)
 }
 
@@ -46,7 +53,7 @@ macro_rules! floatnote_log {
 
         // Log to console (visible in dev mode)
         println!("[FLOATNOTE] [{}] [{}] [{}] {}", timestamp, $level, $category, message);
-        
+
         // Log to file using standard log crate
         match $level {
             "ERROR" => log::error!(target: $category, "{}", message),
@@ -61,28 +68,28 @@ macro_rules! floatnote_log {
 #[macro_export]
 macro_rules! log_info {
     ($category:expr, $($arg:tt)*) => {{
-        crate::floatnote_log!("INFO", $category, $($arg)*);
+        $crate::floatnote_log!("INFO", $category, $($arg)*);
     }};
 }
 
 #[macro_export]
 macro_rules! log_error {
     ($category:expr, $($arg:tt)*) => {{
-        crate::floatnote_log!("ERROR", $category, $($arg)*);
+        $crate::floatnote_log!("ERROR", $category, $($arg)*);
     }};
 }
 
 #[macro_export]
 macro_rules! log_debug {
     ($category:expr, $($arg:tt)*) => {{
-        crate::floatnote_log!("DEBUG", $category, $($arg)*);
+        $crate::floatnote_log!("DEBUG", $category, $($arg)*);
     }};
 }
 
 #[macro_export]
 macro_rules! log_warn {
     ($category:expr, $($arg:tt)*) => {{
-        crate::floatnote_log!("WARN", $category, $($arg)*);
+        $crate::floatnote_log!("WARN", $category, $($arg)*);
     }};
 }
 
@@ -94,7 +101,7 @@ pub async fn get_log_file_path() -> Result<String, String> {
         .join("com.float-note.dev")
         .join("logs")
         .join("float-note.log");
-    
+
     Ok(app_data_dir.to_string_lossy().to_string())
 }
 
@@ -106,14 +113,14 @@ pub async fn get_recent_logs(lines: Option<usize>) -> Result<String, String> {
         .join("com.float-note.dev")
         .join("logs")
         .join("float-note.log");
-    
+
     if !app_data_dir.exists() {
         return Ok("Log file not found".to_string());
     }
-    
+
     let content = std::fs::read_to_string(&app_data_dir)
         .map_err(|e| format!("Failed to read log file: {}", e))?;
-    
+
     let lines_to_show = lines.unwrap_or(100);
     let recent_lines: Vec<&str> = content
         .lines()
@@ -123,6 +130,6 @@ pub async fn get_recent_logs(lines: Option<usize>) -> Result<String, String> {
         .into_iter()
         .rev()
         .collect();
-    
+
     Ok(recent_lines.join("\n"))
 }

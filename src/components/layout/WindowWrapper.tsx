@@ -6,7 +6,11 @@ interface WindowWrapperProps {
   style?: React.CSSProperties;
 }
 
-export function WindowWrapper({ children, className = '', style }: WindowWrapperProps) {
+export function WindowWrapper({
+  children,
+  className = '',
+  style,
+}: WindowWrapperProps) {
   return (
     <div
       className={`w-full h-full text-foreground flex flex-col rounded-lg overflow-hidden border border-border/30 shadow-elegant ${className}`}

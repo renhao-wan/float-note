@@ -1,10 +1,12 @@
-use uuid::{Uuid, uuid};
+use uuid::{uuid, Uuid};
 
 // FloatNote 专属 namespace UUID v4（避免与其他使用 RFC 4122 DNS namespace 的系统冲突）
+#[allow(dead_code)]
 const FLOATNOTE_NAMESPACE: Uuid = uuid!("4d90eaf3-f299-4bb4-a150-900c6b820a54");
 
 /// Generate a deterministic UUID v5 from a slug
 /// The same slug will always produce the same UUID
+#[allow(dead_code)]
 pub fn uuid_from_slug(slug: &str) -> String {
     Uuid::new_v5(&FLOATNOTE_NAMESPACE, slug.as_bytes()).to_string()
 }
@@ -27,19 +29,19 @@ mod tests {
         let slug = "my-awesome-note";
         let uuid1 = uuid_from_slug(slug);
         let uuid2 = uuid_from_slug(slug);
-        
+
         // Same slug should always produce the same UUID
         assert_eq!(uuid1, uuid2);
-        
+
         // Should be a valid UUID format
         assert!(Uuid::parse_str(&uuid1).is_ok());
     }
-    
+
     #[test]
     fn test_different_slugs_different_uuids() {
         let uuid1 = uuid_from_slug("note-one");
         let uuid2 = uuid_from_slug("note-two");
-        
+
         // Different slugs should produce different UUIDs
         assert_ne!(uuid1, uuid2);
     }

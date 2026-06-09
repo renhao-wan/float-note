@@ -1,9 +1,11 @@
 use crate::error::FloatNoteResult;
-use crate::handlers::{build_app_menu, handle_menu_event, register_global_shortcuts, handle_global_shortcut};
 use crate::handlers::window_handler::apply_initial_window_settings;
+use crate::handlers::{
+    build_app_menu, handle_global_shortcut, handle_menu_event, register_global_shortcuts,
+};
 use crate::startup::data_loader::load_application_data;
-use crate::{DetachedWindowsState, NotesState};
 use crate::{log_error, log_info};
+use crate::{DetachedWindowsState, NotesState};
 use tauri::{App, Manager};
 use tauri_plugin_global_shortcut::ShortcutState;
 
@@ -20,7 +22,7 @@ pub fn setup_app(app: &mut App) -> FloatNoteResult<()> {
     tauri::async_runtime::block_on(async {
         let notes_lock = notes_state.lock().await;
         let windows_lock = detached_windows_state.lock().await;
-        if let Ok(menu) = build_app_menu(&app_handle_for_menu, &*windows_lock, &*notes_lock) {
+        if let Ok(menu) = build_app_menu(&app_handle_for_menu, &windows_lock, &notes_lock) {
             let _ = app_handle_for_menu.set_menu(menu);
         }
     });
@@ -33,9 +35,8 @@ pub fn setup_app(app: &mut App) -> FloatNoteResult<()> {
 
     // Apply config settings synchronously
     let config_state_ref = app.state::<crate::ConfigState>();
-    let config_for_init = tauri::async_runtime::block_on(async {
-        config_state_ref.lock().await.clone()
-    });
+    let config_for_init =
+        tauri::async_runtime::block_on(async { config_state_ref.lock().await.clone() });
 
     apply_initial_window_settings(&app_handle, &config_for_init);
 
@@ -51,7 +52,13 @@ pub fn setup_app(app: &mut App) -> FloatNoteResult<()> {
 }
 
 /// Build the global shortcut handler
-pub fn build_shortcut_handler() -> impl Fn(&tauri::AppHandle, &tauri_plugin_global_shortcut::Shortcut, tauri_plugin_global_shortcut::ShortcutEvent) + Send + Sync + 'static {
+pub fn build_shortcut_handler() -> impl Fn(
+    &tauri::AppHandle,
+    &tauri_plugin_global_shortcut::Shortcut,
+    tauri_plugin_global_shortcut::ShortcutEvent,
+) + Send
+       + Sync
+       + 'static {
     |app, shortcut, event| {
         log_info!(
             "SHORTCUT-HANDLER",
@@ -59,7 +66,7 @@ pub fn build_shortcut_handler() -> impl Fn(&tauri::AppHandle, &tauri_plugin_glob
             event.state,
             shortcut
         );
-        
+
         if event.state == ShortcutState::Pressed {
             handle_global_shortcut(app, shortcut, event.state);
         }
@@ -67,7 +74,8 @@ pub fn build_shortcut_handler() -> impl Fn(&tauri::AppHandle, &tauri_plugin_glob
 }
 
 /// Build the menu event handler
-pub fn build_menu_handler() -> impl Fn(&tauri::AppHandle, tauri::menu::MenuEvent) + Send + Sync + 'static {
+pub fn build_menu_handler(
+) -> impl Fn(&tauri::AppHandle, tauri::menu::MenuEvent) + Send + Sync + 'static {
     |app, event| {
         let menu_id = event.id();
         handle_menu_event(app, menu_id.0.as_str());

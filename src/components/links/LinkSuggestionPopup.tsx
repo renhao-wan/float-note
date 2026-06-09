@@ -52,11 +52,13 @@ export function LinkSuggestionPopup({
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
-          setSelectedIndex(prev => (prev + 1) % suggestions.length);
+          setSelectedIndex((prev) => (prev + 1) % suggestions.length);
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setSelectedIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+          setSelectedIndex(
+            (prev) => (prev - 1 + suggestions.length) % suggestions.length
+          );
           break;
         case 'Enter':
           e.preventDefault();
@@ -78,7 +80,10 @@ export function LinkSuggestionPopup({
   // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         onClose();
       }
     };

@@ -2,11 +2,11 @@
 
 ## 窗口类型
 
-| 类型 | 前缀 | 说明 |
-|------|------|------|
-| 主窗口 | `main` | 应用主窗口，唯一 |
-| 分离窗口 | `note-` | 笔记浮动窗口 |
-| 拖拽预览 | `drag-ghost-` | 拖拽时的预览窗口 |
+| 类型     | 前缀           | 说明                     |
+| -------- | -------------- | ------------------------ |
+| 主窗口   | `main`         | 应用主窗口，唯一         |
+| 分离窗口 | `note-`        | 笔记浮动窗口             |
+| 拖拽预览 | `drag-ghost-`  | 拖拽时的预览窗口         |
 | 混合拖拽 | `hybrid-drag-` | 拖拽分离过程中的过渡窗口 |
 
 ## 窗口操作
@@ -25,12 +25,12 @@
 
 ### 窗口状态
 
-| 状态 | 说明 |
-|------|------|
+| 状态        | 说明                     |
+| ----------- | ------------------------ |
 | `is_shaded` | 折叠模式（仅显示标题栏） |
-| `is_pinned` | 置顶模式 |
-| `position` | 窗口位置 [x, y] |
-| `size` | 窗口大小 [width, height] |
+| `is_pinned` | 置顶模式                 |
+| `position`  | 窗口位置 [x, y]          |
+| `size`      | 窗口大小 [width, height] |
 
 ## 状态同步
 
@@ -38,14 +38,14 @@
 
 使用 Tauri 事件系统实现跨窗口同步：
 
-| 事件 | 数据 | 说明 |
-|------|------|------|
-| `note-created` | Note | 创建笔记 |
-| `note-updated` | Note | 更新笔记 |
-| `note-deleted` | string (id) | 删除笔记 |
-| `config-updated` | AppConfig | 配置变更 |
-| `window-closed` | string (note_id) | 关闭窗口 |
-| `all-detached-windows-cleared` | number | 关闭所有窗口 |
+| 事件                           | 数据             | 说明         |
+| ------------------------------ | ---------------- | ------------ |
+| `note-created`                 | Note             | 创建笔记     |
+| `note-updated`                 | Note             | 更新笔记     |
+| `note-deleted`                 | string (id)      | 删除笔记     |
+| `config-updated`               | AppConfig        | 配置变更     |
+| `window-closed`                | string (note_id) | 关闭窗口     |
+| `all-detached-windows-cleared` | number           | 关闭所有窗口 |
 
 ### 同步流程
 
@@ -76,10 +76,10 @@
 
 使用策略模式实现跨平台透明度控制：
 
-| 平台 | 实现方式 |
-|------|----------|
-| macOS | NSWindow API |
-| Windows | Win32 API |
-| Linux | X11/Wayland |
+| 平台    | 实现方式     |
+| ------- | ------------ |
+| macOS   | NSWindow API |
+| Windows | Win32 API    |
+| Linux   | X11/Wayland  |
 
 只有分离窗口支持透明度控制，主窗口不支持。

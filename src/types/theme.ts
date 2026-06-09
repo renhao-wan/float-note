@@ -11,26 +11,26 @@ export interface Theme {
     // Core colors
     background: string;
     foreground: string;
-    
+
     // UI colors
     card: string;
     cardForeground: string;
-    
+
     // Interactive colors
     primary: string;
     primaryForeground: string;
-    
+
     // State colors
     muted: string;
     mutedForeground: string;
-    
+
     // Borders and dividers
     border: string;
-    
+
     // Accent colors
     accent: string;
     accentForeground: string;
-    
+
     // Semantic colors
     destructive: string;
     destructiveForeground: string;
@@ -41,7 +41,13 @@ export interface Theme {
     scale?: number;
     color?: string;
   };
-  codeTheme?: 'github-dark' | 'github-light' | 'dracula' | 'monokai' | 'nord' | 'one-dark';
+  codeTheme?:
+    | 'github-dark'
+    | 'github-light'
+    | 'dracula'
+    | 'monokai'
+    | 'nord'
+    | 'one-dark';
 }
 
 export interface ThemePreset extends Theme {
@@ -544,31 +550,39 @@ export const themes: Record<string, ThemePreset> = {
 export function hexToHSL(hex: string): string {
   // Remove the # if present
   hex = hex.replace('#', '');
-  
+
   // Convert hex to RGB
   const r = parseInt(hex.substring(0, 2), 16) / 255;
   const g = parseInt(hex.substring(2, 4), 16) / 255;
   const b = parseInt(hex.substring(4, 6), 16) / 255;
-  
+
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
-  let h = 0, s = 0, l = (max + min) / 2;
-  
+  let h = 0,
+    s = 0,
+    l = (max + min) / 2;
+
   if (max !== min) {
     const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    
+
     switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-      case g: h = ((b - r) / d + 2) / 6; break;
-      case b: h = ((r - g) / d + 4) / 6; break;
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+        break;
+      case g:
+        h = ((b - r) / d + 2) / 6;
+        break;
+      case b:
+        h = ((r - g) / d + 4) / 6;
+        break;
     }
   }
-  
+
   h = Math.round(h * 360);
   s = Math.round(s * 100);
   l = Math.round(l * 100);
-  
+
   // Return in Tailwind's expected format
   return `${h} ${s}% ${l}%`;
 }
@@ -576,46 +590,59 @@ export function hexToHSL(hex: string): string {
 // Helper function to apply theme to CSS variables
 export function applyTheme(theme: Theme): void {
   const root = document.documentElement;
-  
+
   console.log('[THEME] Applying theme colors:', theme.name);
-  
+
   // Apply colors (convert hex to HSL for Tailwind)
   Object.entries(theme.colors).forEach(([key, value]) => {
     const cssVarName = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
     const hslValue = hexToHSL(value);
-    console.log('[THEME] Setting', cssVarName, '=', hslValue, '(from', value, ')');
+    console.log(
+      '[THEME] Setting',
+      cssVarName,
+      '=',
+      hslValue,
+      '(from',
+      value,
+      ')'
+    );
     root.style.setProperty(cssVarName, hslValue);
-    
+
     // Verify it was set
     const actualValue = root.style.getPropertyValue(cssVarName);
     console.log('[THEME] Verified', cssVarName, 'is now:', actualValue);
   });
-  
+
   // Apply fonts
   root.style.setProperty('--font-editor', theme.fonts.editor);
   root.style.setProperty('--font-preview', theme.fonts.preview);
   root.style.setProperty('--font-ui', theme.fonts.ui);
-  
+
   // Apply background texture
   if (theme.backgroundTexture && theme.backgroundTexture.type !== 'none') {
     root.classList.add(`bg-texture-${theme.backgroundTexture.type}`);
     if (theme.backgroundTexture.opacity) {
-      root.style.setProperty('--texture-opacity', theme.backgroundTexture.opacity.toString());
+      root.style.setProperty(
+        '--texture-opacity',
+        theme.backgroundTexture.opacity.toString()
+      );
     }
     if (theme.backgroundTexture.color) {
       root.style.setProperty('--texture-color', theme.backgroundTexture.color);
     }
   } else {
     // Remove all texture classes
-    ['paper', 'canvas', 'grid', 'dots', 'noise', 'gradient'].forEach(texture => {
-      root.classList.remove(`bg-texture-${texture}`);
-    });
+    ['paper', 'canvas', 'grid', 'dots', 'noise', 'gradient'].forEach(
+      (texture) => {
+        root.classList.remove(`bg-texture-${texture}`);
+      }
+    );
   }
 }
 
 // Get theme by ID (searches by theme.id property, not object key)
 export function getThemeById(id: string): Theme | undefined {
-  return Object.values(themes).find(theme => theme.id === id);
+  return Object.values(themes).find((theme) => theme.id === id);
 }
 
 // Get all theme IDs

@@ -1,11 +1,12 @@
 use std::fs;
 use std::path::PathBuf;
 use uuid::Uuid;
+use base64::Engine;
 
-use crate::types::attachment::{Attachment, UploadAttachmentRequest};
-use crate::modules::storage::get_configured_notes_directory;
-use crate::log_info;
 use crate::error::FloatNoteError;
+use crate::log_info;
+use crate::modules::storage::get_configured_notes_directory;
+use crate::types::attachment::{Attachment, UploadAttachmentRequest};
 
 /// Response for save_clipboard_image
 #[derive(serde::Serialize)]
@@ -14,7 +15,10 @@ pub struct SaveImageResponse {
 }
 
 /// Get the attachments directory for a note
-fn get_attachments_dir(config: &crate::types::config::AppConfig, note_id: &str) -> Result<PathBuf, String> {
+fn get_attachments_dir(
+    config: &crate::types::config::AppConfig,
+    note_id: &str,
+) -> Result<PathBuf, String> {
     let notes_dir = get_configured_notes_directory(config)?;
     let attachments_dir = notes_dir.join("attachments").join(note_id);
 
@@ -28,13 +32,19 @@ fn get_attachments_dir(config: &crate::types::config::AppConfig, note_id: &str) 
 }
 
 /// Get the metadata file path for note attachments
-fn get_metadata_path(config: &crate::types::config::AppConfig, note_id: &str) -> Result<PathBuf, String> {
+fn get_metadata_path(
+    config: &crate::types::config::AppConfig,
+    note_id: &str,
+) -> Result<PathBuf, String> {
     let attachments_dir = get_attachments_dir(config, note_id)?;
     Ok(attachments_dir.join("metadata.json"))
 }
 
 /// Load attachments metadata from disk
-fn load_metadata(config: &crate::types::config::AppConfig, note_id: &str) -> Result<Vec<Attachment>, String> {
+fn load_metadata(
+    config: &crate::types::config::AppConfig,
+    note_id: &str,
+) -> Result<Vec<Attachment>, String> {
     let metadata_path = get_metadata_path(config, note_id)?;
 
     if !metadata_path.exists() {
@@ -93,12 +103,19 @@ pub async fn upload_attachment(
 ) -> Result<Attachment, FloatNoteError> {
     let config_lock = config.lock().await;
 
-    log_info!("ATTACHMENTS", "Uploading attachment for note: {}", request.note_id);
+    log_info!(
+        "ATTACHMENTS",
+        "Uploading attachment for note: {}",
+        request.note_id
+    );
 
     // Check if source file exists
     let source_path = PathBuf::from(&request.file_path);
     if !source_path.exists() {
-        return Err(FloatNoteError::NotFound(format!("File not found: {}", request.file_path)));
+        return Err(FloatNoteError::NotFound(format!(
+            "File not found: {}",
+            request.file_path
+        )));
     }
 
     // Get file info
@@ -123,7 +140,7 @@ pub async fn upload_attachment(
 
     // Get attachments directory
     let attachments_dir = get_attachments_dir(&config_lock, &request.note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+        .map_err(FloatNoteError::Storage)?;
 
     let dest_path = attachments_dir.join(&filename);
 
@@ -144,17 +161,22 @@ pub async fn upload_attachment(
     };
 
     // Load existing metadata
-    let mut metadata = load_metadata(&config_lock, &request.note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let mut metadata =
+        load_metadata(&config_lock, &request.note_id).map_err(FloatNoteError::Storage)?;
 
     // Add new attachment
     metadata.push(attachment.clone());
 
     // Save metadata
     save_metadata(&config_lock, &request.note_id, &metadata)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+        .map_err(FloatNoteError::Storage)?;
 
-    log_info!("ATTACHMENTS", "Uploaded attachment: {} for note: {}", attachment.id, request.note_id);
+    log_info!(
+        "ATTACHMENTS",
+        "Uploaded attachment: {} for note: {}",
+        attachment.id,
+        request.note_id
+    );
 
     Ok(attachment)
 }
@@ -168,21 +190,29 @@ pub async fn delete_attachment(
 ) -> Result<(), FloatNoteError> {
     let config_lock = config.lock().await;
 
-    log_info!("ATTACHMENTS", "Deleting attachment: {} from note: {}", attachment_id, note_id);
+    log_info!(
+        "ATTACHMENTS",
+        "Deleting attachment: {} from note: {}",
+        attachment_id,
+        note_id
+    );
 
     // Load metadata
-    let mut metadata = load_metadata(&config_lock, &note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let mut metadata =
+        load_metadata(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
 
     // Find attachment
-    let attachment = metadata.iter()
+    let attachment = metadata
+        .iter()
         .find(|a| a.id == attachment_id)
         .cloned()
-        .ok_or_else(|| FloatNoteError::NotFound(format!("Attachment not found: {}", attachment_id)))?;
+        .ok_or_else(|| {
+            FloatNoteError::NotFound(format!("Attachment not found: {}", attachment_id))
+        })?;
 
     // Delete file
-    let attachments_dir = get_attachments_dir(&config_lock, &note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let attachments_dir =
+        get_attachments_dir(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
     let file_path = attachments_dir.join(&attachment.filename);
 
     if file_path.exists() {
@@ -194,8 +224,7 @@ pub async fn delete_attachment(
     metadata.retain(|a| a.id != attachment_id);
 
     // Save metadata
-    save_metadata(&config_lock, &note_id, &metadata)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    save_metadata(&config_lock, &note_id, &metadata).map_err(FloatNoteError::Storage)?;
 
     log_info!("ATTACHMENTS", "Deleted attachment: {}", attachment_id);
 
@@ -210,8 +239,7 @@ pub async fn get_note_attachments(
 ) -> Result<Vec<Attachment>, FloatNoteError> {
     let config_lock = config.lock().await;
 
-    let metadata = load_metadata(&config_lock, &note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let metadata = load_metadata(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
 
     Ok(metadata)
 }
@@ -226,17 +254,19 @@ pub async fn get_attachment_path(
     let config_lock = config.lock().await;
 
     // Load metadata
-    let metadata = load_metadata(&config_lock, &note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let metadata = load_metadata(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
 
     // Find attachment
-    let attachment = metadata.iter()
+    let attachment = metadata
+        .iter()
         .find(|a| a.id == attachment_id)
-        .ok_or_else(|| FloatNoteError::NotFound(format!("Attachment not found: {}", attachment_id)))?;
+        .ok_or_else(|| {
+            FloatNoteError::NotFound(format!("Attachment not found: {}", attachment_id))
+        })?;
 
     // Get file path
-    let attachments_dir = get_attachments_dir(&config_lock, &note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let attachments_dir =
+        get_attachments_dir(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
     let file_path = attachments_dir.join(&attachment.filename);
 
     Ok(file_path.to_string_lossy().to_string())
@@ -249,14 +279,20 @@ pub async fn paste_image_from_clipboard(
     note_id: String,
     config: tauri::State<'_, crate::ConfigState>,
 ) -> Result<Attachment, FloatNoteError> {
-    let config_lock = config.lock().await;
+    let _config_lock = config.lock().await;
 
-    log_info!("ATTACHMENTS", "Pasting image from clipboard for note: {}", note_id);
+    log_info!(
+        "ATTACHMENTS",
+        "Pasting image from clipboard for note: {}",
+        note_id
+    );
 
     // TODO: Implement proper clipboard image paste
     // This requires platform-specific implementation for macOS/Windows/Linux
     // For now, return an error indicating this feature is not yet implemented
-    Err(FloatNoteError::Storage("Clipboard paste not yet implemented. Please use file upload instead.".to_string()))
+    Err(FloatNoteError::Storage(
+        "Clipboard paste not yet implemented. Please use file upload instead.".to_string(),
+    ))
 }
 
 /// Read an image file and return as base64 data URL
@@ -268,15 +304,18 @@ pub async fn read_image_as_base64(
     let config_lock = config.lock().await;
 
     // Get the notes directory
-    let notes_dir = get_configured_notes_directory(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let notes_dir =
+        get_configured_notes_directory(&config_lock).map_err(FloatNoteError::Storage)?;
 
     // Build the full file path
     let file_path = notes_dir.join(&path);
 
     // Check if file exists
     if !file_path.exists() {
-        return Err(FloatNoteError::NotFound(format!("Image file not found: {}", path)));
+        return Err(FloatNoteError::NotFound(format!(
+            "Image file not found: {}",
+            path
+        )));
     }
 
     // Read the file
@@ -284,7 +323,10 @@ pub async fn read_image_as_base64(
         .map_err(|e| FloatNoteError::Storage(format!("Failed to read image: {}", e)))?;
 
     // Determine MIME type from extension
-    let ext = file_path.extension().and_then(|e| e.to_str()).unwrap_or("png");
+    let ext = file_path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("png");
     let mime_type = match ext.to_lowercase().as_str() {
         "jpg" | "jpeg" => "image/jpeg",
         "png" => "image/png",
@@ -294,7 +336,7 @@ pub async fn read_image_as_base64(
     };
 
     // Encode as base64
-    let base64_data = base64::encode(&image_bytes);
+    let base64_data = base64::engine::general_purpose::STANDARD.encode(&image_bytes);
 
     // Return as data URL
     Ok(format!("data:{};base64,{}", mime_type, base64_data))
@@ -310,7 +352,11 @@ pub async fn save_clipboard_image(
 ) -> Result<SaveImageResponse, FloatNoteError> {
     let config_lock = config.lock().await;
 
-    log_info!("ATTACHMENTS", "Saving clipboard image for note: {}", note_id);
+    log_info!(
+        "ATTACHMENTS",
+        "Saving clipboard image for note: {}",
+        note_id
+    );
 
     // Extract base64 data (remove data:image/xxx;base64, prefix)
     let base64_data = if image_data.contains(',') {
@@ -320,12 +366,13 @@ pub async fn save_clipboard_image(
     };
 
     // Decode base64
-    let image_bytes = base64::decode(base64_data)
+    let image_bytes = base64::engine::general_purpose::STANDARD
+        .decode(base64_data)
         .map_err(|e| FloatNoteError::Storage(format!("Failed to decode base64: {}", e)))?;
 
     // Get attachments directory
-    let attachments_dir = get_attachments_dir(&config_lock, &note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let attachments_dir =
+        get_attachments_dir(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
 
     // Generate unique filename
     let ext = filename.rsplit('.').next().unwrap_or("png").to_string();
@@ -351,17 +398,21 @@ pub async fn save_clipboard_image(
     };
 
     // Load existing metadata
-    let mut metadata = load_metadata(&config_lock, &note_id)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let mut metadata =
+        load_metadata(&config_lock, &note_id).map_err(FloatNoteError::Storage)?;
 
     // Add new attachment
     metadata.push(attachment);
 
     // Save metadata
-    save_metadata(&config_lock, &note_id, &metadata)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    save_metadata(&config_lock, &note_id, &metadata).map_err(FloatNoteError::Storage)?;
 
-    log_info!("ATTACHMENTS", "Saved clipboard image: {} for note: {}", new_filename, note_id);
+    log_info!(
+        "ATTACHMENTS",
+        "Saved clipboard image: {} for note: {}",
+        new_filename,
+        note_id
+    );
 
     Ok(SaveImageResponse {
         filename: new_filename,

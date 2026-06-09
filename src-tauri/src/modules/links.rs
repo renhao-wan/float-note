@@ -1,13 +1,13 @@
-use std::fs;
-use std::path::PathBuf;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::PathBuf;
 
-use crate::types::link::{NoteLink, Backlink, LinkSuggestion};
-use crate::NotesState;
-use crate::modules::storage::get_configured_notes_directory;
-use crate::log_info;
 use crate::error::FloatNoteError;
+use crate::log_info;
+use crate::modules::storage::get_configured_notes_directory;
+use crate::types::link::{Backlink, LinkSuggestion, NoteLink};
+use crate::NotesState;
 
 /// Link index stored in .floatnote/links.json
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -41,24 +41,26 @@ fn load_link_index(config: &crate::types::config::AppConfig) -> Result<LinkIndex
         });
     }
 
-    let content = fs::read_to_string(&index_path)
-        .map_err(|e| format!("Failed to read link index: {}", e))?;
+    let content =
+        fs::read_to_string(&index_path).map_err(|e| format!("Failed to read link index: {}", e))?;
 
-    let index: LinkIndex = serde_json::from_str(&content)
-        .map_err(|e| format!("Failed to parse link index: {}", e))?;
+    let index: LinkIndex =
+        serde_json::from_str(&content).map_err(|e| format!("Failed to parse link index: {}", e))?;
 
     Ok(index)
 }
 
 /// Save link index to disk
-fn save_link_index(config: &crate::types::config::AppConfig, index: &LinkIndex) -> Result<(), String> {
+fn save_link_index(
+    config: &crate::types::config::AppConfig,
+    index: &LinkIndex,
+) -> Result<(), String> {
     let index_path = get_link_index_path(config)?;
 
     let content = serde_json::to_string_pretty(index)
         .map_err(|e| format!("Failed to serialize link index: {}", e))?;
 
-    fs::write(&index_path, content)
-        .map_err(|e| format!("Failed to write link index: {}", e))?;
+    fs::write(&index_path, content).map_err(|e| format!("Failed to write link index: {}", e))?;
 
     Ok(())
 }
@@ -81,7 +83,9 @@ fn extract_wikilinks(content: &str) -> Vec<String> {
 /// Get context around a link (the line containing the link)
 fn get_link_context(content: &str, link_text: &str) -> String {
     for line in content.lines() {
-        if line.contains(&format!("[[{}]]", link_text)) || line.contains(&format!("[[{}|", link_text)) {
+        if line.contains(&format!("[[{}]]", link_text))
+            || line.contains(&format!("[[{}|", link_text))
+        {
             return line.trim().to_string();
         }
     }
@@ -113,7 +117,8 @@ pub async fn rebuild_link_index(
 
         for link_text in wikilinks {
             // Find the target note by title
-            if let Some((target_id, _)) = note_titles.iter().find(|(_, title)| title == &link_text) {
+            if let Some((target_id, _)) = note_titles.iter().find(|(_, title)| title == &link_text)
+            {
                 let now = chrono::Utc::now().to_rfc3339();
                 let link = NoteLink {
                     source_id: note.id.clone(),
@@ -131,10 +136,13 @@ pub async fn rebuild_link_index(
         last_rebuild: chrono::Utc::now().to_rfc3339(),
     };
 
-    save_link_index(&config_lock, &index)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    save_link_index(&config_lock, &index).map_err(FloatNoteError::Storage)?;
 
-    log_info!("LINKS", "Link index rebuilt with {} links", index.links.len());
+    log_info!(
+        "LINKS",
+        "Link index rebuilt with {} links",
+        index.links.len()
+    );
 
     Ok(())
 }
@@ -149,8 +157,7 @@ pub async fn get_backlinks(
     let notes_lock = notes.lock().await;
     let config_lock = config.lock().await;
 
-    let index = load_link_index(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let index = load_link_index(&config_lock).map_err(FloatNoteError::Storage)?;
 
     let mut backlinks = Vec::new();
 
@@ -180,10 +187,10 @@ pub async fn get_outgoing_links(
 ) -> Result<Vec<NoteLink>, FloatNoteError> {
     let config_lock = config.lock().await;
 
-    let index = load_link_index(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let index = load_link_index(&config_lock).map_err(FloatNoteError::Storage)?;
 
-    let outgoing: Vec<NoteLink> = index.links
+    let outgoing: Vec<NoteLink> = index
+        .links
         .iter()
         .filter(|link| link.source_id == note_id)
         .cloned()

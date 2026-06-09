@@ -68,7 +68,9 @@ export class TransparencyStrategyManager {
     }
 
     // 默认回退到 macOS 策略（开发环境）
-    console.warn('[TRANSPARENCY] Unknown platform, falling back to macOS strategy');
+    console.warn(
+      '[TRANSPARENCY] Unknown platform, falling back to macOS strategy'
+    );
     return new MacOSTransparencyStrategy();
   }
 
@@ -179,6 +181,5 @@ export function getTransparencyManager(): TransparencyStrategyManager {
 }
 
 // 保持向后兼容的导出（仅在浏览器环境创建）
-export const transparencyManager = typeof window !== 'undefined'
-  ? getTransparencyManager()
-  : null;
+export const transparencyManager =
+  typeof window !== 'undefined' ? getTransparencyManager() : null;

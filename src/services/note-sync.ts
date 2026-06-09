@@ -21,7 +21,7 @@ class NoteSyncService {
 
   // Emit sync events to all listeners
   private emit(event: SyncEvent) {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
         listener(event);
       } catch (error) {
@@ -61,7 +61,10 @@ class NoteSyncService {
 export const noteSyncService = new NoteSyncService();
 
 // Hook for using sync in React components
-export function useNoteSync(noteId: string | null, onNoteUpdate: (note: Note) => void) {
+export function useNoteSync(
+  noteId: string | null,
+  onNoteUpdate: (note: Note) => void
+) {
   // Use ref to hold latest callback, avoiding unnecessary re-subscriptions
   const onNoteUpdateRef = useRef(onNoteUpdate);
   onNoteUpdateRef.current = onNoteUpdate;
@@ -71,7 +74,11 @@ export function useNoteSync(noteId: string | null, onNoteUpdate: (note: Note) =>
     if (!noteId) return;
 
     const unsubscribe = noteSyncService.subscribe((event) => {
-      if (event.noteId === noteId && event.type === 'note-updated' && event.note) {
+      if (
+        event.noteId === noteId &&
+        event.type === 'note-updated' &&
+        event.note
+      ) {
         onNoteUpdateRef.current(event.note);
       }
     });

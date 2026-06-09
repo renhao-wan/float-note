@@ -1,7 +1,7 @@
 // Layout components
 export * from './layout';
 
-// Notes components  
+// Notes components
 export * from './notes';
 
 // Settings components

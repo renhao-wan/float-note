@@ -30,9 +30,12 @@ export class WindowsTransparencyStrategy implements TransparencyStrategy {
    */
   async getOpacity(windowLabel: string): Promise<number> {
     try {
-      const opacity = await invoke<number>('get_detached_window_opacity_windows', {
-        windowLabel,
-      });
+      const opacity = await invoke<number>(
+        'get_detached_window_opacity_windows',
+        {
+          windowLabel,
+        }
+      );
       return opacity;
     } catch (error) {
       console.error('[WINDOWS_TRANSPARENCY] Failed to get opacity:', error);

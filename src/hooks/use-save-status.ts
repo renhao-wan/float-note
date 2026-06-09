@@ -21,7 +21,7 @@ export function useSaveStatus(): SaveStatus & {
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const startSaving = () => {
-    setStatus(prev => ({ ...prev, isSaving: true, saveError: null }));
+    setStatus((prev) => ({ ...prev, isSaving: true, saveError: null }));
   };
 
   const saveSuccess = () => {
@@ -38,10 +38,10 @@ export function useSaveStatus(): SaveStatus & {
   };
 
   const setSaveError = (error: string) => {
-    setStatus(prev => ({ 
-      ...prev, 
-      isSaving: false, 
-      saveError: error 
+    setStatus((prev) => ({
+      ...prev,
+      isSaving: false,
+      saveError: error,
     }));
   };
 

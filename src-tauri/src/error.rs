@@ -75,21 +75,25 @@ macro_rules! to_string_error {
 }
 
 /// 辅助函数：创建存储错误
+#[allow(dead_code)]
 pub fn storage_error(msg: impl Into<String>) -> FloatNoteError {
     FloatNoteError::Storage(msg.into())
 }
 
 /// 辅助函数：创建窗口错误
+#[allow(dead_code)]
 pub fn window_error(msg: impl Into<String>) -> FloatNoteError {
     FloatNoteError::Window(msg.into())
 }
 
 /// 辅助函数：创建配置错误
+#[allow(dead_code)]
 pub fn config_error(msg: impl Into<String>) -> FloatNoteError {
     FloatNoteError::Config(msg.into())
 }
 
 /// 辅助函数：创建无效操作错误
+#[allow(dead_code)]
 pub fn invalid_operation(msg: impl Into<String>) -> FloatNoteError {
     FloatNoteError::InvalidOperation(msg.into())
 }

@@ -35,25 +35,25 @@
 @layer base {
   :root {
     /* ─── Obsidian Observatory palette ─── */
-    --background: 24 10% 8%;          /* #141311 deep warm charcoal */
-    --foreground: 36 28% 89%;         /* #e8e2d6 warm parchment white */
-    --card: 24 10% 11%;               /* #1e1c18 warm surface */
-    --card-foreground: 36 24% 87%;    /* #e4ddd0 */
+    --background: 24 10% 8%; /* #141311 deep warm charcoal */
+    --foreground: 36 28% 89%; /* #e8e2d6 warm parchment white */
+    --card: 24 10% 11%; /* #1e1c18 warm surface */
+    --card-foreground: 36 24% 87%; /* #e4ddd0 */
     --popover: 24 10% 11%;
     --popover-foreground: 36 24% 87%;
-    --primary: 34 62% 60%;            /* #d4a053 warm amber gold */
+    --primary: 34 62% 60%; /* #d4a053 warm amber gold */
     --primary-foreground: 24 10% 8%;
-    --secondary: 24 8% 14%;           /* #252320 warm secondary */
+    --secondary: 24 8% 14%; /* #252320 warm secondary */
     --secondary-foreground: 36 18% 72%;
-    --muted: 24 8% 14%;               /* #252320 */
-    --muted-foreground: 36 14% 55%;   /* #9e917e */
-    --accent: 172 22% 46%;            /* #5a9e96 muted teal */
+    --muted: 24 8% 14%; /* #252320 */
+    --muted-foreground: 36 14% 55%; /* #9e917e */
+    --accent: 172 22% 46%; /* #5a9e96 muted teal */
     --accent-foreground: 36 28% 93%;
-    --destructive: 4 58% 56%;         /* #d45858 warm coral */
+    --destructive: 4 58% 56%; /* #d45858 warm coral */
     --destructive-foreground: 36 28% 93%;
-    --border: 24 8% 18%;              /* #2e2b27 subtle warm lines */
+    --border: 24 8% 18%; /* #2e2b27 subtle warm lines */
     --input: 24 8% 18%;
-    --ring: 34 62% 60%;               /* amber glow */
+    --ring: 34 62% 60%; /* amber glow */
     --radius: 0.5rem;
 
     /* ─── Layout surfaces ─── */
@@ -77,7 +77,9 @@
     @apply border-border;
   }
 
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -88,7 +90,9 @@
   body {
     color: hsl(var(--foreground));
     background: transparent;
-    font-feature-settings: 'liga' 1, 'calt' 1;
+    font-feature-settings:
+      'liga' 1,
+      'calt' 1;
     letter-spacing: -0.015em;
     line-height: 1.5;
     font-size: 12px;
@@ -100,11 +104,14 @@
   }
 
   /* ─── Buttons — pointer cursor ─── */
-  button, [role="button"], a[href] {
+  button,
+  [role='button'],
+  a[href] {
     cursor: pointer;
   }
 
-  button:disabled, [disabled] {
+  button:disabled,
+  [disabled] {
     cursor: not-allowed;
   }
 
@@ -114,25 +121,40 @@
     font-weight: 400;
     line-height: 1.72;
     letter-spacing: -0.008em;
-    font-feature-settings: 'kern' 1, 'liga' 1;
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1;
   }
 
   /* ─── Monospace for code ─── */
   .mono-font {
     font-family: var(--font-editor);
-    font-feature-settings: 'liga' 1, 'calt' 1;
+    font-feature-settings:
+      'liga' 1,
+      'calt' 1;
   }
 
   /* ─── Headings — warm and authoritative ─── */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 600;
     letter-spacing: -0.04em;
     line-height: 1.3;
   }
 
-  h1 { font-size: 1.25rem; }
-  h2 { font-size: 1.125rem; }
-  h3 { font-size: 1rem; }
+  h1 {
+    font-size: 1.25rem;
+  }
+  h2 {
+    font-size: 1.125rem;
+  }
+  h3 {
+    font-size: 1rem;
+  }
 
   /* ─── Scrollbar — minimal warm accent ─── */
   ::-webkit-scrollbar {
@@ -219,7 +241,11 @@
 
   /* ─── Slider ─── */
   .slider {
-    background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--muted)) 100%);
+    background: linear-gradient(
+      90deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--muted)) 100%
+    );
     outline: none;
     opacity: 0.8;
     transition: opacity 0.2s;
@@ -270,14 +296,13 @@
      ═══════════════════════════════════════════ */
   .bg-pattern-paper {
     background-color: hsl(var(--background));
-    background-image:
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 1px,
-        hsl(var(--border) / 0.04) 1px,
-        hsl(var(--border) / 0.04) 2px
-      );
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      hsl(var(--border) / 0.04) 1px,
+      hsl(var(--border) / 0.04) 2px
+    );
   }
 
   .bg-pattern-canvas {
@@ -309,8 +334,11 @@
 
   .bg-pattern-dots {
     background-color: hsl(var(--background));
-    background-image:
-      radial-gradient(circle at 1px 1px, hsl(var(--border) / 0.12) 1px, transparent 1px);
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      hsl(var(--border) / 0.12) 1px,
+      transparent 1px
+    );
     background-size: 20px 20px;
   }
 
@@ -322,14 +350,13 @@
     position: fixed;
     inset: 0;
     opacity: var(--texture-opacity);
-    background-image:
-      repeating-linear-gradient(
-        100deg,
-        transparent,
-        transparent 2px,
-        var(--texture-color, hsl(var(--foreground))) 2px,
-        var(--texture-color, hsl(var(--foreground))) 3px
-      );
+    background-image: repeating-linear-gradient(
+      100deg,
+      transparent,
+      transparent 2px,
+      var(--texture-color, hsl(var(--foreground))) 2px,
+      var(--texture-color, hsl(var(--foreground))) 3px
+    );
     pointer-events: none;
     z-index: 1;
   }
@@ -364,8 +391,15 @@
     inset: 0;
     opacity: var(--texture-opacity);
     background-image:
-      linear-gradient(var(--texture-color, hsl(var(--foreground))) 1px, transparent 1px),
-      linear-gradient(90deg, var(--texture-color, hsl(var(--foreground))) 1px, transparent 1px);
+      linear-gradient(
+        var(--texture-color, hsl(var(--foreground))) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        var(--texture-color, hsl(var(--foreground))) 1px,
+        transparent 1px
+      );
     background-size: 20px 20px;
     pointer-events: none;
     z-index: 1;
@@ -376,8 +410,11 @@
     position: fixed;
     inset: 0;
     opacity: var(--texture-opacity);
-    background-image:
-      radial-gradient(circle at 1px 1px, var(--texture-color, hsl(var(--foreground))) 1px, transparent 1px);
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      var(--texture-color, hsl(var(--foreground))) 1px,
+      transparent 1px
+    );
     background-size: 20px 20px;
     pointer-events: none;
     z-index: 1;
@@ -398,7 +435,11 @@
     position: fixed;
     inset: 0;
     opacity: var(--texture-opacity);
-    background: radial-gradient(ellipse at top, var(--texture-color, hsl(var(--primary))), transparent 70%);
+    background: radial-gradient(
+      ellipse at top,
+      var(--texture-color, hsl(var(--primary))),
+      transparent 70%
+    );
     pointer-events: none;
     z-index: 1;
   }
@@ -418,20 +459,22 @@
      Notebook paper styles
      ═══════════════════════════════════════════ */
   .note-paper-dotted-grid {
-    background-image:
-      radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.2) 1px, transparent 1px);
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      hsl(var(--muted-foreground) / 0.2) 1px,
+      transparent 1px
+    );
     background-size: 16px 16px;
     background-position: 0 0;
   }
 
   .note-paper-lines {
-    background-image:
-      repeating-linear-gradient(
-        transparent,
-        transparent 23px,
-        hsl(var(--muted-foreground) / 0.15) 24px,
-        hsl(var(--muted-foreground) / 0.15) 25px
-      );
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 23px,
+      hsl(var(--muted-foreground) / 0.15) 24px,
+      hsl(var(--muted-foreground) / 0.15) 25px
+    );
     background-size: 100% 24px;
   }
 
@@ -451,7 +494,9 @@
         hsl(var(--destructive) / 0.3) 81px,
         transparent 82px
       );
-    background-size: 100% 24px, 100% 100%;
+    background-size:
+      100% 24px,
+      100% 100%;
   }
 
   /* ═══════════════════════════════════════════
@@ -568,8 +613,9 @@
 
   /* ─── Window roll animation ─── */
   .window-content-transition {
-    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.2s ease-out;
+    transition:
+      height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.2s ease-out;
   }
 
   /* ─── Drag regions ─── */
@@ -665,35 +711,53 @@
    Animations
    ═══════════════════════════════════════════ */
 @keyframes spin-fast {
-  100% { transform: rotate(360deg); }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 .animate-spin-fast {
   animation: spin-fast 0.35s linear;
 }
 
 @keyframes flip-x {
-  0% { transform: perspective(200px) rotateX(0deg); }
-  100% { transform: perspective(200px) rotateX(360deg); }
+  0% {
+    transform: perspective(200px) rotateX(0deg);
+  }
+  100% {
+    transform: perspective(200px) rotateX(360deg);
+  }
 }
 .animate-flip-x {
-  animation: flip-x 0.35s cubic-bezier(0.4,0,0.2,1);
+  animation: flip-x 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Hover animations that work every time */
 @keyframes flip-x-hover {
-  0% { transform: perspective(200px) rotateX(0deg) scale(1); }
-  50% { transform: perspective(200px) rotateX(180deg) scale(1.1); }
-  100% { transform: perspective(200px) rotateX(360deg) scale(1); }
+  0% {
+    transform: perspective(200px) rotateX(0deg) scale(1);
+  }
+  50% {
+    transform: perspective(200px) rotateX(180deg) scale(1.1);
+  }
+  100% {
+    transform: perspective(200px) rotateX(360deg) scale(1);
+  }
 }
 
 @keyframes spin-hover {
-  0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.1); }
-  100% { transform: rotate(360deg) scale(1); }
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
 
 .group:hover .group-hover\:animate-flip-x {
-  animation: flip-x-hover 0.4s cubic-bezier(0.4,0,0.2,1);
+  animation: flip-x-hover 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .group:hover .group-hover\:animate-spin-fast {
@@ -716,8 +780,13 @@
 
 /* ─── Warm glow pulse for primary elements ─── */
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 8px hsl(var(--primary) / 0.15); }
-  50% { box-shadow: 0 0 16px hsl(var(--primary) / 0.25); }
+  0%,
+  100% {
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.15);
+  }
+  50% {
+    box-shadow: 0 0 16px hsl(var(--primary) / 0.25);
+  }
 }
 
 .animate-glow-pulse {

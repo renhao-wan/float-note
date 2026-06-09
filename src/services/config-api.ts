@@ -5,15 +5,15 @@ export const configApi = {
   async getConfig(): Promise<AppConfig> {
     try {
       const config = await invoke<AppConfig>('get_config');
-      
+
       if (!config) {
         throw new Error('Backend returned null config');
       }
-      
+
       if (!config.appearance) {
         throw new Error('Backend returned invalid config - missing appearance');
       }
-      
+
       return config;
     } catch (error) {
       console.error('[FLOATNOTE] Error getting config:', error);
@@ -23,16 +23,20 @@ export const configApi = {
 
   async updateConfig(config: AppConfig): Promise<AppConfig> {
     try {
-      const result = await invoke<AppConfig>('update_config', { newConfig: config });
-      
+      const result = await invoke<AppConfig>('update_config', {
+        newConfig: config,
+      });
+
       if (!result) {
         throw new Error('Backend returned null on config update');
       }
-      
+
       if (!result.appearance) {
-        throw new Error('Backend returned invalid config on update - missing appearance');
+        throw new Error(
+          'Backend returned invalid config on update - missing appearance'
+        );
       }
-      
+
       return result;
     } catch (error) {
       console.error('[FLOATNOTE] Error updating config:', error);

@@ -3,7 +3,7 @@ use crate::types::{note::Note, window::DetachedWindow};
 use crate::{log_error, log_info};
 use std::collections::HashMap;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
-use tauri::{AppHandle, Manager, Emitter};
+use tauri::{AppHandle, Emitter, Manager};
 
 /// Build the application menu with all items
 pub fn build_app_menu(
@@ -39,51 +39,69 @@ pub fn build_app_menu(
 }
 
 fn build_app_submenu(app: &AppHandle) -> FloatNoteResult<Submenu<tauri::Wry>> {
-    let app_menu = Submenu::new(app, "FloatNote", true)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    
+    let app_menu =
+        Submenu::new(app, "FloatNote", true).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+
     let about_item = MenuItem::new(app, "About FloatNote", true, None::<&str>)
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let separator = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let separator =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let services_item = MenuItem::new(app, "Services", true, None::<&str>)
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let separator2 = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let separator2 =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let hide_item = MenuItem::new(app, "Hide FloatNote", true, Some("Cmd+H"))
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let hide_others_item = MenuItem::new(app, "Hide Others", true, Some("Cmd+Alt+H"))
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let show_all_item = MenuItem::new(app, "Show All", true, None::<&str>)
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let separator3 = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let separator3 =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let quit_item = MenuItem::with_id(app, "quit", "Quit FloatNote", true, Some("Cmd+Q"))
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
-    app_menu.append(&about_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    app_menu.append(&separator).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    app_menu.append(&services_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    app_menu.append(&separator2).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    app_menu.append(&hide_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    app_menu.append(&hide_others_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    app_menu.append(&show_all_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    app_menu.append(&separator3).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    app_menu.append(&quit_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    app_menu
+        .append(&about_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    app_menu
+        .append(&separator)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    app_menu
+        .append(&services_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    app_menu
+        .append(&separator2)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    app_menu
+        .append(&hide_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    app_menu
+        .append(&hide_others_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    app_menu
+        .append(&show_all_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    app_menu
+        .append(&separator3)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    app_menu
+        .append(&quit_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
     Ok(app_menu)
 }
 
 fn build_edit_submenu(app: &AppHandle) -> FloatNoteResult<Submenu<tauri::Wry>> {
-    let edit_menu = Submenu::new(app, "Edit", true)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    
+    let edit_menu =
+        Submenu::new(app, "Edit", true).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+
     let undo_item = MenuItem::new(app, "Undo", true, Some("Cmd+Z"))
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let redo_item = MenuItem::new(app, "Redo", true, Some("Cmd+Shift+Z"))
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let separator = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let separator =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let cut_item = MenuItem::new(app, "Cut", true, Some("Cmd+X"))
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let copy_item = MenuItem::new(app, "Copy", true, Some("Cmd+C"))
@@ -93,13 +111,27 @@ fn build_edit_submenu(app: &AppHandle) -> FloatNoteResult<Submenu<tauri::Wry>> {
     let select_all_item = MenuItem::new(app, "Select All", true, Some("Cmd+A"))
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
-    edit_menu.append(&undo_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    edit_menu.append(&redo_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    edit_menu.append(&separator).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    edit_menu.append(&cut_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    edit_menu.append(&copy_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    edit_menu.append(&paste_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    edit_menu.append(&select_all_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    edit_menu
+        .append(&undo_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    edit_menu
+        .append(&redo_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    edit_menu
+        .append(&separator)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    edit_menu
+        .append(&cut_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    edit_menu
+        .append(&copy_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    edit_menu
+        .append(&paste_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    edit_menu
+        .append(&select_all_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
     Ok(edit_menu)
 }
@@ -109,22 +141,42 @@ fn build_notes_submenu(
     detached_windows: &HashMap<String, DetachedWindow>,
     notes: &HashMap<String, Note>,
 ) -> FloatNoteResult<Submenu<tauri::Wry>> {
-    let notes_menu = Submenu::new(app, "Notes", true)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    
-    let new_note_item = MenuItem::with_id(app, "new-note", "New Note", true, Some("Cmd+Ctrl+Alt+Shift+N"))
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let separator = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let show_main_window_item = MenuItem::with_id(app, "show-main-window", "Show Main Window", true, None::<&str>)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let separator2 = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let notes_menu =
+        Submenu::new(app, "Notes", true).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
-    notes_menu.append(&new_note_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    notes_menu.append(&separator).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    notes_menu.append(&show_main_window_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    notes_menu.append(&separator2).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let new_note_item = MenuItem::with_id(
+        app,
+        "new-note",
+        "New Note",
+        true,
+        Some("Cmd+Ctrl+Alt+Shift+N"),
+    )
+    .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let separator =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let show_main_window_item = MenuItem::with_id(
+        app,
+        "show-main-window",
+        "Show Main Window",
+        true,
+        None::<&str>,
+    )
+    .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let separator2 =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+
+    notes_menu
+        .append(&new_note_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    notes_menu
+        .append(&separator)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    notes_menu
+        .append(&show_main_window_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    notes_menu
+        .append(&separator2)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
     // Add all notes to the menu
     let mut notes_vec: Vec<(&String, &Note)> = notes.iter().collect();
@@ -147,45 +199,68 @@ fn build_notes_submenu(
         } else {
             format!("  {}", title)
         };
-        let item = MenuItem::with_id(app, format!("open-note-{}", note_id), menu_title, true, None::<&str>)
+        let item = MenuItem::with_id(
+            app,
+            format!("open-note-{}", note_id),
+            menu_title,
+            true,
+            None::<&str>,
+        )
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+        notes_menu
+            .append(&item)
             .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-        notes_menu.append(&item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     }
 
     Ok(notes_menu)
 }
 
 fn build_developer_submenu(app: &AppHandle) -> FloatNoteResult<Submenu<tauri::Wry>> {
-    let developer_menu = Submenu::new(app, "Developer", true)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    
+    let developer_menu =
+        Submenu::new(app, "Developer", true).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+
     let reload_app_item = MenuItem::with_id(app, "reload-app", "Reload App", true, Some("Cmd+R"))
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let restart_app_item = MenuItem::with_id(app, "restart-app", "Restart App", true, Some("Cmd+Shift+R"))
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let dev_separator = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let force_main_visible_item = MenuItem::with_id(app, "force-main-visible", "Force Main Window Visible", true, None::<&str>)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let restart_app_item =
+        MenuItem::with_id(app, "restart-app", "Restart App", true, Some("Cmd+Shift+R"))
+            .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let dev_separator =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let force_main_visible_item = MenuItem::with_id(
+        app,
+        "force-main-visible",
+        "Force Main Window Visible",
+        true,
+        None::<&str>,
+    )
+    .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
-    developer_menu.append(&reload_app_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    developer_menu.append(&restart_app_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    developer_menu.append(&dev_separator).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    developer_menu.append(&force_main_visible_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    developer_menu
+        .append(&reload_app_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    developer_menu
+        .append(&restart_app_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    developer_menu
+        .append(&dev_separator)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    developer_menu
+        .append(&force_main_visible_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
     Ok(developer_menu)
 }
 
 fn build_window_submenu(app: &AppHandle) -> FloatNoteResult<Submenu<tauri::Wry>> {
-    let window_menu = Submenu::new(app, "Window", true)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    
+    let window_menu =
+        Submenu::new(app, "Window", true).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+
     let minimize_item = MenuItem::with_id(app, "minimize", "Minimize", true, Some("Cmd+M"))
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let zoom_item = MenuItem::new(app, "Zoom", true, None::<&str>)
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let separator = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let separator =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
     // Tiling options (macOS 11+)
     let tile_left = MenuItem::new(app, "Tile Window to Left of Screen", true, None::<&str>)
@@ -194,32 +269,53 @@ fn build_window_submenu(app: &AppHandle) -> FloatNoteResult<Submenu<tauri::Wry>>
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
     let replace_tiled = MenuItem::new(app, "Replace Tiled Window", true, None::<&str>)
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let separator2 = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let separator2 =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
     let remove_from_stage = MenuItem::new(app, "Remove Window from Set", true, None::<&str>)
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    let separator3 = PredefinedMenuItem::separator(app)
-        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    let separator3 =
+        PredefinedMenuItem::separator(app).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
     let bring_all_to_front = MenuItem::new(app, "Bring All to Front", true, None::<&str>)
         .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
-    window_menu.append(&minimize_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    window_menu.append(&zoom_item).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    window_menu.append(&separator).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    window_menu.append(&tile_left).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    window_menu.append(&tile_right).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    window_menu.append(&replace_tiled).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    window_menu.append(&separator2).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    window_menu.append(&remove_from_stage).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    window_menu.append(&separator3).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
-    window_menu.append(&bring_all_to_front).map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&minimize_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&zoom_item)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&separator)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&tile_left)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&tile_right)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&replace_tiled)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&separator2)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&remove_from_stage)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&separator3)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
+    window_menu
+        .append(&bring_all_to_front)
+        .map_err(|e| FloatNoteError::Menu(e.to_string()))?;
 
     Ok(window_menu)
 }
 
 /// Update the application menu
+#[allow(dead_code)]
 pub async fn update_app_menu(
     app: tauri::AppHandle,
     detached_windows: tauri::State<'_, crate::state::DetachedWindowsState>,
@@ -227,21 +323,21 @@ pub async fn update_app_menu(
 ) -> Result<(), String> {
     let windows_lock = detached_windows.lock().await;
     let notes_lock = notes.lock().await;
-    
-    let menu = build_app_menu(&app, &*windows_lock, &*notes_lock)
-        .map_err(|e| e.to_string())?;
-    app.set_menu(menu).map_err(|e| format!("Failed to update menu: {}", e))?;
-    
+
+    let menu = build_app_menu(&app, &windows_lock, &notes_lock).map_err(|e| e.to_string())?;
+    app.set_menu(menu)
+        .map_err(|e| format!("Failed to update menu: {}", e))?;
+
     Ok(())
 }
 
 /// Handle menu events
 pub fn handle_menu_event(app: &AppHandle, menu_id: &str) {
-    use crate::modules::windows::{force_main_window_visible, create_detached_window};
+    use crate::modules::windows::{create_detached_window, force_main_window_visible};
+    use crate::state::NotesState;
     use crate::types::window::CreateDetachedWindowRequest;
     use crate::DetachedWindowsState;
-    use crate::state::NotesState;
-    
+
     log_info!("MENU", "Menu event received: {}", menu_id);
 
     match menu_id {
@@ -256,7 +352,10 @@ pub fn handle_menu_event(app: &AppHandle, menu_id: &str) {
             }
         }
         "new-note" => {
-            log_info!("MENU", "New Note menu item selected - emitting menu-new-note event");
+            log_info!(
+                "MENU",
+                "New Note menu item selected - emitting menu-new-note event"
+            );
             match app.emit("menu-new-note", ()) {
                 Ok(_) => log_info!("MENU", "✅ Successfully emitted menu-new-note event"),
                 Err(e) => log_error!("MENU", "❌ Failed to emit menu-new-note event: {}", e),
@@ -316,9 +415,8 @@ pub fn handle_menu_event(app: &AppHandle, menu_id: &str) {
                 let windows_lock = detached_windows.lock().await;
 
                 // Check if window already exists for this note
-                if let Some((window_label, _)) = windows_lock
-                    .iter()
-                    .find(|(_, w)| w.note_id == note_id)
+                if let Some((window_label, _)) =
+                    windows_lock.iter().find(|(_, w)| w.note_id == note_id)
                 {
                     // Window exists, just focus it
                     if let Some(window) = app_handle.get_webview_window(window_label) {

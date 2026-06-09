@@ -20,7 +20,9 @@ export interface CreateDetachedWindowRequest {
 }
 
 export class DetachedWindowsAPI {
-  static async createDetachedWindow(request: CreateDetachedWindowRequest): Promise<DetachedWindow> {
+  static async createDetachedWindow(
+    request: CreateDetachedWindowRequest
+  ): Promise<DetachedWindow> {
     return await invoke<DetachedWindow>('create_detached_window', { request });
   }
 
@@ -29,18 +31,36 @@ export class DetachedWindowsAPI {
   }
 
   static async getDetachedWindows(): Promise<DetachedWindow[]> {
-    const result = await invoke<{[key: string]: DetachedWindow}>('get_detached_windows');
+    const result = await invoke<{ [key: string]: DetachedWindow }>(
+      'get_detached_windows'
+    );
 
     // 返回所有窗口（包括 hybrid-drag- 和 note- 前缀）
     return Object.values(result);
   }
 
-  static async updateWindowPosition(windowLabel: string, x: number, y: number): Promise<void> {
-    return await invoke('update_detached_window_position', { windowLabel, x, y });
+  static async updateWindowPosition(
+    windowLabel: string,
+    x: number,
+    y: number
+  ): Promise<void> {
+    return await invoke('update_detached_window_position', {
+      windowLabel,
+      x,
+      y,
+    });
   }
 
-  static async updateWindowSize(windowLabel: string, width: number, height: number): Promise<void> {
-    return await invoke('update_detached_window_size', { windowLabel, width, height });
+  static async updateWindowSize(
+    windowLabel: string,
+    width: number,
+    height: number
+  ): Promise<void> {
+    return await invoke('update_detached_window_size', {
+      windowLabel,
+      width,
+      height,
+    });
   }
 
   static async toggleWindowShade(windowLabel: string): Promise<boolean> {

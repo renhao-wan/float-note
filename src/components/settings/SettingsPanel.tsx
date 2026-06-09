@@ -15,7 +15,8 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
   const { t, i18n } = useTranslation();
   const { config, updateConfig, isLoading } = useConfigStore();
   const [localConfig, setLocalConfig] = useState(config);
-  const [currentNotesDirectory, setCurrentNotesDirectory] = useState<string>('');
+  const [currentNotesDirectory, setCurrentNotesDirectory] =
+    useState<string>('');
   const [directoryInputValue, setDirectoryInputValue] = useState<string>('');
 
   useEffect(() => {
@@ -46,21 +47,29 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
   };
 
   // 实时预览 + 立即持久化
-  const handleAppearanceChange = async (appearanceUpdate: Partial<AppConfig['appearance']>) => {
+  const handleAppearanceChange = async (
+    appearanceUpdate: Partial<AppConfig['appearance']>
+  ) => {
     const newConfig = {
       ...localConfig,
-      appearance: { ...localConfig.appearance, ...appearanceUpdate }
+      appearance: { ...localConfig.appearance, ...appearanceUpdate },
     };
     setLocalConfig(newConfig);
 
     // 如果更新了字体，立即应用到 CSS 变量
     if (appearanceUpdate.editorFontFamily) {
       const root = document.documentElement;
-      root.style.setProperty('--font-editor', appearanceUpdate.editorFontFamily);
+      root.style.setProperty(
+        '--font-editor',
+        appearanceUpdate.editorFontFamily
+      );
     }
     if (appearanceUpdate.previewFontFamily) {
       const root = document.documentElement;
-      root.style.setProperty('--font-preview', appearanceUpdate.previewFontFamily);
+      root.style.setProperty(
+        '--font-preview',
+        appearanceUpdate.previewFontFamily
+      );
     }
 
     // 立即应用并持久化
@@ -76,7 +85,9 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
         const importedNote = await notesApi.importSingleFile(selectedFile);
         // Trigger notes list refresh
         window.dispatchEvent(new Event('notes-updated'));
-        toast.success(t('toast.importFileSuccess', { title: importedNote.title }));
+        toast.success(
+          t('toast.importFileSuccess', { title: importedNote.title })
+        );
       }
     } catch (error) {
       console.error('Failed to import file:', error);
@@ -89,10 +100,13 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       // Use Tauri's native directory picker
       const selectedDir = await notesApi.openDirectoryDialog();
       if (selectedDir) {
-        const importedNotes = await notesApi.importNotesFromDirectory(selectedDir);
+        const importedNotes =
+          await notesApi.importNotesFromDirectory(selectedDir);
         // Trigger notes list refresh
         window.dispatchEvent(new Event('notes-updated'));
-        toast.success(t('toast.importDirectorySuccess', { count: importedNotes.length }));
+        toast.success(
+          t('toast.importDirectorySuccess', { count: importedNotes.length })
+        );
       }
     } catch (error) {
       console.error('Failed to import directory:', error);
@@ -105,8 +119,11 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       // Use Tauri's native directory picker
       const selectedDir = await notesApi.openDirectoryDialog();
       if (selectedDir) {
-        const exportedFiles = await notesApi.exportAllNotesToDirectory(selectedDir);
-        toast.success(t('toast.exportSuccess', { count: exportedFiles.length }));
+        const exportedFiles =
+          await notesApi.exportAllNotesToDirectory(selectedDir);
+        toast.success(
+          t('toast.exportSuccess', { count: exportedFiles.length })
+        );
       }
     } catch (error) {
       console.error('Failed to export notes:', error);
@@ -127,7 +144,7 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             ...localConfig.storage,
             notesDirectory: directoryInputValue.trim(),
             useCustomDirectory: true,
-          }
+          },
         };
         setLocalConfig(updatedConfig);
         await updateConfig(updatedConfig);
@@ -155,14 +172,19 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
   const handleBrowseDirectory = async () => {
     try {
       // Use Tauri's native directory picker with current directory as initial
-      const result = await notesApi.openDirectoryDialog(currentNotesDirectory || directoryInputValue);
+      const result = await notesApi.openDirectoryDialog(
+        currentNotesDirectory || directoryInputValue
+      );
       if (result) {
         setDirectoryInputValue(result);
       }
     } catch (error) {
       console.error('Failed to open directory dialog:', error);
       // Fallback to prompt
-      const newDir = prompt('Enter the path to your notes directory:', directoryInputValue);
+      const newDir = prompt(
+        'Enter the path to your notes directory:',
+        directoryInputValue
+      );
       if (newDir) {
         setDirectoryInputValue(newDir);
       }
@@ -174,36 +196,60 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       {/* Section Header - Standardized 76px height to match notes sidebar */}
       <div className="h-[40px] flex flex-col justify-center">
         <h2 className="text-sm font-medium text-foreground mb-1 flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/70">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-primary/70"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" />
           </svg>
           {t('settings.general.title')}
         </h2>
-        <p className="text-xs text-muted-foreground/60">{t('settings.general.description')}</p>
+        <p className="text-xs text-muted-foreground/60">
+          {t('settings.general.description')}
+        </p>
       </div>
 
       <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
         <h3 className="text-xs font-medium text-foreground/90 mb-3 flex items-center gap-2 uppercase tracking-wide">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 8v4l3 3"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-muted-foreground/70"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4l3 3" />
           </svg>
           {t('settings.general.about.title')}
         </h3>
         <div className="space-y-3 text-xs">
           <div className="flex justify-between items-center gap-3">
-            <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.application')}</span>
+            <span className="text-muted-foreground/80 font-mono w-24">
+              {t('settings.general.about.application')}
+            </span>
             <div className="flex-1"></div>
             <span className="text-foreground font-mono">FloatNote</span>
           </div>
           <div className="flex justify-between items-center gap-3">
-            <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.version')}</span>
+            <span className="text-muted-foreground/80 font-mono w-24">
+              {t('settings.general.about.version')}
+            </span>
             <div className="flex-1"></div>
             <span className="text-foreground font-mono">0.1.0</span>
           </div>
           <div className="flex justify-between items-center gap-3">
-            <span className="text-muted-foreground/80 font-mono w-24">{t('settings.general.about.author')}</span>
+            <span className="text-muted-foreground/80 font-mono w-24">
+              {t('settings.general.about.author')}
+            </span>
             <div className="flex-1"></div>
             <span className="text-foreground font-mono">Renhao Wan</span>
           </div>
@@ -212,19 +258,30 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
       <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
         <h3 className="text-xs font-medium text-foreground/90 mb-3 flex items-center gap-2 uppercase tracking-wide">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-            <polyline points="9,22 9,12 15,12 15,22"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-muted-foreground/70"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9,22 9,12 15,12 15,22" />
           </svg>
           {t('settings.general.interface.title')}
         </h3>
         <div className="space-y-3 text-xs">
-
           {/* Language Selector */}
           <div className="flex justify-between items-center gap-3">
             <div className="flex flex-col">
-              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.interface.language')}</span>
-              <span className="text-muted-foreground/60 text-xs">{t('settings.general.interface.languageDescription')}</span>
+              <span className="text-foreground/90 font-mono text-xs">
+                {t('settings.general.interface.language')}
+              </span>
+              <span className="text-muted-foreground/60 text-xs">
+                {t('settings.general.interface.languageDescription')}
+              </span>
             </div>
             <div className="w-28">
               <CustomSelect
@@ -237,35 +294,49 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                   // 立即切换语言
                   i18n.changeLanguage(newLang);
                   // 立即保存配置
-                  await handleConfigChange({ language: newLang as 'zh' | 'en' });
-              }}
-            />
+                  await handleConfigChange({
+                    language: newLang as 'zh' | 'en',
+                  });
+                }}
+              />
             </div>
           </div>
-
         </div>
       </div>
 
       {/* File Operations Section */}
       <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
         <h3 className="text-xs font-medium text-foreground/90 mb-3 flex items-center gap-2 uppercase tracking-wide">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14,2 14,8 20,8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/>
-            <line x1="16" y1="17" x2="8" y2="17"/>
-            <line x1="10" y1="9" x2="8" y2="9"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-muted-foreground/70"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14,2 14,8 20,8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <line x1="10" y1="9" x2="8" y2="9" />
           </svg>
           {t('settings.general.fileOperations.title')}
         </h3>
         <div className="space-y-3 text-xs">
-
           {/* Notes Directory */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
-                <span className="text-foreground/90 font-mono text-xs">{t('settings.general.fileOperations.notesDirectory')}</span>
-                <span className="text-muted-foreground/60 text-xs">{t('settings.general.fileOperations.notesDirectoryDescription')}</span>
+                <span className="text-foreground/90 font-mono text-xs">
+                  {t('settings.general.fileOperations.notesDirectory')}
+                </span>
+                <span className="text-muted-foreground/60 text-xs">
+                  {t(
+                    'settings.general.fileOperations.notesDirectoryDescription'
+                  )}
+                </span>
               </div>
               <button
                 onClick={() => handleReloadNotes()}
@@ -301,13 +372,17 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               </div>
             )}
           </div>
-          
+
           {/* Import Notes */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
-                <span className="text-foreground/90 font-mono text-xs">{t('settings.general.fileOperations.importNotes')}</span>
-                <span className="text-muted-foreground/60 text-xs">{t('settings.general.fileOperations.importNotesDescription')}</span>
+                <span className="text-foreground/90 font-mono text-xs">
+                  {t('settings.general.fileOperations.importNotes')}
+                </span>
+                <span className="text-muted-foreground/60 text-xs">
+                  {t('settings.general.fileOperations.importNotesDescription')}
+                </span>
               </div>
               <div className="flex gap-2">
                 <button
@@ -325,12 +400,16 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               </div>
             </div>
           </div>
-          
+
           {/* Export Notes */}
           <div className="flex justify-between items-center">
             <div className="flex flex-col">
-              <span className="text-foreground/90 font-mono text-xs">{t('settings.general.fileOperations.exportNotes')}</span>
-              <span className="text-muted-foreground/60 text-xs">{t('settings.general.fileOperations.exportNotesDescription')}</span>
+              <span className="text-foreground/90 font-mono text-xs">
+                {t('settings.general.fileOperations.exportNotes')}
+              </span>
+              <span className="text-muted-foreground/60 text-xs">
+                {t('settings.general.fileOperations.exportNotesDescription')}
+              </span>
             </div>
             <button
               onClick={() => handleExportAll()}
@@ -339,24 +418,30 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
               {t('settings.general.fileOperations.exportAll')}
             </button>
           </div>
-          
+
           {/* Lightweight Tip */}
           <div className="bg-primary/5 rounded-2xl p-3 border border-primary/10">
             <div className="flex items-start gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/70 mt-0.5 flex-shrink-0">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="16" x2="12" y2="12"/>
-                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="text-primary/70 mt-0.5 flex-shrink-0"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
               </svg>
               <span className="text-xs text-muted-foreground/80 leading-relaxed">
                 {t('settings.general.fileOperations.lightweightTip')}
               </span>
             </div>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 
@@ -365,60 +450,101 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       {/* Section Header */}
       <div className="h-[40px] flex flex-col justify-center">
         <h2 className="text-sm font-medium text-foreground mb-1 flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/70">
-            <circle cx="12" cy="12" r="10"/>
-            <circle cx="12" cy="12" r="4"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-primary/70"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="4" />
           </svg>
           {t('settings.appearance.title')}
         </h2>
-        <p className="text-xs text-muted-foreground/60">{t('settings.appearance.description')}</p>
+        <p className="text-xs text-muted-foreground/60">
+          {t('settings.appearance.description')}
+        </p>
       </div>
 
       <div className="space-y-3">
         {/* Theme Selector */}
         <div className="bg-card/20 rounded-2xl p-3 border border-border/10">
           <h3 className="text-xs font-medium text-foreground/90 mb-2 flex items-center gap-2 uppercase tracking-wide">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-              <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-muted-foreground/70"
+            >
+              <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07" />
             </svg>
             {t('settings.appearance.themes.title')}
           </h3>
           <ThemeSelector />
         </div>
-
       </div>
     </div>
   );
-
 
   const renderEditorSection = () => (
     <div data-section="editor" className="space-y-6">
       <div className="h-[40px] flex flex-col justify-center">
         <h2 className="text-sm font-medium text-foreground mb-1 flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/70">
-            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-            <path d="m15 5 4 4"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-primary/70"
+          >
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+            <path d="m15 5 4 4" />
           </svg>
           {t('settings.editor.title')}
         </h2>
-        <p className="text-xs text-muted-foreground/60">{t('settings.editor.description')}</p>
+        <p className="text-xs text-muted-foreground/60">
+          {t('settings.editor.description')}
+        </p>
       </div>
-      
+
       <div className="space-y-4">
         {/* Typography */}
         <div className="bg-card/20 rounded-2xl p-3 border border-border/10">
           <h3 className="text-xs font-medium text-foreground/90 mb-2 flex items-center gap-2 uppercase tracking-wide">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-              <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-muted-foreground/70"
+            >
+              <path d="M4 7V4h16v3M9 20h6M12 4v16" />
             </svg>
             {t('settings.appearance.typography.title')}
           </h3>
           <div className="space-y-2">
             {/* Font Size */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.editorFontSize')}</label>
+              <label className="text-xs text-foreground/80 w-20 font-mono">
+                {t('settings.appearance.typography.editorFontSize')}
+              </label>
               <div className="flex-1 flex items-center gap-2">
-                <span className="text-xs text-muted-foreground/70" style={{ fontSize: '11px' }}>A</span>
+                <span
+                  className="text-xs text-muted-foreground/70"
+                  style={{ fontSize: '11px' }}
+                >
+                  A
+                </span>
                 <div className="flex-1 relative h-5 slider-container">
                   <div className="slider-track"></div>
                   <input
@@ -427,11 +553,20 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                     max="24"
                     step="1"
                     value={localConfig.appearance?.fontSize ?? 15}
-                    onChange={(e) => handleAppearanceChange({ fontSize: parseInt(e.target.value) })}
+                    onChange={(e) =>
+                      handleAppearanceChange({
+                        fontSize: parseInt(e.target.value),
+                      })
+                    }
                     className="slider-input"
                   />
                 </div>
-                <span className="text-muted-foreground/70" style={{ fontSize: '18px' }}>A</span>
+                <span
+                  className="text-muted-foreground/70"
+                  style={{ fontSize: '18px' }}
+                >
+                  A
+                </span>
               </div>
               <span className="text-xs text-muted-foreground/70 min-w-[2rem] text-right font-mono">
                 {localConfig.appearance?.fontSize ?? 15}px
@@ -440,21 +575,65 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
             {/* Editor Font */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.editorFont')}</label>
+              <label className="text-xs text-foreground/80 w-20 font-mono">
+                {t('settings.appearance.typography.editorFont')}
+              </label>
               <div className="flex-1 max-w-[200px]">
                 <CustomSelect
-                  value={localConfig.appearance?.editorFontFamily || 'JetBrains Mono, monospace'}
-                  onChange={(value) => handleAppearanceChange({ editorFontFamily: value })}
+                  value={
+                    localConfig.appearance?.editorFontFamily ||
+                    'JetBrains Mono, monospace'
+                  }
+                  onChange={(value) =>
+                    handleAppearanceChange({ editorFontFamily: value })
+                  }
                   options={[
-                    { value: 'JetBrains Mono, monospace', label: t('settings.appearance.typography.fonts.jetbrainsMono') },
-                    { value: 'Fira Code, monospace', label: t('settings.appearance.typography.fonts.firaCode') },
-                    { value: 'Source Code Pro, monospace', label: t('settings.appearance.typography.fonts.sourceCodePro') },
-                    { value: 'Cascadia Code, monospace', label: t('settings.appearance.typography.fonts.cascadiaCode') },
-                    { value: 'IBM Plex Mono, monospace', label: t('settings.appearance.typography.fonts.ibmPlexMono') },
-                    { value: 'Menlo, Monaco, monospace', label: t('settings.appearance.typography.fonts.menlo') },
-                    { value: 'Consolas, monospace', label: t('settings.appearance.typography.fonts.consolas') },
-                    { value: 'system-ui', label: t('settings.appearance.typography.fonts.systemUi') },
-                    { value: 'monospace', label: t('settings.appearance.typography.fonts.monospace') },
+                    {
+                      value: 'JetBrains Mono, monospace',
+                      label: t(
+                        'settings.appearance.typography.fonts.jetbrainsMono'
+                      ),
+                    },
+                    {
+                      value: 'Fira Code, monospace',
+                      label: t('settings.appearance.typography.fonts.firaCode'),
+                    },
+                    {
+                      value: 'Source Code Pro, monospace',
+                      label: t(
+                        'settings.appearance.typography.fonts.sourceCodePro'
+                      ),
+                    },
+                    {
+                      value: 'Cascadia Code, monospace',
+                      label: t(
+                        'settings.appearance.typography.fonts.cascadiaCode'
+                      ),
+                    },
+                    {
+                      value: 'IBM Plex Mono, monospace',
+                      label: t(
+                        'settings.appearance.typography.fonts.ibmPlexMono'
+                      ),
+                    },
+                    {
+                      value: 'Menlo, Monaco, monospace',
+                      label: t('settings.appearance.typography.fonts.menlo'),
+                    },
+                    {
+                      value: 'Consolas, monospace',
+                      label: t('settings.appearance.typography.fonts.consolas'),
+                    },
+                    {
+                      value: 'system-ui',
+                      label: t('settings.appearance.typography.fonts.systemUi'),
+                    },
+                    {
+                      value: 'monospace',
+                      label: t(
+                        'settings.appearance.typography.fonts.monospace'
+                      ),
+                    },
                   ]}
                 />
               </div>
@@ -462,20 +641,60 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
             {/* Content Font */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.contentFont')}</label>
+              <label className="text-xs text-foreground/80 w-20 font-mono">
+                {t('settings.appearance.typography.contentFont')}
+              </label>
               <div className="flex-1 max-w-[200px]">
                 <CustomSelect
-                  value={localConfig.appearance?.previewFontFamily || 'Source Serif 4, Georgia, serif'}
-                  onChange={(value) => handleAppearanceChange({ previewFontFamily: value })}
+                  value={
+                    localConfig.appearance?.previewFontFamily ||
+                    'Source Serif 4, Georgia, serif'
+                  }
+                  onChange={(value) =>
+                    handleAppearanceChange({ previewFontFamily: value })
+                  }
                   options={[
-                    { value: 'Source Serif 4, Georgia, serif', label: t('settings.appearance.typography.fonts.sourceSerif') },
-                    { value: 'Georgia, serif', label: t('settings.appearance.typography.fonts.georgia') },
-                    { value: 'Times New Roman, serif', label: t('settings.appearance.typography.fonts.timesNewRoman') },
-                    { value: 'Merriweather, serif', label: t('settings.appearance.typography.fonts.merriweather') },
-                    { value: 'Inter, -apple-system, sans-serif', label: t('settings.appearance.typography.fonts.inter') },
-                    { value: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', label: t('settings.appearance.typography.fonts.interFull') },
-                    { value: 'system-ui, -apple-system, sans-serif', label: t('settings.appearance.typography.fonts.systemUi') },
-                    { value: 'Outfit, system-ui, sans-serif', label: t('settings.appearance.typography.fonts.outfit') },
+                    {
+                      value: 'Source Serif 4, Georgia, serif',
+                      label: t(
+                        'settings.appearance.typography.fonts.sourceSerif'
+                      ),
+                    },
+                    {
+                      value: 'Georgia, serif',
+                      label: t('settings.appearance.typography.fonts.georgia'),
+                    },
+                    {
+                      value: 'Times New Roman, serif',
+                      label: t(
+                        'settings.appearance.typography.fonts.timesNewRoman'
+                      ),
+                    },
+                    {
+                      value: 'Merriweather, serif',
+                      label: t(
+                        'settings.appearance.typography.fonts.merriweather'
+                      ),
+                    },
+                    {
+                      value: 'Inter, -apple-system, sans-serif',
+                      label: t('settings.appearance.typography.fonts.inter'),
+                    },
+                    {
+                      value:
+                        'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+                      label: t(
+                        'settings.appearance.typography.fonts.interFull'
+                      ),
+                    },
+                    {
+                      value: 'system-ui, -apple-system, sans-serif',
+                      label: t('settings.appearance.typography.fonts.systemUi'),
+                    },
+                    {
+                      value: 'Outfit, system-ui, sans-serif',
+                      label: t('settings.appearance.typography.fonts.outfit'),
+                    },
                   ]}
                 />
               </div>
@@ -483,7 +702,9 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
 
             {/* Line Height */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-20 font-mono">{t('settings.appearance.typography.lineHeight')}</label>
+              <label className="text-xs text-foreground/80 w-20 font-mono">
+                {t('settings.appearance.typography.lineHeight')}
+              </label>
               <div className="flex-1 flex items-center gap-2">
                 <span className="text-xs text-muted-foreground/70">1.2</span>
                 <div className="flex-1 relative h-5 slider-container">
@@ -494,7 +715,11 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
                     max="2.0"
                     step="0.1"
                     value={localConfig.appearance?.lineHeight ?? 1.6}
-                    onChange={(e) => handleAppearanceChange({ lineHeight: parseFloat(e.target.value) })}
+                    onChange={(e) =>
+                      handleAppearanceChange({
+                        lineHeight: parseFloat(e.target.value),
+                      })
+                    }
                     className="slider-input"
                   />
                 </div>
@@ -510,12 +735,20 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
         {/* Paper Style */}
         <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
           <h3 className="text-xs font-medium text-foreground/90 mb-3 flex items-center gap-2 uppercase tracking-wide">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <path d="M9 9h.01"/>
-              <path d="M15 9h.01"/>
-              <path d="M9 15h.01"/>
-              <path d="M15 15h.01"/>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-muted-foreground/70"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <path d="M9 9h.01" />
+              <path d="M15 9h.01" />
+              <path d="M9 15h.01" />
+              <path d="M15 15h.01" />
             </svg>
             {t('settings.editor.paperStyle.title')}
           </h3>
@@ -523,19 +756,44 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             <div className="text-xs text-muted-foreground/70 mb-4">
               {t('settings.editor.paperStyle.description')}
             </div>
-            
+
             <div className="grid grid-cols-2 gap-3">
               {[
-                { key: 'none', label: t('settings.editor.paperStyle.plain'), description: t('settings.editor.paperStyle.plainDescription') },
-                { key: 'dotted-grid', label: t('settings.editor.paperStyle.dots'), description: t('settings.editor.paperStyle.dotsDescription') },
-                { key: 'lines', label: t('settings.editor.paperStyle.lines'), description: t('settings.editor.paperStyle.linesDescription') },
-                { key: 'ruled', label: t('settings.editor.paperStyle.ruled'), description: t('settings.editor.paperStyle.ruledDescription') }
+                {
+                  key: 'none',
+                  label: t('settings.editor.paperStyle.plain'),
+                  description: t('settings.editor.paperStyle.plainDescription'),
+                },
+                {
+                  key: 'dotted-grid',
+                  label: t('settings.editor.paperStyle.dots'),
+                  description: t('settings.editor.paperStyle.dotsDescription'),
+                },
+                {
+                  key: 'lines',
+                  label: t('settings.editor.paperStyle.lines'),
+                  description: t('settings.editor.paperStyle.linesDescription'),
+                },
+                {
+                  key: 'ruled',
+                  label: t('settings.editor.paperStyle.ruled'),
+                  description: t('settings.editor.paperStyle.ruledDescription'),
+                },
               ].map((style) => (
                 <button
                   key={style.key}
-                  onClick={() => handleAppearanceChange({ notePaperStyle: style.key as any })}
+                  onClick={() =>
+                    handleAppearanceChange({
+                      notePaperStyle: style.key as
+                        | 'none'
+                        | 'dotted-grid'
+                        | 'lines'
+                        | 'ruled',
+                    })
+                  }
                   className={`p-3 rounded-xl border-2 transition-all text-left ${
-                    (localConfig.appearance?.notePaperStyle || 'none') === style.key
+                    (localConfig.appearance?.notePaperStyle || 'none') ===
+                    style.key
                       ? 'border-primary/50 bg-primary/5'
                       : 'border-border/20 bg-background/20 hover:border-border/40'
                   }`}
@@ -551,122 +809,222 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
             </div>
           </div>
         </div>
-        
+
         {/* Editor Features */}
         <div className="bg-card/20 rounded-2xl p-4 border border-border/10">
           <h3 className="text-xs font-medium text-foreground/90 mb-3 flex items-center gap-2 uppercase tracking-wide">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <path d="m9 11 3 3L22 4"/>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-muted-foreground/70"
+            >
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <path d="m9 11 3 3L22 4" />
             </svg>
             {t('settings.editor.editorFeatures.title')}
           </h3>
           <div className="space-y-3">
-            
             {/* Focus Mode */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.focusMode')}</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">
+                {t('settings.editor.editorFeatures.focusMode')}
+              </label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.focusModeDescription')}</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">
+                  {t('settings.editor.editorFeatures.focusModeDescription')}
+                </span>
                 <button
-                  onClick={() => handleAppearanceChange({ focusMode: !localConfig.appearance?.focusMode })}
+                  onClick={() =>
+                    handleAppearanceChange({
+                      focusMode: !localConfig.appearance?.focusMode,
+                    })
+                  }
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
-                    localConfig.appearance?.focusMode ? 'bg-primary' : 'bg-background/40 border border-border/40'
+                    localConfig.appearance?.focusMode
+                      ? 'bg-primary'
+                      : 'bg-background/40 border border-border/40'
                   }`}
                 >
-                  <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
-                    localConfig.appearance?.focusMode ? 'translate-x-3.5' : 'translate-x-0'
-                  }`} />
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
+                      localConfig.appearance?.focusMode
+                        ? 'translate-x-3.5'
+                        : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
             </div>
-            
+
             {/* Syntax Highlighting */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.syntaxHighlighting')}</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">
+                {t('settings.editor.editorFeatures.syntaxHighlighting')}
+              </label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.syntaxHighlightingDescription')}</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">
+                  {t(
+                    'settings.editor.editorFeatures.syntaxHighlightingDescription'
+                  )}
+                </span>
                 <button
-                  onClick={() => handleAppearanceChange({ syntaxHighlighting: !localConfig.appearance?.syntaxHighlighting })}
+                  onClick={() =>
+                    handleAppearanceChange({
+                      syntaxHighlighting:
+                        !localConfig.appearance?.syntaxHighlighting,
+                    })
+                  }
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
-                    localConfig.appearance?.syntaxHighlighting ? 'bg-primary' : 'bg-background/40 border border-border/40'
+                    localConfig.appearance?.syntaxHighlighting
+                      ? 'bg-primary'
+                      : 'bg-background/40 border border-border/40'
                   }`}
                 >
-                  <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
-                    localConfig.appearance?.syntaxHighlighting ? 'translate-x-3.5' : 'translate-x-0'
-                  }`} />
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
+                      localConfig.appearance?.syntaxHighlighting
+                        ? 'translate-x-3.5'
+                        : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
             </div>
-            
+
             {/* Typewriter Mode */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.typewriterMode')}</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">
+                {t('settings.editor.editorFeatures.typewriterMode')}
+              </label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.typewriterModeDescription')}</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">
+                  {t(
+                    'settings.editor.editorFeatures.typewriterModeDescription'
+                  )}
+                </span>
                 <button
-                  onClick={() => handleAppearanceChange({ typewriterMode: !localConfig.appearance?.typewriterMode })}
+                  onClick={() =>
+                    handleAppearanceChange({
+                      typewriterMode: !localConfig.appearance?.typewriterMode,
+                    })
+                  }
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
-                    localConfig.appearance?.typewriterMode ? 'bg-primary' : 'bg-background/40 border border-border/40'
+                    localConfig.appearance?.typewriterMode
+                      ? 'bg-primary'
+                      : 'bg-background/40 border border-border/40'
                   }`}
                 >
-                  <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
-                    localConfig.appearance?.typewriterMode ? 'translate-x-3.5' : 'translate-x-0'
-                  }`} />
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
+                      localConfig.appearance?.typewriterMode
+                        ? 'translate-x-3.5'
+                        : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
             </div>
-            
+
             {/* Vim Mode */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.vimMode')}</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">
+                {t('settings.editor.editorFeatures.vimMode')}
+              </label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.vimModeDescription')}</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">
+                  {t('settings.editor.editorFeatures.vimModeDescription')}
+                </span>
                 <button
-                  onClick={() => handleAppearanceChange({ vimMode: !localConfig.appearance?.vimMode })}
+                  onClick={() =>
+                    handleAppearanceChange({
+                      vimMode: !localConfig.appearance?.vimMode,
+                    })
+                  }
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
-                    localConfig.appearance?.vimMode ? 'bg-primary' : 'bg-background/40 border border-border/40'
+                    localConfig.appearance?.vimMode
+                      ? 'bg-primary'
+                      : 'bg-background/40 border border-border/40'
                   }`}
                 >
-                  <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
-                    localConfig.appearance?.vimMode ? 'translate-x-3.5' : 'translate-x-0'
-                  }`} />
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
+                      localConfig.appearance?.vimMode
+                        ? 'translate-x-3.5'
+                        : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
             </div>
-            
+
             {/* Word Wrap */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.editor.editorFeatures.wordWrap')}</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">
+                {t('settings.editor.editorFeatures.wordWrap')}
+              </label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.editor.editorFeatures.wordWrapDescription')}</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">
+                  {t('settings.editor.editorFeatures.wordWrapDescription')}
+                </span>
                 <button
-                  onClick={() => handleAppearanceChange({ wordWrap: localConfig.appearance?.wordWrap === false ? true : false })}
+                  onClick={() =>
+                    handleAppearanceChange({
+                      wordWrap:
+                        localConfig.appearance?.wordWrap === false
+                          ? true
+                          : false,
+                    })
+                  }
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
-                    localConfig.appearance?.wordWrap !== false ? 'bg-primary' : 'bg-background/40 border border-border/40'
+                    localConfig.appearance?.wordWrap !== false
+                      ? 'bg-primary'
+                      : 'bg-background/40 border border-border/40'
                   }`}
                 >
-                  <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
-                    localConfig.appearance?.wordWrap !== false ? 'translate-x-3.5' : 'translate-x-0'
-                  }`} />
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
+                      localConfig.appearance?.wordWrap !== false
+                        ? 'translate-x-3.5'
+                        : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
             </div>
 
             {/* Note Previews */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-foreground/80 w-28 font-mono">{t('settings.general.interface.notePreviews')}</label>
+              <label className="text-xs text-foreground/80 w-28 font-mono">
+                {t('settings.general.interface.notePreviews')}
+              </label>
               <div className="flex items-center gap-3 flex-1">
-                <span className="text-xs text-muted-foreground/60 flex-1">{t('settings.general.interface.notePreviewsDescription')}</span>
+                <span className="text-xs text-muted-foreground/60 flex-1">
+                  {t('settings.general.interface.notePreviewsDescription')}
+                </span>
                 <button
-                  onClick={() => handleAppearanceChange({ showNotePreviews: !localConfig.appearance?.showNotePreviews })}
+                  onClick={() =>
+                    handleAppearanceChange({
+                      showNotePreviews:
+                        !localConfig.appearance?.showNotePreviews,
+                    })
+                  }
                   className={`relative w-8 h-4 rounded-full transition-colors flex-shrink-0 ${
-                    localConfig.appearance?.showNotePreviews ? 'bg-primary' : 'bg-background/40 border border-border/40'
+                    localConfig.appearance?.showNotePreviews
+                      ? 'bg-primary'
+                      : 'bg-background/40 border border-border/40'
                   }`}
                 >
-                  <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
-                    localConfig.appearance?.showNotePreviews ? 'translate-x-3.5' : 'translate-x-0'
-                  }`} />
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-3 h-3 bg-background rounded-full transition-transform border border-border/20 ${
+                      localConfig.appearance?.showNotePreviews
+                        ? 'translate-x-3.5'
+                        : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
             </div>
@@ -675,7 +1033,6 @@ export function SettingsPanel({ selectedSection }: SettingsPanelProps) {
       </div>
     </div>
   );
-
 
   const renderSection = () => {
     switch (selectedSection) {

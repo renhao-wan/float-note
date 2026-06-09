@@ -9,9 +9,7 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
+    "typeRoots": ["./node_modules/@types"],
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

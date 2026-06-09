@@ -4,10 +4,10 @@ use crate::modules::storage::{
     load_detached_windows_from_disk as load_detached_windows_from_disk_storage,
 };
 use crate::types::config::AppConfig;
+use crate::{log_error, log_info};
 use crate::{ConfigState, ModifiedStateTrackerState};
 use crate::{DetachedWindowsState, NotesState};
-use crate::{log_info, log_error};
-use tauri::{AppHandle, Manager, Emitter};
+use tauri::{AppHandle, Emitter, Manager};
 
 /// Load all application data on startup
 pub async fn load_application_data(app_handle: AppHandle) -> FloatNoteResult<()> {
@@ -68,26 +68,26 @@ async fn load_notes(
         .map_err(|e| FloatNoteError::Storage(format!("Failed to create file storage: {}", e)))?;
 
     // Run migration if needed
-    let notes_dir = crate::modules::storage::get_notes_directory()
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let notes_dir =
+        crate::modules::storage::get_notes_directory().map_err(FloatNoteError::Storage)?;
     let json_path = notes_dir.join("notes.json");
     file_storage
         .migrate_if_needed(json_path)
         .await
-        .map_err(|e| FloatNoteError::Storage(e))?;
+        .map_err(FloatNoteError::Storage)?;
 
     // Load notes from files
     file_storage
         .load_notes()
         .await
-        .map_err(|e| FloatNoteError::Storage(e))
+        .map_err(FloatNoteError::Storage)
 }
 
 async fn load_detached_windows(
 ) -> FloatNoteResult<std::collections::HashMap<String, crate::types::window::DetachedWindow>> {
     load_detached_windows_from_disk_storage()
         .await
-        .map_err(|e| FloatNoteError::Storage(e))
+        .map_err(FloatNoteError::Storage)
 }
 
 async fn update_notes_state(

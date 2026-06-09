@@ -4,7 +4,8 @@ import { invoke } from '@tauri-apps/api/core';
 import { DetachedWindowsAPI } from '../services/detached-windows-api';
 
 // Debounce intervals
-const POSITION_UPDATE_DELAY = process.env.NODE_ENV === 'production' ? 5000 : 10000; // 5s prod, 10s dev
+const POSITION_UPDATE_DELAY =
+  process.env.NODE_ENV === 'production' ? 5000 : 10000; // 5s prod, 10s dev
 const SIZE_UPDATE_DELAY = process.env.NODE_ENV === 'production' ? 5000 : 10000; // 5s prod, 10s dev
 
 export function useWindowTracking(noteId: string) {
@@ -13,7 +14,7 @@ export function useWindowTracking(noteId: string) {
   const sizeTimerRef = useRef<NodeJS.Timeout>();
   const lastPositionRef = useRef<{ x: number; y: number }>();
   const lastSizeRef = useRef<{ width: number; height: number }>();
-  
+
   useEffect(() => {
     const appWindow = getCurrentWebviewWindow();
 
@@ -44,17 +45,17 @@ export function useWindowTracking(noteId: string) {
         }
       }, POSITION_UPDATE_DELAY);
     };
-    
+
     // Debounced size update function
     const debouncedSizeUpdate = (size: { width: number; height: number }) => {
       // Clear existing timer
       if (sizeTimerRef.current) {
         clearTimeout(sizeTimerRef.current);
       }
-      
+
       // Store the latest size
       lastSizeRef.current = size;
-      
+
       // Set new timer
       sizeTimerRef.current = setTimeout(async () => {
         if (lastSizeRef.current) {
@@ -72,7 +73,7 @@ export function useWindowTracking(noteId: string) {
         }
       }, SIZE_UPDATE_DELAY);
     };
-    
+
     // Listen for window move events
     const unlistenMove = appWindow.onMoved(({ payload: position }) => {
       debouncedPositionUpdate(position);
@@ -82,7 +83,7 @@ export function useWindowTracking(noteId: string) {
     const unlistenResize = appWindow.onResized(({ payload: size }) => {
       debouncedSizeUpdate(size);
     });
-    
+
     // Cleanup
     return () => {
       // Clear any pending timers
@@ -119,8 +120,8 @@ export function useWindowTracking(noteId: string) {
       saveFinalState();
 
       // Remove event listeners
-      unlistenMove.then(fn => fn());
-      unlistenResize.then(fn => fn());
+      unlistenMove.then((fn) => fn());
+      unlistenResize.then((fn) => fn());
     };
   }, [noteId]);
 }

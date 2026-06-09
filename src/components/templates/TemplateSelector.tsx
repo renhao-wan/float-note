@@ -8,9 +8,15 @@ interface TemplateSelectorProps {
   onClose: () => void;
 }
 
-export function TemplateSelector({ templates, onSelect, onClose }: TemplateSelectorProps) {
+export function TemplateSelector({
+  templates,
+  onSelect,
+  onClose,
+}: TemplateSelectorProps) {
   const { t } = useTranslation();
-  const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate | null>(
+    null
+  );
 
   const handleSelect = () => {
     if (selectedTemplate) {
@@ -19,8 +25,8 @@ export function TemplateSelector({ templates, onSelect, onClose }: TemplateSelec
   };
 
   // Group templates by builtin/custom
-  const builtinTemplates = templates.filter(t => t.is_builtin);
-  const customTemplates = templates.filter(t => !t.is_builtin);
+  const builtinTemplates = templates.filter((t) => t.is_builtin);
+  const customTemplates = templates.filter((t) => !t.is_builtin);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -34,9 +40,16 @@ export function TemplateSelector({ templates, onSelect, onClose }: TemplateSelec
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
@@ -44,82 +57,98 @@ export function TemplateSelector({ templates, onSelect, onClose }: TemplateSelec
         {/* Template list */}
         <div className="flex-1 overflow-y-auto p-4">
           <div className="space-y-4">
-              {/* Builtin templates */}
-              {builtinTemplates.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide mb-2">
-                    {t('templates.builtin')}
-                  </h3>
-                  <div className="space-y-2">
-                    {builtinTemplates.map((template) => (
-                      <button
-                        key={template.id}
-                        onClick={() => setSelectedTemplate(template)}
-                        className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                          selectedTemplate?.id === template.id
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border/30 hover:border-primary/50 hover:bg-primary/5'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-sm font-medium text-foreground">
-                              {template.name}
-                            </div>
-                            <div className="text-xs text-muted-foreground/60 mt-1">
-                              {template.description}
-                            </div>
+            {/* Builtin templates */}
+            {builtinTemplates.length > 0 && (
+              <div>
+                <h3 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide mb-2">
+                  {t('templates.builtin')}
+                </h3>
+                <div className="space-y-2">
+                  {builtinTemplates.map((template) => (
+                    <button
+                      key={template.id}
+                      onClick={() => setSelectedTemplate(template)}
+                      className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                        selectedTemplate?.id === template.id
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border/30 hover:border-primary/50 hover:bg-primary/5'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-sm font-medium text-foreground">
+                            {template.name}
                           </div>
-                          {selectedTemplate?.id === template.id && (
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
-                              <polyline points="20,6 9,17 4,12"/>
-                            </svg>
-                          )}
+                          <div className="text-xs text-muted-foreground/60 mt-1">
+                            {template.description}
+                          </div>
                         </div>
-                      </button>
-                    ))}
-                  </div>
+                        {selectedTemplate?.id === template.id && (
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="text-primary"
+                          >
+                            <polyline points="20,6 9,17 4,12" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Custom templates */}
-              {customTemplates.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide mb-2">
-                    {t('templates.custom')}
-                  </h3>
-                  <div className="space-y-2">
-                    {customTemplates.map((template) => (
-                      <button
-                        key={template.id}
-                        onClick={() => setSelectedTemplate(template)}
-                        className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                          selectedTemplate?.id === template.id
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border/30 hover:border-primary/50 hover:bg-primary/5'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-sm font-medium text-foreground">
-                              {template.name}
-                            </div>
-                            <div className="text-xs text-muted-foreground/60 mt-1">
-                              {template.description}
-                            </div>
+            {/* Custom templates */}
+            {customTemplates.length > 0 && (
+              <div>
+                <h3 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide mb-2">
+                  {t('templates.custom')}
+                </h3>
+                <div className="space-y-2">
+                  {customTemplates.map((template) => (
+                    <button
+                      key={template.id}
+                      onClick={() => setSelectedTemplate(template)}
+                      className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                        selectedTemplate?.id === template.id
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border/30 hover:border-primary/50 hover:bg-primary/5'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-sm font-medium text-foreground">
+                            {template.name}
                           </div>
-                          {selectedTemplate?.id === template.id && (
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
-                              <polyline points="20,6 9,17 4,12"/>
-                            </svg>
-                          )}
+                          <div className="text-xs text-muted-foreground/60 mt-1">
+                            {template.description}
+                          </div>
                         </div>
-                      </button>
-                    ))}
-                  </div>
+                        {selectedTemplate?.id === template.id && (
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="text-primary"
+                          >
+                            <polyline points="20,6 9,17 4,12" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer */}

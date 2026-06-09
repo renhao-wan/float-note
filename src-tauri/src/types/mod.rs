@@ -1,9 +1,9 @@
 // Type declarations for the application
-pub mod note;
+pub mod attachment;
 pub mod config;
+pub mod link;
+pub mod note;
+pub mod template;
+pub mod trash;
 pub mod window;
 pub mod workspace;
-pub mod trash;
-pub mod attachment;
-pub mod link;
-pub mod template;

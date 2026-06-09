@@ -8,7 +8,9 @@ interface AppInitializationProps {
   isDetachedWindow: boolean;
 }
 
-export function useAppInitialization({ isDetachedWindow }: AppInitializationProps) {
+export function useAppInitialization({
+  isDetachedWindow,
+}: AppInitializationProps) {
   const { config, loadConfig } = useConfigStore();
   const { loadWindows } = useDetachedWindowsStore();
 
@@ -20,8 +22,12 @@ export function useAppInitialization({ isDetachedWindow }: AppInitializationProp
     const initializeApp = async () => {
       // Load config and windows concurrently
       await Promise.all([
-        loadConfig().catch(err => console.warn('[FLOATNOTE] Config load failed:', err)),
-        loadWindows().catch(err => console.warn('[FLOATNOTE] Windows load failed:', err))
+        loadConfig().catch((err) =>
+          console.warn('[FLOATNOTE] Config load failed:', err)
+        ),
+        loadWindows().catch((err) =>
+          console.warn('[FLOATNOTE] Windows load failed:', err)
+        ),
       ]);
 
       // Listen for data-loaded event from backend
@@ -50,7 +56,7 @@ export function useAppInitialization({ isDetachedWindow }: AppInitializationProp
   useEffect(() => {
     const themeId = config?.appearance?.themeId || 'midnight-ink';
     const theme = getThemeById(themeId);
-    
+
     if (theme) {
       applyTheme(theme);
     } else {

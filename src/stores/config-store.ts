@@ -12,7 +12,9 @@ interface ConfigStore {
   loadConfig: () => Promise<void>;
   updateAlwaysOnTop: (alwaysOnTop: boolean) => Promise<void>;
   updateConfig: (config: Partial<AppConfig>) => Promise<void>;
-  updateAppearance: (appearance: Partial<AppConfig['appearance']>) => Promise<void>;
+  updateAppearance: (
+    appearance: Partial<AppConfig['appearance']>
+  ) => Promise<void>;
   updateFontSize: (fontSize: number) => Promise<void>;
   updateTheme: (theme: 'dark' | 'light' | 'system') => Promise<void>;
 }
@@ -52,7 +54,7 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
       set({
         config: defaultConfig,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to load config'
+        error: error instanceof Error ? error.message : 'Failed to load config',
       });
     }
   },
@@ -64,66 +66,70 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
 
   updateConfig: async (configUpdate: Partial<AppConfig>) => {
     const { config } = get();
-    
+
     if (!config) {
       console.error('[FLOATNOTE] Current config is null! Using defaults');
       const newConfig = { ...defaultConfig, ...configUpdate };
       set({ config: newConfig });
       return;
     }
-    
+
     // Deep merge to handle nested objects properly
     const updatedConfig: AppConfig = {
       ...config,
       ...configUpdate,
       appearance: {
         ...config.appearance,
-        ...(configUpdate.appearance || {})
+        ...(configUpdate.appearance || {}),
       },
       shortcuts: {
         ...config.shortcuts,
-        ...(configUpdate.shortcuts || {})
+        ...(configUpdate.shortcuts || {}),
       },
       window: {
         ...config.window,
-        ...(configUpdate.window || {})
+        ...(configUpdate.window || {}),
       },
       storage: {
         ...config.storage,
-        ...(configUpdate.storage || {})
-      }
+        ...(configUpdate.storage || {}),
+      },
     };
-    
+
     try {
       const newConfig = await configApi.updateConfig(updatedConfig);
-      
+
       if (!newConfig) {
         console.error('[FLOATNOTE] Backend returned null config');
         set({ error: 'Backend returned null config' });
         return;
       }
-      
+
       if (!newConfig.appearance) {
         console.error('[FLOATNOTE] Backend returned invalid config structure');
-        set({ 
+        set({
           config: { ...defaultConfig, ...newConfig },
-          error: 'Invalid config structure received'
+          error: 'Invalid config structure received',
         });
         return;
       }
-      
+
       set({ config: newConfig });
-      
+
       // Emit config-updated event to notify all windows
       try {
         await emit('config-updated', newConfig);
       } catch (error) {
-        console.error('[FLOATNOTE] Failed to emit config-updated event:', error);
+        console.error(
+          '[FLOATNOTE] Failed to emit config-updated event:',
+          error
+        );
       }
     } catch (error) {
       console.error('[FLOATNOTE] Error updating config:', error);
-      set({ 
-        error: error instanceof Error ? error.message : 'Failed to update config'
+      set({
+        error:
+          error instanceof Error ? error.message : 'Failed to update config',
       });
     }
   },
@@ -131,7 +137,7 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
   updateAppearance: async (appearance: Partial<AppConfig['appearance']>) => {
     const { config, updateConfig } = get();
     await updateConfig({
-      appearance: { ...config.appearance, ...appearance }
+      appearance: { ...config.appearance, ...appearance },
     });
   },
 

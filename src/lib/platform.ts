@@ -29,7 +29,10 @@ export const getModifierSymbol = (): string => {
  * @param key - 按键字母（如 'N', 'K'）
  * @param modifiers - 修饰键数组（如 ['shift', 'alt']）
  */
-export const getShortcutDisplay = (key: string, modifiers: string[] = []): string => {
+export const getShortcutDisplay = (
+  key: string,
+  modifiers: string[] = []
+): string => {
   const parts: string[] = [getModifierSymbol()];
   if (modifiers.includes('shift')) parts.push('⇧');
   if (modifiers.includes('alt')) parts.push(isMac() ? '⌥' : 'Alt');

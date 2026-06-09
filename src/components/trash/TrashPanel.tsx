@@ -22,7 +22,8 @@ export function TrashPanel({ onNoteRestored }: TrashPanelProps) {
     emptyTrash,
   } = useTrashStore();
 
-  const [selectedTrashedNote, setSelectedTrashedNote] = useState<TrashedNote | null>(null);
+  const [selectedTrashedNote, setSelectedTrashedNote] =
+    useState<TrashedNote | null>(null);
 
   // Load trash on mount
   useEffect(() => {
@@ -76,7 +77,7 @@ export function TrashPanel({ onNoteRestored }: TrashPanelProps) {
   };
 
   const handleSelectNote = (noteId: string) => {
-    const trashedNote = trashedNotes.find(t => t.note.id === noteId);
+    const trashedNote = trashedNotes.find((t) => t.note.id === noteId);
     setSelectedTrashedNote(trashedNote || null);
   };
 
@@ -88,12 +89,22 @@ export function TrashPanel({ onNoteRestored }: TrashPanelProps) {
         <div className="h-[76px] flex flex-col justify-center px-4 border-b border-border/20 pt-5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2 pt-1">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/60">
-                <path d="M3 6h18"/>
-                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/>
-                <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                className="text-muted-foreground/60"
+              >
+                <path d="M3 6h18" />
+                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
+                <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
               </svg>
-              <h2 className="text-sm font-medium text-foreground/90">{t('sidebar.trash')}</h2>
+              <h2 className="text-sm font-medium text-foreground/90">
+                {t('sidebar.trash')}
+              </h2>
             </div>
 
             {trashedNotes.length > 0 && (
@@ -125,13 +136,23 @@ export function TrashPanel({ onNoteRestored }: TrashPanelProps) {
           ) : trashedNotes.length === 0 ? (
             <div className="p-4 text-center text-muted-foreground/60 text-sm">
               <div className="space-y-2">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mx-auto text-muted-foreground/30">
-                  <path d="M3 6h18"/>
-                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/>
-                  <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  className="mx-auto text-muted-foreground/30"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
+                  <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                 </svg>
                 <div>{t('trash.empty')}</div>
-                <div className="text-xs text-muted-foreground/40">{t('trash.emptyDescription')}</div>
+                <div className="text-xs text-muted-foreground/40">
+                  {t('trash.emptyDescription')}
+                </div>
               </div>
             </div>
           ) : (
@@ -140,7 +161,9 @@ export function TrashPanel({ onNoteRestored }: TrashPanelProps) {
                 <TrashItem
                   key={trashedNote.note.id}
                   trashedNote={trashedNote}
-                  isSelected={selectedTrashedNote?.note.id === trashedNote.note.id}
+                  isSelected={
+                    selectedTrashedNote?.note.id === trashedNote.note.id
+                  }
                   onSelect={handleSelectNote}
                   onRestore={handleRestore}
                   onPermanentDelete={handlePermanentDelete}
@@ -165,10 +188,18 @@ export function TrashPanel({ onNoteRestored }: TrashPanelProps) {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center text-muted-foreground/30">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mx-auto mb-4">
-                <path d="M3 6h18"/>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              <svg
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+                className="mx-auto mb-4"
+              >
+                <path d="M3 6h18" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
               </svg>
               <p className="text-sm">{t('trash.selectNote')}</p>
             </div>

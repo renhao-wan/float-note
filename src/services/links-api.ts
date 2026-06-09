@@ -6,7 +6,10 @@ const LOG_PREFIX = '[FLOATNOTE]';
 /**
  * 统一的 invoke 包装函数，添加错误处理和日志
  */
-async function invokeWithLogging<T>(command: string, args?: Record<string, unknown>): Promise<T> {
+async function invokeWithLogging<T>(
+  command: string,
+  args?: Record<string, unknown>
+): Promise<T> {
   try {
     return await invoke<T>(command, args);
   } catch (error) {
@@ -41,6 +44,8 @@ export const linksApi = {
    * Search notes for link autocomplete
    */
   async searchNotesForLink(query: string): Promise<LinkSuggestion[]> {
-    return invokeWithLogging<LinkSuggestion[]>('search_notes_for_link', { query });
+    return invokeWithLogging<LinkSuggestion[]>('search_notes_for_link', {
+      query,
+    });
   },
 };

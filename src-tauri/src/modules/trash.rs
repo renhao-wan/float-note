@@ -1,15 +1,15 @@
-use tauri::{State, AppHandle, Emitter};
+use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
-use std::collections::HashSet;
+use tauri::{AppHandle, Emitter, State};
 
-use crate::types::note::Note;
-use crate::types::trash::{TrashedNote, TrashStats};
-use crate::NotesState;
-use crate::modules::storage::get_configured_notes_directory;
-use crate::utils::generate_unique_slug;
-use crate::{log_info, log_error};
 use crate::error::FloatNoteError;
+use crate::modules::storage::get_configured_notes_directory;
+use crate::types::note::Note;
+use crate::types::trash::{TrashStats, TrashedNote};
+use crate::utils::generate_unique_slug;
+use crate::NotesState;
+use crate::{log_error, log_info};
 
 /// Get the trash directory path
 fn get_trash_dir(config: &crate::types::config::AppConfig) -> Result<PathBuf, String> {
@@ -32,7 +32,9 @@ fn get_trash_metadata_path(config: &crate::types::config::AppConfig) -> Result<P
 }
 
 /// Load trash metadata from disk
-fn load_trash_metadata(config: &crate::types::config::AppConfig) -> Result<Vec<TrashedNote>, String> {
+fn load_trash_metadata(
+    config: &crate::types::config::AppConfig,
+) -> Result<Vec<TrashedNote>, String> {
     let metadata_path = get_trash_metadata_path(config)?;
 
     if !metadata_path.exists() {
@@ -78,18 +80,18 @@ pub async fn move_to_trash(
     log_info!("TRASH", "Moving note to trash: {}", note_id);
 
     // Get the note from memory
-    let note = notes_lock.get(&note_id)
+    let note = notes_lock
+        .get(&note_id)
         .ok_or_else(|| FloatNoteError::NotFound(format!("Note not found: {}", note_id)))?
         .clone();
 
     // Get the file path
-    let notes_dir = get_configured_notes_directory(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let notes_dir =
+        get_configured_notes_directory(&config_lock).map_err(FloatNoteError::Storage)?;
     let note_file = notes_dir.join(format!("{}.md", note_id));
 
     // Get trash directory
-    let trash_dir = get_trash_dir(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let trash_dir = get_trash_dir(&config_lock).map_err(FloatNoteError::Storage)?;
     let trash_file = trash_dir.join(format!("{}.md", note_id));
 
     // Move file to trash
@@ -104,17 +106,21 @@ pub async fn move_to_trash(
         let trash_attachments_dir = trash_dir.join("attachments").join(&note_id);
         // Create parent directories if they don't exist
         if let Some(parent) = trash_attachments_dir.parent() {
-            fs::create_dir_all(parent)
-                .map_err(|e| FloatNoteError::Storage(format!("Failed to create trash attachments directory: {}", e)))?;
+            fs::create_dir_all(parent).map_err(|e| {
+                FloatNoteError::Storage(format!(
+                    "Failed to create trash attachments directory: {}",
+                    e
+                ))
+            })?;
         }
-        fs::rename(&attachments_dir, &trash_attachments_dir)
-            .map_err(|e| FloatNoteError::Storage(format!("Failed to move attachments to trash: {}", e)))?;
+        fs::rename(&attachments_dir, &trash_attachments_dir).map_err(|e| {
+            FloatNoteError::Storage(format!("Failed to move attachments to trash: {}", e))
+        })?;
         log_info!("TRASH", "Moved attachments to trash for note: {}", note_id);
     }
 
     // Add to trash metadata
-    let mut metadata = load_trash_metadata(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let mut metadata = load_trash_metadata(&config_lock).map_err(FloatNoteError::Storage)?;
 
     let trashed_note = TrashedNote {
         note: note.clone(),
@@ -123,8 +129,7 @@ pub async fn move_to_trash(
     };
 
     metadata.push(trashed_note);
-    save_trash_metadata(&config_lock, &metadata)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    save_trash_metadata(&config_lock, &metadata).map_err(FloatNoteError::Storage)?;
 
     // Remove from memory
     notes_lock.remove(&note_id);
@@ -153,29 +158,32 @@ pub async fn restore_from_trash(
     log_info!("TRASH", "Restoring note from trash: {}", note_id);
 
     // Load trash metadata
-    let mut metadata = load_trash_metadata(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let mut metadata = load_trash_metadata(&config_lock).map_err(FloatNoteError::Storage)?;
 
     // Find the trashed note
-    let trashed_index = metadata.iter()
+    let trashed_index = metadata
+        .iter()
         .position(|t| t.note.id == note_id)
         .ok_or_else(|| FloatNoteError::NotFound(format!("Note not found in trash: {}", note_id)))?;
 
     let trashed_note = metadata.remove(trashed_index);
 
     // Get paths
-    let trash_dir = get_trash_dir(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let trash_dir = get_trash_dir(&config_lock).map_err(FloatNoteError::Storage)?;
     let trash_file = trash_dir.join(format!("{}.md", note_id));
 
-    let notes_dir = get_configured_notes_directory(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let notes_dir =
+        get_configured_notes_directory(&config_lock).map_err(FloatNoteError::Storage)?;
     let note_file = notes_dir.join(format!("{}.md", note_id));
 
     // Check if a note with the same ID already exists
     let mut restored_note = trashed_note.note.clone();
     if notes_lock.contains_key(&note_id) {
-        log_info!("TRASH", "Note ID conflict detected: {} already exists, generating new ID", note_id);
+        log_info!(
+            "TRASH",
+            "Note ID conflict detected: {} already exists, generating new ID",
+            note_id
+        );
 
         // Generate new unique ID
         let existing_ids: HashSet<String> = notes_lock.keys().cloned().collect();
@@ -191,8 +199,9 @@ pub async fn restore_from_trash(
 
         // Move file back from trash with new name
         if trash_file.exists() {
-            fs::rename(&trash_file, &new_note_file)
-                .map_err(|e| FloatNoteError::Storage(format!("Failed to restore note from trash: {}", e)))?;
+            fs::rename(&trash_file, &new_note_file).map_err(|e| {
+                FloatNoteError::Storage(format!("Failed to restore note from trash: {}", e))
+            })?;
         }
 
         // Restore attachments from trash with new ID
@@ -200,12 +209,22 @@ pub async fn restore_from_trash(
         if trash_attachments_dir.exists() {
             let attachments_dir = notes_dir.join("attachments").join(&new_id);
             if let Some(parent) = attachments_dir.parent() {
-                fs::create_dir_all(parent)
-                    .map_err(|e| FloatNoteError::Storage(format!("Failed to create attachments directory: {}", e)))?;
+                fs::create_dir_all(parent).map_err(|e| {
+                    FloatNoteError::Storage(format!(
+                        "Failed to create attachments directory: {}",
+                        e
+                    ))
+                })?;
             }
-            fs::rename(&trash_attachments_dir, &attachments_dir)
-                .map_err(|e| FloatNoteError::Storage(format!("Failed to restore attachments from trash: {}", e)))?;
-            log_info!("TRASH", "Restored attachments from trash for note: {} -> {}", note_id, new_id);
+            fs::rename(&trash_attachments_dir, &attachments_dir).map_err(|e| {
+                FloatNoteError::Storage(format!("Failed to restore attachments from trash: {}", e))
+            })?;
+            log_info!(
+                "TRASH",
+                "Restored attachments from trash for note: {} -> {}",
+                note_id,
+                new_id
+            );
         }
 
         // Add back to memory with new ID
@@ -213,8 +232,9 @@ pub async fn restore_from_trash(
     } else {
         // No conflict, restore normally
         if trash_file.exists() {
-            fs::rename(&trash_file, &note_file)
-                .map_err(|e| FloatNoteError::Storage(format!("Failed to restore note from trash: {}", e)))?;
+            fs::rename(&trash_file, &note_file).map_err(|e| {
+                FloatNoteError::Storage(format!("Failed to restore note from trash: {}", e))
+            })?;
         }
 
         // Restore attachments from trash
@@ -222,12 +242,21 @@ pub async fn restore_from_trash(
         if trash_attachments_dir.exists() {
             let attachments_dir = notes_dir.join("attachments").join(&note_id);
             if let Some(parent) = attachments_dir.parent() {
-                fs::create_dir_all(parent)
-                    .map_err(|e| FloatNoteError::Storage(format!("Failed to create attachments directory: {}", e)))?;
+                fs::create_dir_all(parent).map_err(|e| {
+                    FloatNoteError::Storage(format!(
+                        "Failed to create attachments directory: {}",
+                        e
+                    ))
+                })?;
             }
-            fs::rename(&trash_attachments_dir, &attachments_dir)
-                .map_err(|e| FloatNoteError::Storage(format!("Failed to restore attachments from trash: {}", e)))?;
-            log_info!("TRASH", "Restored attachments from trash for note: {}", note_id);
+            fs::rename(&trash_attachments_dir, &attachments_dir).map_err(|e| {
+                FloatNoteError::Storage(format!("Failed to restore attachments from trash: {}", e))
+            })?;
+            log_info!(
+                "TRASH",
+                "Restored attachments from trash for note: {}",
+                note_id
+            );
         }
 
         // Add back to memory
@@ -235,15 +264,15 @@ pub async fn restore_from_trash(
     }
 
     // Update trash metadata
-    save_trash_metadata(&config_lock, &metadata)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    save_trash_metadata(&config_lock, &metadata).map_err(FloatNoteError::Storage)?;
 
     log_info!("TRASH", "Restored note from trash: {}", restored_note.id);
 
     // Emit event to all windows for synchronization
-    app.emit("note-created", &restored_note).unwrap_or_else(|e| {
-        log_error!("TRASH", "Failed to emit note-created event: {}", e);
-    });
+    app.emit("note-created", &restored_note)
+        .unwrap_or_else(|e| {
+            log_error!("TRASH", "Failed to emit note-created event: {}", e);
+        });
 
     Ok(restored_note)
 }
@@ -260,44 +289,53 @@ pub async fn permanently_delete(
     log_info!("TRASH", "Permanently deleting note: {}", note_id);
 
     // Load trash metadata
-    let mut metadata = load_trash_metadata(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let mut metadata = load_trash_metadata(&config_lock).map_err(FloatNoteError::Storage)?;
 
     // Find and remove the trashed note
-    let trashed_index = metadata.iter()
+    let trashed_index = metadata
+        .iter()
         .position(|t| t.note.id == note_id)
         .ok_or_else(|| FloatNoteError::NotFound(format!("Note not found in trash: {}", note_id)))?;
 
     metadata.remove(trashed_index);
 
     // Delete the file from trash
-    let trash_dir = get_trash_dir(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let trash_dir = get_trash_dir(&config_lock).map_err(FloatNoteError::Storage)?;
     let trash_file = trash_dir.join(format!("{}.md", note_id));
 
     if trash_file.exists() {
-        fs::remove_file(&trash_file)
-            .map_err(|e| FloatNoteError::Storage(format!("Failed to delete note from trash: {}", e)))?;
+        fs::remove_file(&trash_file).map_err(|e| {
+            FloatNoteError::Storage(format!("Failed to delete note from trash: {}", e))
+        })?;
     }
 
     // Delete attachments from trash
     let trash_attachments_dir = trash_dir.join("attachments").join(&note_id);
     if trash_attachments_dir.exists() {
-        fs::remove_dir_all(&trash_attachments_dir)
-            .map_err(|e| FloatNoteError::Storage(format!("Failed to delete attachments from trash: {}", e)))?;
-        log_info!("TRASH", "Deleted attachments from trash for note: {}", note_id);
+        fs::remove_dir_all(&trash_attachments_dir).map_err(|e| {
+            FloatNoteError::Storage(format!("Failed to delete attachments from trash: {}", e))
+        })?;
+        log_info!(
+            "TRASH",
+            "Deleted attachments from trash for note: {}",
+            note_id
+        );
     }
 
     // Update trash metadata
-    save_trash_metadata(&config_lock, &metadata)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    save_trash_metadata(&config_lock, &metadata).map_err(FloatNoteError::Storage)?;
 
     log_info!("TRASH", "Permanently deleted note: {}", note_id);
 
     // Emit event to all windows for synchronization
-    app.emit("note-permanently-deleted", &note_id).unwrap_or_else(|e| {
-        log_error!("TRASH", "Failed to emit note-permanently-deleted event: {}", e);
-    });
+    app.emit("note-permanently-deleted", &note_id)
+        .unwrap_or_else(|e| {
+            log_error!(
+                "TRASH",
+                "Failed to emit note-permanently-deleted event: {}",
+                e
+            );
+        });
 
     Ok(())
 }
@@ -313,26 +351,24 @@ pub async fn empty_trash(
     log_info!("TRASH", "Emptying trash");
 
     // Load trash metadata
-    let metadata = load_trash_metadata(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let metadata = load_trash_metadata(&config_lock).map_err(FloatNoteError::Storage)?;
 
     let count = metadata.len();
 
     // Delete all files from trash
-    let trash_dir = get_trash_dir(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let trash_dir = get_trash_dir(&config_lock).map_err(FloatNoteError::Storage)?;
 
     for trashed_note in &metadata {
         let trash_file = trash_dir.join(format!("{}.md", trashed_note.note.id));
         if trash_file.exists() {
-            fs::remove_file(&trash_file)
-                .map_err(|e| FloatNoteError::Storage(format!("Failed to delete note from trash: {}", e)))?;
+            fs::remove_file(&trash_file).map_err(|e| {
+                FloatNoteError::Storage(format!("Failed to delete note from trash: {}", e))
+            })?;
         }
     }
 
     // Clear metadata
-    save_trash_metadata(&config_lock, &[])
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    save_trash_metadata(&config_lock, &[]).map_err(FloatNoteError::Storage)?;
 
     log_info!("TRASH", "Emptied trash, deleted {} notes", count);
 
@@ -354,11 +390,9 @@ pub async fn get_trash_stats(
 ) -> Result<TrashStats, FloatNoteError> {
     let config_lock = config.lock().await;
 
-    let metadata = load_trash_metadata(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let metadata = load_trash_metadata(&config_lock).map_err(FloatNoteError::Storage)?;
 
-    let trash_dir = get_trash_dir(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let trash_dir = get_trash_dir(&config_lock).map_err(FloatNoteError::Storage)?;
 
     // Calculate total size
     let mut total_size = 0u64;
@@ -382,8 +416,7 @@ pub async fn list_trashed_notes(
 ) -> Result<Vec<TrashedNote>, FloatNoteError> {
     let config_lock = config.lock().await;
 
-    let metadata = load_trash_metadata(&config_lock)
-        .map_err(|e| FloatNoteError::Storage(e))?;
+    let metadata = load_trash_metadata(&config_lock).map_err(FloatNoteError::Storage)?;
 
     Ok(metadata)
 }

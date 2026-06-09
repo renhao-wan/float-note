@@ -6,7 +6,10 @@ const LOG_PREFIX = '[FLOATNOTE]';
 /**
  * 统一的 invoke 包装函数，添加错误处理和日志
  */
-async function invokeWithLogging<T>(command: string, args?: Record<string, unknown>): Promise<T> {
+async function invokeWithLogging<T>(
+  command: string,
+  args?: Record<string, unknown>
+): Promise<T> {
   try {
     return await invoke<T>(command, args);
   } catch (error) {
@@ -19,7 +22,9 @@ export const attachmentsApi = {
   /**
    * Upload an attachment for a note
    */
-  async uploadAttachment(request: UploadAttachmentRequest): Promise<Attachment> {
+  async uploadAttachment(
+    request: UploadAttachmentRequest
+  ): Promise<Attachment> {
     return invokeWithLogging<Attachment>('upload_attachment', { request });
   },
 
@@ -27,7 +32,10 @@ export const attachmentsApi = {
    * Delete an attachment
    */
   async deleteAttachment(attachmentId: string, noteId: string): Promise<void> {
-    return invokeWithLogging<void>('delete_attachment', { attachmentId, noteId });
+    return invokeWithLogging<void>('delete_attachment', {
+      attachmentId,
+      noteId,
+    });
   },
 
   /**
@@ -40,14 +48,22 @@ export const attachmentsApi = {
   /**
    * Get attachment file path
    */
-  async getAttachmentPath(attachmentId: string, noteId: string): Promise<string> {
-    return invokeWithLogging<string>('get_attachment_path', { attachmentId, noteId });
+  async getAttachmentPath(
+    attachmentId: string,
+    noteId: string
+  ): Promise<string> {
+    return invokeWithLogging<string>('get_attachment_path', {
+      attachmentId,
+      noteId,
+    });
   },
 
   /**
    * Paste image from clipboard
    */
   async pasteImageFromClipboard(noteId: string): Promise<Attachment> {
-    return invokeWithLogging<Attachment>('paste_image_from_clipboard', { noteId });
+    return invokeWithLogging<Attachment>('paste_image_from_clipboard', {
+      noteId,
+    });
   },
 };

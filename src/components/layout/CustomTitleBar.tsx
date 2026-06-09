@@ -27,7 +27,7 @@ export function CustomTitleBar({
   rightContent,
   onClose,
   isShaded = false,
-  stats
+  stats,
 }: CustomTitleBarProps) {
   const { t } = useTranslation();
   // Get the current window directly - getCurrentWebviewWindow() handles Tauri context internally
@@ -55,7 +55,7 @@ export function CustomTitleBar({
     });
 
     return () => {
-      unlisten.then(fn => fn());
+      unlisten.then((fn) => fn());
     };
   }, [appWindow]);
 
@@ -138,9 +138,7 @@ export function CustomTitleBar({
     >
       {/* Left side content */}
       {rightContent && (
-        <div className="flex items-center gap-2">
-          {rightContent}
-        </div>
+        <div className="flex items-center gap-2">{rightContent}</div>
       )}
 
       {/* Center title area - draggable */}
@@ -154,15 +152,23 @@ export function CustomTitleBar({
             <span title={t('titlebar.middleClickUnshade')}>{title}</span>
             <div className="flex items-center gap-3 text-[10px] text-foreground/50">
               {stats.wordCount !== undefined && (
-                <span>{t('titlebar.wordCountWithCount', { count: stats.wordCount })}</span>
+                <span>
+                  {t('titlebar.wordCountWithCount', { count: stats.wordCount })}
+                </span>
               )}
               {stats.lastSaved && (
-                <span>• {t('titlebar.savedWithTime', { time: stats.lastSaved })}</span>
+                <span>
+                  • {t('titlebar.savedWithTime', { time: stats.lastSaved })}
+                </span>
               )}
             </div>
           </div>
         ) : (
-          <span className="text-foreground/70 font-medium select-none tracking-wide" style={{ fontSize: '13px', fontFamily: 'var(--font-ui)' }} title={t('titlebar.middleClickShade')}>
+          <span
+            className="text-foreground/70 font-medium select-none tracking-wide"
+            style={{ fontSize: '13px', fontFamily: 'var(--font-ui)' }}
+            title={t('titlebar.middleClickShade')}
+          >
             {title}
           </span>
         )}
@@ -177,7 +183,15 @@ export function CustomTitleBar({
               className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground/80 hover:bg-foreground/5 transition-all duration-150"
               title={t('titlebar.minimize')}
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              >
                 <line x1="1.5" y1="5" x2="8.5" y2="5" />
               </svg>
             </button>
@@ -190,13 +204,31 @@ export function CustomTitleBar({
           >
             {isMaximized ? (
               // Restore icon (two overlapping rectangles)
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <rect x="2.5" y="0.5" width="6" height="6" rx="1" />
                 <path d="M0.5 3.5 L0.5 8.5 L5.5 8.5 L5.5 7.5" />
               </svg>
             ) : (
               // Maximize icon (single rectangle)
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <rect x="1.5" y="1.5" width="7" height="7" rx="1" />
               </svg>
             )}
@@ -207,7 +239,15 @@ export function CustomTitleBar({
             className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all duration-150"
             title={t('titlebar.close')}
           >
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            >
               <line x1="1.5" y1="1.5" x2="8.5" y2="8.5" />
               <line x1="8.5" y1="1.5" x2="1.5" y2="8.5" />
             </svg>

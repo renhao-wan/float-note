@@ -28,9 +28,10 @@ export function NoteTagSelector({ note, onTagsChange }: NoteTagSelectorProps) {
     if (inputValue.trim()) {
       const filtered = tags
         .map((tag) => tag.name)
-        .filter((name) =>
-          name.toLowerCase().includes(inputValue.toLowerCase()) &&
-          !note.tags?.includes(name)
+        .filter(
+          (name) =>
+            name.toLowerCase().includes(inputValue.toLowerCase()) &&
+            !note.tags?.includes(name)
         );
       setSuggestions(filtered);
     } else {
@@ -48,7 +49,10 @@ export function NoteTagSelector({ note, onTagsChange }: NoteTagSelectorProps) {
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setSuggestions([]);
         setIsEditing(false);
       }
@@ -89,7 +93,12 @@ export function NoteTagSelector({ note, onTagsChange }: NoteTagSelectorProps) {
       setInputValue('');
       setSuggestions([]);
       setIsEditing(false);
-    } else if (e.key === 'Backspace' && !inputValue && note.tags && note.tags.length > 0) {
+    } else if (
+      e.key === 'Backspace' &&
+      !inputValue &&
+      note.tags &&
+      note.tags.length > 0
+    ) {
       await handleRemoveTag(note.tags[note.tags.length - 1]);
     }
   };

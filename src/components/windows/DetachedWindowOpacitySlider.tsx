@@ -20,30 +20,36 @@ export const DetachedWindowOpacitySlider = ({
   const transparencyManager = getTransparencyManager();
 
   // 应用透明度到窗口
-  const applyOpacity = useCallback(async (value: number) => {
-    try {
-      await transparencyManager.setOpacity(windowLabel, value);
-      setOpacity(value);
-      onOpacityChange?.(value);
-    } catch (error) {
-      console.error('[OPACITY_SLIDER] Failed to apply opacity:', error);
-    }
-  }, [windowLabel, onOpacityChange, transparencyManager]);
+  const applyOpacity = useCallback(
+    async (value: number) => {
+      try {
+        await transparencyManager.setOpacity(windowLabel, value);
+        setOpacity(value);
+        onOpacityChange?.(value);
+      } catch (error) {
+        console.error('[OPACITY_SLIDER] Failed to apply opacity:', error);
+      }
+    },
+    [windowLabel, onOpacityChange, transparencyManager]
+  );
 
   // 处理滑块变化
-  const handleSliderChange = useCallback((value: number[]) => {
-    const newOpacity = value[0];
-    setOpacity(newOpacity); // 立即更新 UI
+  const handleSliderChange = useCallback(
+    (value: number[]) => {
+      const newOpacity = value[0];
+      setOpacity(newOpacity); // 立即更新 UI
 
-    // 防抖：停止拖动 100ms 后才应用透明度
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
+      // 防抖：停止拖动 100ms 后才应用透明度
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
 
-    debounceTimerRef.current = setTimeout(() => {
-      applyOpacity(newOpacity);
-    }, 100);
-  }, [applyOpacity]);
+      debounceTimerRef.current = setTimeout(() => {
+        applyOpacity(newOpacity);
+      }, 100);
+    },
+    [applyOpacity]
+  );
 
   // 初始化时应用透明度
   useEffect(() => {

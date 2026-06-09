@@ -6,7 +6,10 @@ const LOG_PREFIX = '[FLOATNOTE]';
 /**
  * 统一的 invoke 包装函数，添加错误处理和日志
  */
-async function invokeWithLogging<T>(command: string, args?: Record<string, unknown>): Promise<T> {
+async function invokeWithLogging<T>(
+  command: string,
+  args?: Record<string, unknown>
+): Promise<T> {
   try {
     return await invoke<T>(command, args);
   } catch (error) {
@@ -40,12 +43,16 @@ export const notesApi = {
   },
 
   async reorderNotes(noteIds: string[]): Promise<Note[]> {
-    return invokeWithLogging<Note[]>('reorder_notes', { request: { note_ids: noteIds } });
+    return invokeWithLogging<Note[]>('reorder_notes', {
+      request: { note_ids: noteIds },
+    });
   },
 
   // File import/export operations
   async importNotesFromDirectory(directoryPath: string): Promise<Note[]> {
-    return invokeWithLogging<Note[]>('import_notes_from_directory', { directoryPath });
+    return invokeWithLogging<Note[]>('import_notes_from_directory', {
+      directoryPath,
+    });
   },
 
   async importSingleFile(filePath: string): Promise<Note> {
@@ -57,7 +64,9 @@ export const notesApi = {
   },
 
   async exportAllNotesToDirectory(directoryPath: string): Promise<string[]> {
-    return invokeWithLogging<string[]>('export_all_notes_to_directory', { directoryPath });
+    return invokeWithLogging<string[]>('export_all_notes_to_directory', {
+      directoryPath,
+    });
   },
 
   // Notes directory management
@@ -75,7 +84,9 @@ export const notesApi = {
 
   // Directory dialog
   async openDirectoryDialog(initialDir?: string): Promise<string | null> {
-    return invokeWithLogging<string | null>('open_directory_dialog', { initialDir: initialDir || null });
+    return invokeWithLogging<string | null>('open_directory_dialog', {
+      initialDir: initialDir || null,
+    });
   },
 
   // File picker dialog
@@ -85,6 +96,8 @@ export const notesApi = {
 
   // Open directory in Finder/Explorer
   async openDirectoryInFinder(directoryPath: string): Promise<void> {
-    return invokeWithLogging<void>('open_directory_in_finder', { directoryPath });
+    return invokeWithLogging<void>('open_directory_in_finder', {
+      directoryPath,
+    });
   },
 };

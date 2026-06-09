@@ -42,47 +42,53 @@ export function useAttachments(noteId: string | null): UseAttachmentsReturn {
     loadAttachments();
   }, [loadAttachments]);
 
-  const uploadFile = useCallback(async (filePath: string): Promise<Attachment> => {
-    if (!noteId) {
-      throw new Error('No note selected');
-    }
+  const uploadFile = useCallback(
+    async (filePath: string): Promise<Attachment> => {
+      if (!noteId) {
+        throw new Error('No note selected');
+      }
 
-    setIsLoading(true);
-    setError(null);
-    try {
-      const attachment = await attachmentsApi.uploadAttachment({
-        note_id: noteId,
-        file_path: filePath,
-      });
-      setAttachments(prev => [...prev, attachment]);
-      return attachment;
-    } catch (err) {
-      console.error('[FLOATNOTE] Failed to upload attachment:', err);
-      setError(String(err));
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [noteId]);
+      setIsLoading(true);
+      setError(null);
+      try {
+        const attachment = await attachmentsApi.uploadAttachment({
+          note_id: noteId,
+          file_path: filePath,
+        });
+        setAttachments((prev) => [...prev, attachment]);
+        return attachment;
+      } catch (err) {
+        console.error('[FLOATNOTE] Failed to upload attachment:', err);
+        setError(String(err));
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [noteId]
+  );
 
-  const deleteAttachment = useCallback(async (attachmentId: string): Promise<void> => {
-    if (!noteId) {
-      throw new Error('No note selected');
-    }
+  const deleteAttachment = useCallback(
+    async (attachmentId: string): Promise<void> => {
+      if (!noteId) {
+        throw new Error('No note selected');
+      }
 
-    setIsLoading(true);
-    setError(null);
-    try {
-      await attachmentsApi.deleteAttachment(attachmentId, noteId);
-      setAttachments(prev => prev.filter(a => a.id !== attachmentId));
-    } catch (err) {
-      console.error('[FLOATNOTE] Failed to delete attachment:', err);
-      setError(String(err));
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [noteId]);
+      setIsLoading(true);
+      setError(null);
+      try {
+        await attachmentsApi.deleteAttachment(attachmentId, noteId);
+        setAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
+      } catch (err) {
+        console.error('[FLOATNOTE] Failed to delete attachment:', err);
+        setError(String(err));
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [noteId]
+  );
 
   const pasteFromClipboard = useCallback(async (): Promise<Attachment> => {
     if (!noteId) {
@@ -93,7 +99,7 @@ export function useAttachments(noteId: string | null): UseAttachmentsReturn {
     setError(null);
     try {
       const attachment = await attachmentsApi.pasteImageFromClipboard(noteId);
-      setAttachments(prev => [...prev, attachment]);
+      setAttachments((prev) => [...prev, attachment]);
       return attachment;
     } catch (err) {
       console.error('[FLOATNOTE] Failed to paste from clipboard:', err);
@@ -104,17 +110,20 @@ export function useAttachments(noteId: string | null): UseAttachmentsReturn {
     }
   }, [noteId]);
 
-  const getMarkdownReference = useCallback((attachment: Attachment): string => {
-    // Use relative path to attachments directory
-    const isImage = attachment.mime_type.startsWith('image/');
-    const path = `./attachments/${noteId}/${attachment.filename}`;
+  const getMarkdownReference = useCallback(
+    (attachment: Attachment): string => {
+      // Use relative path to attachments directory
+      const isImage = attachment.mime_type.startsWith('image/');
+      const path = `./attachments/${noteId}/${attachment.filename}`;
 
-    if (isImage) {
-      return `![${attachment.original_filename}](${path})`;
-    } else {
-      return `[${attachment.original_filename}](${path})`;
-    }
-  }, [noteId]);
+      if (isImage) {
+        return `![${attachment.original_filename}](${path})`;
+      } else {
+        return `[${attachment.original_filename}](${path})`;
+      }
+    },
+    [noteId]
+  );
 
   return {
     attachments,

@@ -12,11 +12,13 @@ FloatNote 是一个空间笔记应用，核心特性是多窗口架构——笔�
 ## ✨ 特性
 
 ### 🪟 多窗口空间架构
+
 - 从侧边栏拖拽笔记即可创建独立浮动窗口
 - 支持窗口置顶、透明度调节、折叠（Shade）模式
 - 窗口位置和大小自动持久化，跨会话恢复
 
 ### 📝 Markdown 编辑器
+
 - 基于 CodeMirror 6，支持语法高亮
 - 实时 Markdown 预览
 - Vim 模式支持
@@ -24,35 +26,39 @@ FloatNote 是一个空间笔记应用，核心特性是多窗口架构——笔�
 - 自动保存（3 秒防抖）
 
 ### 🎨 15 个内置主题
+
 Obsidian Observatory、Dark Forest、Cosmic Dusk、Morning Mist、Warm Parchment、Pure Mono、Inverse Void、Terminal Green、Cyberpunk Neon、Executive Suite、Pastel Dream、Zen Garden、High Contrast Dark、Autumn Harvest、Arctic Frost
 
 ### 📁 文件管理
+
 - 笔记以 Markdown 文件存储，带 YAML frontmatter
 - 支持导入/导出 Markdown 文件
 - 自定义笔记存储目录
 - 标题重命名自动同步文件名
 
 ### 🌐 国际化
+
 支持中文和英文，运行时切换
 
 ### 🔧 高度可定制
+
 - 自定义编辑器字体、预览字体、应用字体
 - 字体大小、行高调节
 - 纸张样式：空白、点阵、横线、方格
 
 ## 🛠️ 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 桌面框架 | Tauri v2 |
-| 前端 | React 18 + TypeScript + Vite 5 |
-| 状态管理 | Zustand |
-| 样式 | Tailwind CSS 3 |
-| 编辑器 | CodeMirror 6 |
+| 层级     | 技术                                           |
+| -------- | ---------------------------------------------- |
+| 桌面框架 | Tauri v2                                       |
+| 前端     | React 18 + TypeScript + Vite 5                 |
+| 状态管理 | Zustand                                        |
+| 样式     | Tailwind CSS 3                                 |
+| 编辑器   | CodeMirror 6                                   |
 | Markdown | react-markdown + remark-gfm + rehype-highlight |
-| UI 组件 | Radix UI |
-| 后端 | Rust + Tokio |
-| 包管理 | pnpm |
+| UI 组件  | Radix UI                                       |
+| 后端     | Rust + Tokio                                   |
+| 包管理   | pnpm                                           |
 
 ## 📦 安装
 

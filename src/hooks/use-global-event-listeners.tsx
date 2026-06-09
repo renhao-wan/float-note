@@ -34,65 +34,93 @@ export function useGlobalEventListeners({
         unlisteners.push(unlistenNewNote);
 
         // Listen for direct note deployment events
-        const unlistenDeployWindow = await listen('deploy-note-window', async (event) => {
-          const noteIndex = event.payload as number;
+        const unlistenDeployWindow = await listen(
+          'deploy-note-window',
+          async (event) => {
+            const noteIndex = event.payload as number;
 
-          // Retry mechanism for when notes haven't loaded yet
-          const attemptDeploy = async (retries = 3) => {
-            const currentNotes = notesRef.current;
-            const windowsStore = useDetachedWindowsStore.getState();
+            // Retry mechanism for when notes haven't loaded yet
+            const attemptDeploy = async (retries = 3) => {
+              const currentNotes = notesRef.current;
+              const windowsStore = useDetachedWindowsStore.getState();
 
-            if (currentNotes[noteIndex]) {
-              const targetNote = currentNotes[noteIndex];
-              const slotNumber = noteIndex + 1; // Convert 0-based to 1-based
-              const gridPos = getGridPosition(slotNumber);
+              if (currentNotes[noteIndex]) {
+                const targetNote = currentNotes[noteIndex];
+                const slotNumber = noteIndex + 1; // Convert 0-based to 1-based
+                const gridPos = getGridPosition(slotNumber);
 
-              try {
-                const windowExists = windowsStore.isWindowOpen(targetNote.id);
+                try {
+                  const windowExists = windowsStore.isWindowOpen(targetNote.id);
 
-                if (windowExists) {
-                  const focused = await windowsStore.focusWindow(targetNote.id);
+                  if (windowExists) {
+                    const focused = await windowsStore.focusWindow(
+                      targetNote.id
+                    );
 
-                  if (!focused) {
-                    await windowsStore.createWindow(targetNote.id, gridPos.x, gridPos.y, gridPos.width, gridPos.height);
+                    if (!focused) {
+                      await windowsStore.createWindow(
+                        targetNote.id,
+                        gridPos.x,
+                        gridPos.y,
+                        gridPos.width,
+                        gridPos.height
+                      );
+                    }
+                  } else {
+                    await windowsStore.createWindow(
+                      targetNote.id,
+                      gridPos.x,
+                      gridPos.y,
+                      gridPos.width,
+                      gridPos.height
+                    );
                   }
-                } else {
-                  await windowsStore.createWindow(targetNote.id, gridPos.x, gridPos.y, gridPos.width, gridPos.height);
+                } catch (error) {
+                  console.error('[DEPLOY] Error deploying window:', error);
                 }
-              } catch (error) {
-                console.error('[DEPLOY] Error deploying window:', error);
+              } else if (retries > 0) {
+                setTimeout(() => attemptDeploy(retries - 1), 200);
               }
-            } else if (retries > 0) {
-              setTimeout(() => attemptDeploy(retries - 1), 200);
-            }
-          };
+            };
 
-          await attemptDeploy();
-        });
+            await attemptDeploy();
+          }
+        );
         unlisteners.push(unlistenDeployWindow);
 
         // Note: window-closed and window-created events are handled
         // directly by the stores when they perform the operations
 
         // Listen for window destroyed events
-        const unlistenWindowDestroyed = await listen('window-destroyed', async (event) => {
-          // Clean up backend state
-          try {
-            await invoke('cleanup_destroyed_window', { noteId: event.payload as string });
-          } catch (error) {
-            console.error('[FLOATNOTE] Failed to cleanup backend state:', error);
+        const unlistenWindowDestroyed = await listen(
+          'window-destroyed',
+          async (event) => {
+            // Clean up backend state
+            try {
+              await invoke('cleanup_destroyed_window', {
+                noteId: event.payload as string,
+              });
+            } catch (error) {
+              console.error(
+                '[FLOATNOTE] Failed to cleanup backend state:',
+                error
+              );
+            }
           }
-        });
+        );
         unlisteners.push(unlistenWindowDestroyed);
 
         // Listen for hybrid window destroyed events
-        const unlistenHybridDestroyed = await listen('hybrid-window-destroyed', async () => {
-          // Window positions store will be updated automatically when hybrid window is destroyed
-        });
+        const unlistenHybridDestroyed = await listen(
+          'hybrid-window-destroyed',
+          async () => {
+            // Window positions store will be updated automatically when hybrid window is destroyed
+          }
+        );
         unlisteners.push(unlistenHybridDestroyed);
 
         return () => {
-          unlisteners.forEach(fn => {
+          unlisteners.forEach((fn) => {
             try {
               fn();
             } catch (error) {
@@ -105,10 +133,10 @@ export function useGlobalEventListeners({
         return () => {};
       }
     };
-    
+
     let cancelled = false;
     let cleanup: (() => void) | undefined;
-    setupListeners().then(fn => {
+    setupListeners().then((fn) => {
       if (cancelled) {
         fn();
       } else {

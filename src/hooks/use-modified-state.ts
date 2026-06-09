@@ -12,7 +12,7 @@ export function useModifiedState() {
   });
 
   const markModified = useCallback(() => {
-    setState(prev => ({ ...prev, isModified: true }));
+    setState((prev) => ({ ...prev, isModified: true }));
   }, []);
 
   const markSaved = useCallback((content: string) => {
@@ -22,10 +22,13 @@ export function useModifiedState() {
     });
   }, []);
 
-  const checkIfModified = useCallback((currentContent: string): boolean => {
-    if (state.lastContent === null) return false;
-    return currentContent !== state.lastContent;
-  }, [state.lastContent]);
+  const checkIfModified = useCallback(
+    (currentContent: string): boolean => {
+      if (state.lastContent === null) return false;
+      return currentContent !== state.lastContent;
+    },
+    [state.lastContent]
+  );
 
   return {
     isModified: state.isModified,

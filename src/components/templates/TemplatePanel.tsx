@@ -9,7 +9,9 @@ interface TemplatePanelProps {
   onTemplatesChange: (templates: NoteTemplate[]) => void;
   selectedTemplateId?: string | null;
   onTemplateSelect?: (template: NoteTemplate | null) => void;
-  onEditingContentChange?: (content: { name: string; description: string; content: string } | null) => void;
+  onEditingContentChange?: (
+    content: { name: string; description: string; content: string } | null
+  ) => void;
 }
 
 export function TemplatePanel({
@@ -17,11 +19,13 @@ export function TemplatePanel({
   onTemplatesChange,
   selectedTemplateId,
   onTemplateSelect,
-  onEditingContentChange
+  onEditingContentChange,
 }: TemplatePanelProps) {
   const { t } = useTranslation();
   const [isCreating, setIsCreating] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<NoteTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<NoteTemplate | null>(
+    null
+  );
 
   // Form state
   const [formName, setFormName] = useState('');
@@ -39,7 +43,13 @@ export function TemplatePanel({
     } else if (!isCreating && onEditingContentChange) {
       onEditingContentChange(null);
     }
-  }, [isCreating, formName, formDescription, formContent, onEditingContentChange]);
+  }, [
+    isCreating,
+    formName,
+    formDescription,
+    formContent,
+    onEditingContentChange,
+  ]);
 
   // Reset form
   const resetForm = () => {
@@ -81,8 +91,13 @@ export function TemplatePanel({
 
       if (editingTemplate) {
         // Update existing template
-        const updated = await templatesApi.updateTemplate(editingTemplate.id, request);
-        const newTemplates = templates.map(t => t.id === updated.id ? updated : t);
+        const updated = await templatesApi.updateTemplate(
+          editingTemplate.id,
+          request
+        );
+        const newTemplates = templates.map((t) =>
+          t.id === updated.id ? updated : t
+        );
         onTemplatesChange(newTemplates);
         toast.success(t('templates.updateSuccess'));
       } else {
@@ -95,17 +110,25 @@ export function TemplatePanel({
       resetForm();
     } catch (error) {
       console.error('[FLOATNOTE] Failed to save template:', error);
-      toast.error(editingTemplate ? t('templates.updateFailed') : t('templates.createFailed'));
+      toast.error(
+        editingTemplate
+          ? t('templates.updateFailed')
+          : t('templates.createFailed')
+      );
     }
   };
 
   // Delete template (direct delete without confirmation)
   const handleDelete = async (template: NoteTemplate) => {
-    console.log('[FLOATNOTE] Attempting to delete template:', template.id, template.name);
+    console.log(
+      '[FLOATNOTE] Attempting to delete template:',
+      template.id,
+      template.name
+    );
     try {
       await templatesApi.deleteTemplate(template.id);
       console.log('[FLOATNOTE] Template deleted successfully');
-      const newTemplates = templates.filter(t => t.id !== template.id);
+      const newTemplates = templates.filter((t) => t.id !== template.id);
       onTemplatesChange(newTemplates);
 
       if (editingTemplate?.id === template.id) {
@@ -123,8 +146,8 @@ export function TemplatePanel({
   };
 
   // Group templates
-  const builtinTemplates = templates.filter(t => t.is_builtin);
-  const customTemplates = templates.filter(t => !t.is_builtin);
+  const builtinTemplates = templates.filter((t) => t.is_builtin);
+  const customTemplates = templates.filter((t) => !t.is_builtin);
 
   return (
     <div className="h-full flex flex-col">
@@ -132,22 +155,39 @@ export function TemplatePanel({
       <div className="h-[76px] flex flex-col justify-center px-4 border-b border-border/20 pt-5">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 pt-1">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-primary/80">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14,2 14,8 20,8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              className="text-primary/80"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14,2 14,8 20,8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
             </svg>
-            <h2 className="text-sm font-medium text-foreground/90">{t('sidebar.templates')}</h2>
+            <h2 className="text-sm font-medium text-foreground/90">
+              {t('sidebar.templates')}
+            </h2>
           </div>
           <button
             onClick={handleStartCreate}
             className="text-muted-foreground hover:text-primary p-1 rounded-md transition-all duration-200 hover:bg-primary/10"
             title={t('templates.createTemplate')}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </button>
         </div>
@@ -160,15 +200,24 @@ export function TemplatePanel({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium text-foreground">
-                {editingTemplate ? t('templates.editTemplate') : t('templates.createTemplate')}
+                {editingTemplate
+                  ? t('templates.editTemplate')
+                  : t('templates.createTemplate')}
               </h3>
               <button
                 onClick={resetForm}
                 className="text-muted-foreground hover:text-foreground"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
             </div>
@@ -217,13 +266,25 @@ export function TemplatePanel({
 
             {/* Variables hint */}
             <div className="bg-muted/10 rounded-lg p-3 text-xs text-muted-foreground/60">
-              <div className="font-medium mb-1">{t('templates.variables')}:</div>
+              <div className="font-medium mb-1">
+                {t('templates.variables')}:
+              </div>
               <div className="font-mono space-y-0.5">
-                <div>{'{{title}}'} - {t('templates.varTitle')}</div>
-                <div>{'{{date}}'} - {t('templates.varDate')}</div>
-                <div>{'{{time}}'} - {t('templates.varTime')}</div>
-                <div>{'{{datetime}}'} - {t('templates.varDatetime')}</div>
-                <div>{'{{weekday}}'} - {t('templates.varWeekday')}</div>
+                <div>
+                  {'{{title}}'} - {t('templates.varTitle')}
+                </div>
+                <div>
+                  {'{{date}}'} - {t('templates.varDate')}
+                </div>
+                <div>
+                  {'{{time}}'} - {t('templates.varTime')}
+                </div>
+                <div>
+                  {'{{datetime}}'} - {t('templates.varDatetime')}
+                </div>
+                <div>
+                  {'{{weekday}}'} - {t('templates.varWeekday')}
+                </div>
               </div>
             </div>
 
@@ -319,9 +380,16 @@ export function TemplatePanel({
                           className="p-1 text-muted-foreground/40 hover:text-primary transition-colors"
                           title={t('common.edit')}
                         >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                            <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                           </svg>
                         </button>
                         <button
@@ -332,10 +400,17 @@ export function TemplatePanel({
                           className="p-1 text-muted-foreground/40 hover:text-red-500 transition-colors"
                           title={t('common.delete')}
                         >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M3 6h18"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                           </svg>
                         </button>
                       </div>

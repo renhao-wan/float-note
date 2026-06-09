@@ -30,9 +30,12 @@ export class LinuxTransparencyStrategy implements TransparencyStrategy {
    */
   async getOpacity(windowLabel: string): Promise<number> {
     try {
-      const opacity = await invoke<number>('get_detached_window_opacity_linux', {
-        windowLabel,
-      });
+      const opacity = await invoke<number>(
+        'get_detached_window_opacity_linux',
+        {
+          windowLabel,
+        }
+      );
       return opacity;
     } catch (error) {
       console.error('[LINUX_TRANSPARENCY] Failed to get opacity:', error);

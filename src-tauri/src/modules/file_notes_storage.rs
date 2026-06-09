@@ -3,12 +3,9 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::types::{
-    note::Note,
-    config::AppConfig,
-};
-use crate::modules::file_storage::FileStorageManager;
 use crate::log_info;
+use crate::modules::file_storage::FileStorageManager;
+use crate::types::{config::AppConfig, note::Note};
 
 /// File-based notes storage that maintains compatibility with existing interfaces
 pub struct FileNotesStorage {
@@ -25,20 +22,20 @@ impl FileNotesStorage {
             cache: Arc::new(Mutex::new(HashMap::new())),
         })
     }
-    
+
     /// Load all notes from disk and populate cache
     pub async fn load_notes(&self) -> Result<HashMap<String, Note>, String> {
         log_info!("FILE_NOTES_STORAGE", "Loading notes from markdown files...");
         let notes = self.storage.load_notes().await?;
-        
+
         // Update cache
         let mut cache = self.cache.lock().await;
         *cache = notes.clone();
-        
+
         log_info!("FILE_NOTES_STORAGE", "Loaded {} notes", notes.len());
         Ok(notes)
     }
-    
+
     /// Save a single note to disk and update cache
     pub async fn save_note(&self, note: &Note) -> Result<(), String> {
         // Save to disk
@@ -50,7 +47,7 @@ impl FileNotesStorage {
 
         Ok(())
     }
-    
+
     /// Delete a note from disk and cache
     pub async fn delete_note(&self, note_id: &str) -> Result<(), String> {
         // Delete from disk
@@ -67,16 +64,20 @@ impl FileNotesStorage {
     pub async fn rename_note(&self, old_id: &str, new_id: &str) -> Result<(), String> {
         self.storage.rename_note_file(old_id, new_id).await
     }
-    
+
     /// Get all notes from cache
     pub async fn get_all_notes(&self) -> HashMap<String, Note> {
         let cache = self.cache.lock().await;
         cache.clone()
     }
-    
+
     /// Save all notes from cache to disk (used for bulk operations)
     pub async fn save_all_notes(&self, notes: &HashMap<String, Note>) -> Result<(), String> {
-        log_info!("FILE_NOTES_STORAGE", "Saving all {} notes to disk", notes.len());
+        log_info!(
+            "FILE_NOTES_STORAGE",
+            "Saving all {} notes to disk",
+            notes.len()
+        );
 
         // Save each note to disk first (atomic: all-or-nothing)
         for (_, note) in notes.iter() {
@@ -89,13 +90,16 @@ impl FileNotesStorage {
 
         Ok(())
     }
-    
+
     /// Run migration from old JSON format if needed
     pub async fn migrate_if_needed(&self, json_path: PathBuf) -> Result<(), String> {
         if json_path.exists() && !json_path.with_extension("json.backup").exists() {
-            log_info!("FILE_NOTES_STORAGE", "Detected old notes.json, running migration...");
+            log_info!(
+                "FILE_NOTES_STORAGE",
+                "Detected old notes.json, running migration..."
+            );
             self.storage.migrate_from_json(&json_path).await?;
-            
+
             // Remove the original JSON file after successful migration
             std::fs::remove_file(&json_path)
                 .map_err(|e| format!("Failed to remove old notes.json: {}", e))?;
@@ -103,4 +107,3 @@ impl FileNotesStorage {
         Ok(())
     }
 }
-

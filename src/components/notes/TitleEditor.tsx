@@ -10,8 +10,8 @@ interface TitleEditorProps {
 export function TitleEditor({
   title,
   onTitleChange,
-  className = "",
-  placeholder = "Untitled"
+  className = '',
+  placeholder = 'Untitled',
 }: TitleEditorProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(title);

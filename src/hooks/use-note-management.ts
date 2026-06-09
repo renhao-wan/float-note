@@ -36,7 +36,9 @@ interface UseNoteManagementOptions {
   onSaveError?: (error: unknown) => void;
 }
 
-export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteManagementReturn {
+export function useNoteManagement(
+  options?: UseNoteManagementOptions
+): UseNoteManagementReturn {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [currentContent, setCurrentContent] = useState('');
@@ -55,7 +57,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   notesRef.current = notes;
 
   const selectedNote = useMemo(
-    () => notes.find(note => note.id === selectedNoteId),
+    () => notes.find((note) => note.id === selectedNoteId),
     [notes, selectedNoteId]
   );
 
@@ -66,7 +68,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     }
   });
 
-
   // Load notes from backend
   const loadNotes = useCallback(async () => {
     setLoading(true);
@@ -74,46 +75,58 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       // Try to load notes from Tauri - if this fails, we'll fall back to demo data
       const loadedNotes = await invoke<Note[]>('get_notes');
       setNotes(loadedNotes);
-      
+
       // If we have notes but no selected note, select the first one by position
       if (loadedNotes.length > 0 && !selectedNoteIdRef.current) {
         // Select the note with the lowest position value, or the first in array if no positions
         const noteWithLowestPosition = loadedNotes.reduce((lowest, current) => {
           // If current has a position and lowest doesn't, use current
-          if (current.position !== undefined && current.position !== null && 
-              (lowest.position === undefined || lowest.position === null)) {
+          if (
+            current.position !== undefined &&
+            current.position !== null &&
+            (lowest.position === undefined || lowest.position === null)
+          ) {
             return current;
           }
           // If both have positions, use the one with lower position
-          if (current.position !== undefined && current.position !== null && 
-              lowest.position !== undefined && lowest.position !== null) {
+          if (
+            current.position !== undefined &&
+            current.position !== null &&
+            lowest.position !== undefined &&
+            lowest.position !== null
+          ) {
             return current.position < lowest.position ? current : lowest;
           }
           // Otherwise keep lowest
           return lowest;
         }, loadedNotes[0]);
-        
+
         setSelectedNoteId(noteWithLowestPosition.id);
         setCurrentContent(noteWithLowestPosition.content);
       }
     } catch (error) {
-      console.warn('[FLOATNOTE] Failed to load notes from Tauri, falling back to demo data:', error);
+      console.warn(
+        '[FLOATNOTE] Failed to load notes from Tauri, falling back to demo data:',
+        error
+      );
       // Demo data for browser context or when Tauri fails
       const demoNotes: Note[] = [
         {
           id: 'demo-1',
           title: 'Welcome to FloatNote',
-          content: '# Welcome to FloatNote\n\nThis is a demo note running in browser mode.',
+          content:
+            '# Welcome to FloatNote\n\nThis is a demo note running in browser mode.',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         },
         {
           id: 'demo-2',
           title: 'Demo Note 2',
-          content: '# Demo Note\n\nYou can see the interface, but Tauri features require the desktop app.',
+          content:
+            '# Demo Note\n\nYou can see the interface, but Tauri features require the desktop app.',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
+          updated_at: new Date().toISOString(),
+        },
       ];
       setNotes(demoNotes);
       if (!selectedNoteIdRef.current) {
@@ -131,12 +144,12 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       const newNote = await invoke<Note>('create_note', {
         request: {
           title: 'Untitled',
-          content: ''
-        }
+          content: '',
+        },
       });
 
       // Add the new note to the list and select it
-      setNotes(prev => {
+      setNotes((prev) => {
         const updated = [...prev, newNote];
         // Sort by position (backend-assigned), with None values at the end
         const sorted = updated.sort((a, b) => {
@@ -178,7 +191,7 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     }
 
     // Use notesRef to avoid dependency on notes array
-    const note = notesRef.current.find(n => n.id === noteId);
+    const note = notesRef.current.find((n) => n.id === noteId);
     if (note) {
       // Update ref immediately to prevent race conditions
       selectedNoteIdRef.current = noteId;
@@ -197,9 +210,9 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
     setCurrentContent(content);
 
     // Update the note content in local state (title is now independent)
-    setNotes(prev => {
+    setNotes((prev) => {
       // Update the note without re-sorting to preserve order
-      const updated = prev.map(note =>
+      const updated = prev.map((note) =>
         note.id === currentNoteId
           ? { ...note, content, updated_at: new Date().toISOString() }
           : note
@@ -225,8 +238,8 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         const updatedNote = await invoke<Note>('update_note', {
           id: currentNoteId,
           request: {
-            content
-          }
+            content,
+          },
         });
 
         // Notify save completed
@@ -234,7 +247,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
         // Notify other windows about the update
         noteSyncService.noteUpdated(updatedNote);
-
       } catch (error) {
         console.error('[FLOATNOTE] Failed to save note:', error);
         optionsRef.current?.onSaveError?.(error);
@@ -263,13 +275,13 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
         id: selectedNoteIdRef.current,
         request: {
           content,
-          tags: undefined // Keep existing tags
-        }
+          tags: undefined, // Keep existing tags
+        },
       });
 
       // Update local state to reflect saved state
-      setNotes(prev => {
-        const updated = prev.map(note =>
+      setNotes((prev) => {
+        const updated = prev.map((note) =>
           note.id === selectedNoteIdRef.current
             ? { ...note, content, updated_at: updatedNote.updated_at }
             : note
@@ -283,7 +295,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
 
       // Notify other windows about the update
       noteSyncService.noteUpdated(updatedNote);
-
     } catch (error) {
       console.error('[FLOATNOTE] Failed to save note immediately:', error);
       optionsRef.current?.onSaveError?.(error);
@@ -291,98 +302,112 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
   }, []);
 
   // Rename a note (change title)
-  const renameNote = useCallback(async (noteId: string, newTitle: string): Promise<boolean> => {
-    try {
-      const updatedNote = await invoke<Note>('rename_note', {
-        id: noteId,
-        newTitle
-      });
-
-      // Update local state
-      setNotes(prev => {
-        // Remove old note if ID changed
-        const filtered = prev.filter(n => n.id !== noteId);
-        const updated = [...filtered, updatedNote].sort((a, b) => {
-          if (a.position !== undefined && b.position !== undefined) {
-            return a.position - b.position;
-          }
-          if (a.position !== undefined) return -1;
-          if (b.position !== undefined) return 1;
-          return 0;
+  const renameNote = useCallback(
+    async (noteId: string, newTitle: string): Promise<boolean> => {
+      try {
+        const updatedNote = await invoke<Note>('rename_note', {
+          id: noteId,
+          newTitle,
         });
-        notesRef.current = updated;
-        return updated;
-      });
 
-      // If the renamed note was selected, update selectedNoteId
-      if (selectedNoteIdRef.current === noteId && updatedNote.id !== noteId) {
-        selectedNoteIdRef.current = updatedNote.id;
-        setSelectedNoteId(updatedNote.id);
+        // Update local state
+        setNotes((prev) => {
+          // Remove old note if ID changed
+          const filtered = prev.filter((n) => n.id !== noteId);
+          const updated = [...filtered, updatedNote].sort((a, b) => {
+            if (a.position !== undefined && b.position !== undefined) {
+              return a.position - b.position;
+            }
+            if (a.position !== undefined) return -1;
+            if (b.position !== undefined) return 1;
+            return 0;
+          });
+          notesRef.current = updated;
+          return updated;
+        });
+
+        // If the renamed note was selected, update selectedNoteId
+        if (selectedNoteIdRef.current === noteId && updatedNote.id !== noteId) {
+          selectedNoteIdRef.current = updatedNote.id;
+          setSelectedNoteId(updatedNote.id);
+        }
+
+        return true;
+      } catch (error) {
+        console.error('[FLOATNOTE] Failed to rename note:', error);
+        return false;
       }
-
-      return true;
-    } catch (error) {
-      console.error('[FLOATNOTE] Failed to rename note:', error);
-      return false;
-    }
-  }, []);
+    },
+    []
+  );
 
   // Delete a note (move to trash)
-  const deleteNote = useCallback(async (noteId: string) => {
-    try {
-      // Use notesRef to avoid dependency on notes array
-      const currentNotes = notesRef.current;
-      const currentIndex = currentNotes.findIndex(note => note.id === noteId);
-      const remainingNotes = currentNotes.filter(note => note.id !== noteId);
-      const nextNote = remainingNotes.length > 0
-        ? remainingNotes[Math.min(currentIndex, remainingNotes.length - 1)]
-        : null;
+  const deleteNote = useCallback(
+    async (noteId: string) => {
+      try {
+        // Use notesRef to avoid dependency on notes array
+        const currentNotes = notesRef.current;
+        const currentIndex = currentNotes.findIndex(
+          (note) => note.id === noteId
+        );
+        const remainingNotes = currentNotes.filter(
+          (note) => note.id !== noteId
+        );
+        const nextNote =
+          remainingNotes.length > 0
+            ? remainingNotes[Math.min(currentIndex, remainingNotes.length - 1)]
+            : null;
 
-      // Move to trash instead of permanent delete
-      await invoke('move_to_trash', { noteId });
+        // Move to trash instead of permanent delete
+        await invoke('move_to_trash', { noteId });
 
-      // 更新笔记列表
-      setNotes(remainingNotes);
-      // Update notesRef immediately
-      notesRef.current = remainingNotes;
+        // 更新笔记列表
+        setNotes(remainingNotes);
+        // Update notesRef immediately
+        notesRef.current = remainingNotes;
 
-      // 如果删除的是当前选中的笔记，选择下一个
-      if (selectedNoteIdRef.current === noteId) {
-        selectNote(nextNote?.id || null);
+        // 如果删除的是当前选中的笔记，选择下一个
+        if (selectedNoteIdRef.current === noteId) {
+          selectNote(nextNote?.id || null);
+        }
+      } catch (error) {
+        console.error('[FLOATNOTE] Failed to move note to trash:', error);
       }
-    } catch (error) {
-      console.error('[FLOATNOTE] Failed to move note to trash:', error);
-    }
-  }, [selectNote]);
+    },
+    [selectNote]
+  );
 
   // Update note tags
-  const updateNoteTags = useCallback(async (noteId: string, tags: string[]): Promise<void> => {
-    try {
-      const updatedNote = await invoke<Note>('update_note_tags', {
-        request: { note_id: noteId, tags }
-      });
+  const updateNoteTags = useCallback(
+    async (noteId: string, tags: string[]): Promise<void> => {
+      try {
+        const updatedNote = await invoke<Note>('update_note_tags', {
+          request: { note_id: noteId, tags },
+        });
 
-      // Update local state
-      setNotes(prev => {
-        const updated = prev.map(note =>
-          note.id === noteId ? updatedNote : note
-        );
-        notesRef.current = updated;
-        return updated;
-      });
+        // Update local state
+        setNotes((prev) => {
+          const updated = prev.map((note) =>
+            note.id === noteId ? updatedNote : note
+          );
+          notesRef.current = updated;
+          return updated;
+        });
 
-      // Notify other windows about the update
-      noteSyncService.noteUpdated(updatedNote);
-    } catch (error) {
-      console.error('[FLOATNOTE] Failed to update note tags:', error);
-      throw error;
-    }
-  }, []);
+        // Notify other windows about the update
+        noteSyncService.noteUpdated(updatedNote);
+      } catch (error) {
+        console.error('[FLOATNOTE] Failed to update note tags:', error);
+        throw error;
+      }
+    },
+    []
+  );
 
   // Load notes on mount and listen for data-loaded event
   useEffect(() => {
     loadNotes();
-    
+
     // Listen for data-loaded event from backend
     const setupListener = async () => {
       const unlisten = await listen('data-loaded', () => {
@@ -390,10 +415,10 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       });
       return unlisten;
     };
-    
+
     let cancelled = false;
     let unlisten: (() => void) | undefined;
-    setupListener().then(fn => {
+    setupListener().then((fn) => {
       if (cancelled) {
         fn();
       } else {
@@ -410,7 +435,6 @@ export function useNoteManagement(options?: UseNoteManagementOptions): UseNoteMa
       }
     };
   }, [loadNotes]);
-
 
   return {
     // State

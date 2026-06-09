@@ -29,49 +29,51 @@ export function truncateText(text: string, maxLength: number): string {
 
 // Convert markdown to plain text for previews
 export function markdownToPlainText(markdown: string): string {
-  return markdown
-    // Remove code blocks
-    .replace(/```[\s\S]*?```/g, '[code]')
-    .replace(/`([^`]+)`/g, '$1')
-    // Remove headers
-    .replace(/#{1,6}\s+/g, '')
-    // Remove bold/italic
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/__([^_]+)__/g, '$1')
-    .replace(/_([^_]+)_/g, '$1')
-    // Remove links
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    // Remove images
-    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '[image]')
-    // Remove lists
-    .replace(/^[\s]*[-*+]\s+/gm, '')
-    .replace(/^\s*\d+\.\s+/gm, '')
-    // Remove blockquotes
-    .replace(/^>\s+/gm, '')
-    // Clean up whitespace
-    .replace(/\n\s*\n/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return (
+    markdown
+      // Remove code blocks
+      .replace(/```[\s\S]*?```/g, '[code]')
+      .replace(/`([^`]+)`/g, '$1')
+      // Remove headers
+      .replace(/#{1,6}\s+/g, '')
+      // Remove bold/italic
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/__([^_]+)__/g, '$1')
+      .replace(/_([^_]+)_/g, '$1')
+      // Remove links
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      // Remove images
+      .replace(/!\[([^\]]*)\]\([^)]+\)/g, '[image]')
+      // Remove lists
+      .replace(/^[\s]*[-*+]\s+/gm, '')
+      .replace(/^\s*\d+\.\s+/gm, '')
+      // Remove blockquotes
+      .replace(/^>\s+/gm, '')
+      // Clean up whitespace
+      .replace(/\n\s*\n/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  );
 }
 
 // Extract title from markdown content (first header or line)
 export function extractTitleFromContent(content: string): string {
   if (!content.trim()) return 'Untitled';
-  
+
   // Always use first non-empty line as title
-  const firstLine = content.split('\n').find(line => line.trim());
+  const firstLine = content.split('\n').find((line) => line.trim());
   if (!firstLine) return 'Untitled';
-  
+
   // Clean up the line and extract title
   let title = firstLine.trim();
-  
+
   // Remove markdown formatting if present
   title = title.replace(/^#+\s*/, ''); // Remove markdown headers
   title = title.replace(/^\*\*(.+)\*\*$/, '$1'); // Remove bold
   title = title.replace(/^\*(.+)\*$/, '$1'); // Remove italic
   title = title.replace(/^[-*+]\s+/, ''); // Remove list markers
-  
+
   // Limit length and ensure we have something
   return title.substring(0, 50).trim() || 'Untitled';
 }
@@ -86,7 +88,9 @@ export function getWordCount(content: string): number {
 
   // Remove Chinese characters and count remaining English words
   const withoutChinese = content.replace(/[一-鿿㐀-䶿]/g, '');
-  const englishWords = withoutChinese.split(/\s+/).filter(word => word.length > 0);
+  const englishWords = withoutChinese
+    .split(/\s+/)
+    .filter((word) => word.length > 0);
   const englishCount = englishWords.length;
 
   return chineseCount + englishCount;

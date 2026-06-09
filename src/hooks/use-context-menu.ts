@@ -9,11 +9,14 @@ interface ContextMenuState {
 interface UseContextMenuReturn {
   // State
   contextMenu: ContextMenuState | null;
-  
+
   // Actions
   showContextMenu: (x: number, y: number, noteId: string) => void;
   hideContextMenu: () => void;
-  handleContextMenuAction: (action: 'delete' | 'detach', noteId: string) => void;
+  handleContextMenuAction: (
+    action: 'delete' | 'detach',
+    noteId: string
+  ) => void;
 }
 
 interface UseContextMenuProps {
@@ -28,9 +31,12 @@ export function useContextMenu({
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
   // Show context menu at specific coordinates
-  const showContextMenu = useCallback((x: number, y: number, noteId: string) => {
-    setContextMenu({ x, y, noteId });
-  }, []);
+  const showContextMenu = useCallback(
+    (x: number, y: number, noteId: string) => {
+      setContextMenu({ x, y, noteId });
+    },
+    []
+  );
 
   // Hide context menu
   const hideContextMenu = useCallback(() => {
@@ -38,18 +44,21 @@ export function useContextMenu({
   }, []);
 
   // Handle context menu actions
-  const handleContextMenuAction = useCallback(async (action: 'delete' | 'detach', noteId: string) => {
-    hideContextMenu();
-    
-    switch (action) {
-      case 'delete':
-        await onDeleteNote(noteId);
-        break;
-      case 'detach':
-        await onDetachNote(noteId);
-        break;
-    }
-  }, [onDeleteNote, onDetachNote, hideContextMenu]);
+  const handleContextMenuAction = useCallback(
+    async (action: 'delete' | 'detach', noteId: string) => {
+      hideContextMenu();
+
+      switch (action) {
+        case 'delete':
+          await onDeleteNote(noteId);
+          break;
+        case 'detach':
+          await onDetachNote(noteId);
+          break;
+      }
+    },
+    [onDeleteNote, onDetachNote, hideContextMenu]
+  );
 
   // Close context menu on outside click
   useEffect(() => {
@@ -59,7 +68,7 @@ export function useContextMenu({
       // Check if the click is outside the context menu
       const target = e.target as HTMLElement;
       const contextMenuElement = document.querySelector('[data-context-menu]');
-      
+
       if (contextMenuElement && !contextMenuElement.contains(target)) {
         hideContextMenu();
       }
@@ -83,7 +92,7 @@ export function useContextMenu({
   return {
     // State
     contextMenu,
-    
+
     // Actions
     showContextMenu,
     hideContextMenu,

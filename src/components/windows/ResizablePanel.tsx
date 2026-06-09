@@ -15,12 +15,12 @@ export function ResizablePanel({
   maxWidth = 500,
   defaultWidth = 256,
   onResize,
-  className = ''
+  className = '',
 }: ResizablePanelProps) {
   const [width, setWidth] = useState(defaultWidth);
   const [isResizing, setIsResizing] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     let rafId: number | null = null;
 
@@ -37,7 +37,7 @@ export function ResizablePanel({
         onResize?.(clampedWidth);
       });
     };
-    
+
     const handleMouseUp = () => {
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
@@ -47,13 +47,13 @@ export function ResizablePanel({
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
-    
+
     if (isResizing) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
-      
+
       return () => {
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
@@ -62,13 +62,13 @@ export function ResizablePanel({
   }, [isResizing, minWidth, maxWidth, onResize]);
 
   return (
-    <div 
+    <div
       ref={panelRef}
       className={`relative ${className}`}
       style={{ width: `${width}px` }}
     >
       {children}
-      
+
       {/* Resize handle */}
       <div
         className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/20 transition-colors group"

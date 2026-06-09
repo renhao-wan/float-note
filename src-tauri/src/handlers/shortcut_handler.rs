@@ -1,8 +1,8 @@
 use crate::error::{FloatNoteError, FloatNoteResult};
-use crate::{DetachedWindowsState, ToggleState};
-use crate::{log_debug, log_error, log_info};
 use crate::NotesState;
-use tauri::{AppHandle, Manager, Emitter};
+use crate::{log_debug, log_error, log_info};
+use crate::{DetachedWindowsState, ToggleState};
+use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
 /// Register all global shortcuts for the application
@@ -26,7 +26,11 @@ pub fn register_global_shortcuts(app: &AppHandle) -> FloatNoteResult<()> {
 
     // Register Ctrl+Opt+Shift+1-9 for note deployment (non-fatal)
     if let Err(e) = register_note_deployment_shortcuts(app) {
-        log_error!("STARTUP", "Failed to register note deployment shortcuts: {}", e);
+        log_error!(
+            "STARTUP",
+            "Failed to register note deployment shortcuts: {}",
+            e
+        );
     }
 
     // Register test shortcut Cmd+Shift+N (optional)
@@ -35,9 +39,7 @@ pub fn register_global_shortcuts(app: &AppHandle) -> FloatNoteResult<()> {
     Ok(())
 }
 
-fn register_new_note_shortcut(
-    app: &AppHandle,
-) -> FloatNoteResult<()> {
+fn register_new_note_shortcut(app: &AppHandle) -> FloatNoteResult<()> {
     let manager = app.global_shortcut();
     let hyperkey_n = Shortcut::new(
         Some(Modifiers::SUPER | Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT),
@@ -45,11 +47,11 @@ fn register_new_note_shortcut(
     );
 
     // Unregister if exists
-    let _ = manager.unregister(hyperkey_n.clone());
+    let _ = manager.unregister(hyperkey_n);
 
-    manager
-        .register(hyperkey_n)
-        .map_err(|e| FloatNoteError::GlobalShortcut(format!("Failed to register Hyperkey+N: {}", e)))?;
+    manager.register(hyperkey_n).map_err(|e| {
+        FloatNoteError::GlobalShortcut(format!("Failed to register Hyperkey+N: {}", e))
+    })?;
 
     log_info!(
         "STARTUP",
@@ -59,9 +61,7 @@ fn register_new_note_shortcut(
     Ok(())
 }
 
-fn register_hover_mode_shortcut(
-    app: &AppHandle,
-) -> FloatNoteResult<()> {
+fn register_hover_mode_shortcut(app: &AppHandle) -> FloatNoteResult<()> {
     let manager = app.global_shortcut();
     let hyperkey_h = Shortcut::new(
         Some(Modifiers::SUPER | Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT),
@@ -69,11 +69,11 @@ fn register_hover_mode_shortcut(
     );
 
     // Unregister if exists
-    let _ = manager.unregister(hyperkey_h.clone());
+    let _ = manager.unregister(hyperkey_h);
 
-    manager
-        .register(hyperkey_h)
-        .map_err(|e| FloatNoteError::GlobalShortcut(format!("Failed to register Hyperkey+H: {}", e)))?;
+    manager.register(hyperkey_h).map_err(|e| {
+        FloatNoteError::GlobalShortcut(format!("Failed to register Hyperkey+H: {}", e))
+    })?;
 
     log_info!(
         "STARTUP",
@@ -83,9 +83,7 @@ fn register_hover_mode_shortcut(
     Ok(())
 }
 
-fn register_window_chord_shortcut(
-    app: &AppHandle,
-) -> FloatNoteResult<()> {
+fn register_window_chord_shortcut(app: &AppHandle) -> FloatNoteResult<()> {
     let manager = app.global_shortcut();
     let hyperkey_b = Shortcut::new(
         Some(Modifiers::SUPER | Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT),
@@ -93,11 +91,11 @@ fn register_window_chord_shortcut(
     );
 
     // Unregister if exists
-    let _ = manager.unregister(hyperkey_b.clone());
+    let _ = manager.unregister(hyperkey_b);
 
-    manager
-        .register(hyperkey_b)
-        .map_err(|e| FloatNoteError::GlobalShortcut(format!("Failed to register Hyperkey+B: {}", e)))?;
+    manager.register(hyperkey_b).map_err(|e| {
+        FloatNoteError::GlobalShortcut(format!("Failed to register Hyperkey+B: {}", e))
+    })?;
 
     log_info!(
         "STARTUP",
@@ -107,9 +105,7 @@ fn register_window_chord_shortcut(
     Ok(())
 }
 
-fn register_note_deployment_shortcuts(
-    app: &AppHandle,
-) -> FloatNoteResult<()> {
+fn register_note_deployment_shortcuts(app: &AppHandle) -> FloatNoteResult<()> {
     let manager = app.global_shortcut();
     log_info!(
         "STARTUP",
@@ -294,11 +290,7 @@ fn handle_hover_mode_shortcut(app: &AppHandle) {
                 "✅ Successfully toggled windows. Visible: {}",
                 visible
             ),
-            Err(e) => log_error!(
-                "SHORTCUT-HANDLER",
-                "❌ Failed to toggle windows: {}",
-                e
-            ),
+            Err(e) => log_error!("SHORTCUT-HANDLER", "❌ Failed to toggle windows: {}", e),
         }
     });
 }
@@ -402,10 +394,14 @@ fn handle_deploy_shortcuts(app: &AppHandle, shortcut: &Shortcut) {
         }
     }
 
-    log_debug!("SHORTCUT-HANDLER", "Shortcut didn't match any registered patterns");
+    log_debug!(
+        "SHORTCUT-HANDLER",
+        "Shortcut didn't match any registered patterns"
+    );
 }
 
 /// Re-register global shortcuts (used for runtime updates)
+#[allow(dead_code)]
 pub async fn reregister_global_shortcuts(app: AppHandle) -> FloatNoteResult<Vec<String>> {
     log_info!("SHORTCUT", "Re-registering global shortcuts...");
 
@@ -423,10 +419,13 @@ pub async fn reregister_global_shortcuts(app: AppHandle) -> FloatNoteResult<Vec<
         Code::KeyH,
     );
 
-    log_debug!("SHORTCUT", "Created shortcut objects: Hyperkey+N and Hyperkey+H");
+    log_debug!(
+        "SHORTCUT",
+        "Created shortcut objects: Hyperkey+N and Hyperkey+H"
+    );
 
     // Unregister and re-register Hyperkey+N
-    match shortcut_manager.unregister(hyperkey_n.clone()) {
+    match shortcut_manager.unregister(hyperkey_n) {
         Ok(_) => log_info!("SHORTCUT", "Unregistered existing Hyperkey+N"),
         Err(e) => log_debug!("SHORTCUT", "No existing Hyperkey+N to unregister: {}", e),
     };
@@ -443,7 +442,7 @@ pub async fn reregister_global_shortcuts(app: AppHandle) -> FloatNoteResult<Vec<
     }
 
     // Unregister and re-register Hyperkey+H
-    match shortcut_manager.unregister(hyperkey_h.clone()) {
+    match shortcut_manager.unregister(hyperkey_h) {
         Ok(_) => log_info!("SHORTCUT", "Unregistered existing Hyperkey+H"),
         Err(e) => log_debug!("SHORTCUT", "No existing Hyperkey+H to unregister: {}", e),
     };

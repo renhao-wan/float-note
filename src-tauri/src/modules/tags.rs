@@ -1,11 +1,11 @@
-use tauri::{State, AppHandle, Emitter};
 use std::collections::HashMap;
+use tauri::{AppHandle, Emitter, State};
 
-use crate::types::note::{Note, Tag, CreateTagRequest, UpdateNoteTagsRequest};
-use crate::NotesState;
-use crate::modules::file_notes_storage::FileNotesStorage;
-use crate::{log_info, log_error};
 use crate::error::FloatNoteError;
+use crate::modules::file_notes_storage::FileNotesStorage;
+use crate::types::note::{CreateTagRequest, Note, Tag, UpdateNoteTagsRequest};
+use crate::NotesState;
+use crate::{log_error, log_info};
 
 /// Helper function to save a single note using FileNotesStorage
 async fn save_note_using_file_storage(
@@ -18,9 +18,7 @@ async fn save_note_using_file_storage(
 
 /// Get all unique tags from all notes
 #[tauri::command]
-pub async fn get_all_tags(
-    notes: State<'_, NotesState>,
-) -> Result<Vec<Tag>, FloatNoteError> {
+pub async fn get_all_tags(notes: State<'_, NotesState>) -> Result<Vec<Tag>, FloatNoteError> {
     log_info!("TAGS", "Getting all tags");
 
     let notes_lock = notes.lock().await;
@@ -71,9 +69,14 @@ pub async fn update_note_tags(
         // Save to disk
         save_note_using_file_storage(&updated_note, &config_lock)
             .await
-            .map_err(|e| FloatNoteError::Storage(e))?;
+            .map_err(FloatNoteError::Storage)?;
 
-        log_info!("TAGS", "Updated tags for note: {} -> {:?}", request.note_id, request.tags);
+        log_info!(
+            "TAGS",
+            "Updated tags for note: {} -> {:?}",
+            request.note_id,
+            request.tags
+        );
 
         // Emit event to all windows for synchronization
         app.emit("note-updated", &updated_note).unwrap_or_else(|e| {
@@ -83,7 +86,10 @@ pub async fn update_note_tags(
         Ok(updated_note)
     } else {
         log_error!("TAGS", "Note not found: {}", request.note_id);
-        Err(FloatNoteError::NotFound(format!("Note not found: {}", request.note_id)))
+        Err(FloatNoteError::NotFound(format!(
+            "Note not found: {}",
+            request.note_id
+        )))
     }
 }
 
@@ -117,10 +123,15 @@ pub async fn delete_tag(
     for note in &updated_notes {
         save_note_using_file_storage(note, &config_lock)
             .await
-            .map_err(|e| FloatNoteError::Storage(e))?;
+            .map_err(FloatNoteError::Storage)?;
     }
 
-    log_info!("TAGS", "Removed tag '{}' from {} notes", tag_name, updated_notes.len());
+    log_info!(
+        "TAGS",
+        "Removed tag '{}' from {} notes",
+        tag_name,
+        updated_notes.len()
+    );
 
     // Emit events for each updated note
     for note in &updated_notes {
@@ -146,26 +157,31 @@ pub async fn get_notes_by_tag(
         .filter(|note| {
             note.tags
                 .as_ref()
-                .map_or(false, |tags| tags.contains(&tag_name))
+                .is_some_and(|tags| tags.contains(&tag_name))
         })
         .cloned()
         .collect();
 
-    log_info!("TAGS", "Found {} notes with tag '{}'", filtered_notes.len(), tag_name);
+    log_info!(
+        "TAGS",
+        "Found {} notes with tag '{}'",
+        filtered_notes.len(),
+        tag_name
+    );
     Ok(filtered_notes)
 }
 
 /// Create a new tag (adds it to the tag index)
 /// Note: Tags are stored on notes themselves, this just validates the tag name
 #[tauri::command]
-pub async fn create_tag(
-    request: CreateTagRequest,
-) -> Result<Tag, FloatNoteError> {
+pub async fn create_tag(request: CreateTagRequest) -> Result<Tag, FloatNoteError> {
     log_info!("TAGS", "Creating tag: {}", request.name);
 
     // Validate tag name
     if request.name.trim().is_empty() {
-        return Err(FloatNoteError::Validation("Tag name cannot be empty".to_string()));
+        return Err(FloatNoteError::Validation(
+            "Tag name cannot be empty".to_string(),
+        ));
     }
 
     // Tags are stored on notes, so we just return a Tag object

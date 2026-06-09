@@ -1,15 +1,15 @@
 // Module declarations for organized code structure
-pub mod storage;
-pub mod file_storage;
+pub mod attachments;
+pub mod commands;
 pub mod file_notes_storage;
 pub mod file_operations;
-pub mod commands;
-pub mod system_commands;
-pub mod windows;
+pub mod file_storage;
+pub mod links;
 pub mod logging;
 pub mod modified_state_tracker;
+pub mod storage;
+pub mod system_commands;
 pub mod tags;
-pub mod trash;
-pub mod attachments;
-pub mod links;
 pub mod templates;
+pub mod trash;
+pub mod windows;

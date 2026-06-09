@@ -1,5 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import { Palette, Eye, Focus, Keyboard, Pin, Folder, FolderOpen } from '../../lib/lucide';
+import {
+  Palette,
+  Eye,
+  Focus,
+  Keyboard,
+  Pin,
+  Folder,
+  FolderOpen,
+} from '../../lib/lucide';
 import { useState, useEffect } from 'react';
 import { notesApi } from '../../services/tauri-api';
 import { toast } from '../../stores/toast-store';
@@ -41,7 +49,9 @@ export function AppFooter({ theme, themeId, config }: AppFooterProps) {
         if (typeof window !== 'undefined' && window.__TAURI__) {
           const directory = await notesApi.getCurrentNotesDirectory();
           // Show a simplified path for display
-          const simplifiedPath = directory.replace(/\/Users\/[^/]+/, '~').replace(/.*\/([^/]+\/[^/]+)$/, '.../$1');
+          const simplifiedPath = directory
+            .replace(/\/Users\/[^/]+/, '~')
+            .replace(/.*\/([^/]+\/[^/]+)$/, '.../$1');
           setCurrentDirectory(simplifiedPath);
         } else {
           setCurrentDirectory('~/notes (demo)');
@@ -55,17 +65,19 @@ export function AppFooter({ theme, themeId, config }: AppFooterProps) {
 
   const handleDirectoryClick = async (_e: React.MouseEvent) => {
     console.log('[AppFooter] Directory clicked');
-    
+
     // Both regular click and Alt+Click open the directory in Finder
     setIsLoading(true);
     try {
       console.log('[AppFooter] Getting current notes directory...');
       const currentPath = await notesApi.getCurrentNotesDirectory();
       console.log('[AppFooter] Current path:', currentPath);
-      
+
       console.log('[AppFooter] Opening directory in Finder...');
       await notesApi.openDirectoryInFinder(currentPath);
-      console.log(`[AppFooter] Successfully opened notes directory in Finder: ${currentPath}`);
+      console.log(
+        `[AppFooter] Successfully opened notes directory in Finder: ${currentPath}`
+      );
     } catch (error) {
       console.error('[AppFooter] Failed to open directory in Finder:', error);
       // Only show toast for actual errors, not for non-Tauri context
@@ -81,14 +93,21 @@ export function AppFooter({ theme, themeId, config }: AppFooterProps) {
       <div className="flex items-center gap-3">
         {/* Theme swatch and name */}
         <span className="flex items-center gap-1">
-          <Palette className="w-4 h-4 text-primary/80 flex-shrink-0" strokeWidth={1.5} />
-          <span 
-            className="w-3 h-3 rounded-full border border-border/40 mr-1 flex-shrink-0" 
-            style={{ backgroundColor: theme ? theme.colors?.accent || '#3b82f6' : '#3b82f6' }} 
+          <Palette
+            className="w-4 h-4 text-primary/80 flex-shrink-0"
+            strokeWidth={1.5}
+          />
+          <span
+            className="w-3 h-3 rounded-full border border-border/40 mr-1 flex-shrink-0"
+            style={{
+              backgroundColor: theme
+                ? theme.colors?.accent || '#3b82f6'
+                : '#3b82f6',
+            }}
           />
           {theme ? theme.name : themeId}
         </span>
-        
+
         {/* Opacity */}
         {typeof config.appearance?.windowOpacity === 'number' && (
           <span className="flex items-center gap-1">
@@ -96,30 +115,33 @@ export function AppFooter({ theme, themeId, config }: AppFooterProps) {
             {Math.round(config.appearance.windowOpacity * 100)}%
           </span>
         )}
-        
+
         {/* Focus mode */}
         {config.appearance?.focusMode && (
           <span className="flex items-center gap-1 text-primary">
-            <Focus className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} /> {t('settings.editor.editorFeatures.focusMode')}
+            <Focus className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />{' '}
+            {t('settings.editor.editorFeatures.focusMode')}
           </span>
         )}
-        
+
         {/* Typewriter mode */}
         {config.appearance?.typewriterMode && (
           <span className="flex items-center gap-1 text-primary">
-            <Keyboard className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} /> {t('settings.editor.editorFeatures.typewriterMode')}
+            <Keyboard className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />{' '}
+            {t('settings.editor.editorFeatures.typewriterMode')}
           </span>
         )}
-        
+
         {/* Always on top */}
         {config.alwaysOnTop && (
           <span className="flex items-center gap-1 text-primary">
-            <Pin className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} /> {t('settings.appearance.window.alwaysOnTop')}
+            <Pin className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />{' '}
+            {t('settings.appearance.window.alwaysOnTop')}
           </span>
         )}
       </div>
-      
-      <button 
+
+      <button
         onClick={handleDirectoryClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}

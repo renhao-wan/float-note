@@ -4,11 +4,11 @@
 
 所有数据存储在**笔记目录**下，默认位置：
 
-| 平台 | 路径 |
-|------|------|
-| **Windows** | `%APPDATA%/floatNote/data/` |
-| **macOS** | `~/Library/Application Support/floatNote/data/` |
-| **Linux** | `~/.local/share/floatNote/data/` |
+| 平台        | 路径                                            |
+| ----------- | ----------------------------------------------- |
+| **Windows** | `%APPDATA%/floatNote/data/`                     |
+| **macOS**   | `~/Library/Application Support/floatNote/data/` |
+| **Linux**   | `~/.local/share/floatNote/data/`                |
 
 可在设置中自定义存储目录。
 
@@ -54,18 +54,19 @@ position: 0
 
 ### Frontmatter 字段
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `id` | string | 笔记唯一标识（slug 格式） |
-| `title` | string | 笔记标题 |
-| `created_at` | string | 创建时间（ISO 8601） |
-| `updated_at` | string | 更新时间（ISO 8601） |
-| `tags` | string[] | 标签列表 |
-| `position` | number | 排序位置 |
+| 字段         | 类型     | 说明                      |
+| ------------ | -------- | ------------------------- |
+| `id`         | string   | 笔记唯一标识（slug 格式） |
+| `title`      | string   | 笔记标题                  |
+| `created_at` | string   | 创建时间（ISO 8601）      |
+| `updated_at` | string   | 更新时间（ISO 8601）      |
+| `tags`       | string[] | 标签列表                  |
+| `position`   | number   | 排序位置                  |
 
 ### 文件命名
 
 文件名 = 笔记 ID + `.md`，例如：
+
 - 标题 "我的笔记" → 文件名 `我的笔记.md`
 - 标题 "My Note" → 文件名 `my-note.md`
 
@@ -131,11 +132,11 @@ position: 0
 
 ## 内部数据说明
 
-| 文件 | 用途 |
-|------|------|
-| `.floatnote/workspace.json` | 工作区状态（窗口布局） |
-| `.floatnote/links.json` | 双向链接索引 |
-| `.floatnote/templates/custom_templates.json` | 用户自定义模板 |
-| `.trash/` | 回收站（已删除笔记） |
-| `attachments/` | 附件存储 |
-| `spatial_*.json` | 窗口空间位置 |
+| 文件                                         | 用途                   |
+| -------------------------------------------- | ---------------------- |
+| `.floatnote/workspace.json`                  | 工作区状态（窗口布局） |
+| `.floatnote/links.json`                      | 双向链接索引           |
+| `.floatnote/templates/custom_templates.json` | 用户自定义模板         |
+| `.trash/`                                    | 回收站（已删除笔记）   |
+| `attachments/`                               | 附件存储               |
+| `spatial_*.json`                             | 窗口空间位置           |
