@@ -1,15 +1,50 @@
-name: CI
+name: CD
 
 on:
   push:
-    branches: [master, main]
-  pull_request:
-    branches: [master, main]
+    tags:
+      - 'v*'
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  # 版本验证
+  version-check:
+    name: Version Verification
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Verify tag matches Cargo.toml version
+        working-directory: src-tauri
+        run: |
+          TAG_VERSION="${{ steps.get_version.outputs.version }}"
+          CARGO_VERSION=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/')
+          if [ "v$CARGO_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match Cargo.toml version (v$CARGO_VERSION)"
+            exit 1
+          fi
+          echo "✅ Version verified: $TAG_VERSION matches Cargo.toml"
+
+      - name: Verify tag matches package.json version
+        run: |
+          TAG_VERSION="${{ steps.get_version.outputs.version }}"
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "v$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match package.json version (v$PKG_VERSION)"
+            exit 1
+          fi
+          echo "✅ Version verified: $TAG_VERSION matches package.json"
+
   # 前端代码质量检查
   frontend-check:
     name: Frontend Checks
@@ -92,48 +127,26 @@ jobs:
         working-directory: src-tauri
         run: cargo test
 
-  # 前端构建测试
-  frontend-build:
-    name: Frontend Build
-    runs-on: ubuntu-latest
-    needs: frontend-check
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build frontend
-        run: pnpm run build
-
-  # Tauri 构建测试（可选，耗时较长）
-  tauri-build:
-    name: Tauri Build (${{ matrix.platform }})
+  # 构建和发布
+  build-and-release:
+    name: Build & Release (${{ matrix.platform }})
     runs-on: ${{ matrix.os }}
-    needs: [frontend-check, backend-check]
+    needs: [version-check, frontend-check, backend-check]
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: ubuntu-22.04
             os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
           - platform: macos-latest
             os: macos-latest
+            target: aarch64-apple-darwin
           - platform: windows-latest
             os: windows-latest
+            target: x86_64-pc-windows-msvc
 
     steps:
       - name: Checkout repository
@@ -162,11 +175,13 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
         run: pnpm install
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
 
       - name: Cache Rust dependencies
         uses: actions/cache@v4
@@ -181,7 +196,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: Build Tauri app
+      - name: Build and release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'FloatNote ${{ github.ref_name }}'
+          releaseBody: |
+            ## FloatNote ${{ github.ref_name }}
+
+            ### 下载说明
+            - **Windows**: 下载 `.msi` 或 `.exe` 安装程序（支持自定义安装目录）
+            - **macOS**: 下载 `.dmg` 文件，支持 Intel 和 Apple Silicon
+            - **Linux**: 下载 `.deb` 或 `.AppImage` 文件
+
+            ### 安装说明
+            - Windows: 运行安装程序，按提示选择安装目录
+            - macOS: 打开 DMG 文件，将 FloatNote 拖入 Applications
+            - Linux: 使用 dpkg 安装 .deb 或直接运行 .AppImage
+          releaseDraft: false
+          prerelease: false
+          args: --target ${{ matrix.target }}
