@@ -103,6 +103,10 @@ export default defineConfig(async () => {
         // 3. tell vite to ignore watching `src-tauri`
         ignored: ['**/src-tauri/**'],
       },
+      fs: {
+        // 4. deny access to `src-tauri` to prevent EMFILE errors from Rust doc files
+        deny: ['**/src-tauri/**'],
+      },
     },
     resolve: {
       alias: {
