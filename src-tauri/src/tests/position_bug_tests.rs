@@ -241,7 +241,10 @@ mod position_zero_tests {
 
         // At least one note should have a positive position
         let has_positive = positions.iter().any(|&p| p.is_some() && p.unwrap() > 0);
-        assert!(has_positive, "At least one note should have a positive position");
+        assert!(
+            has_positive,
+            "At least one note should have a positive position"
+        );
 
         log_info!("POSITION_BUG_TEST", "✅ Position conflict test passed");
     }
@@ -480,7 +483,10 @@ mod position_zero_tests {
         let positions: Vec<i32> = loaded_notes.values().filter_map(|n| n.position).collect();
 
         // At least one note should have a valid position
-        assert!(!positions.is_empty(), "Should have at least one note with a valid position");
+        assert!(
+            !positions.is_empty(),
+            "Should have at least one note with a valid position"
+        );
 
         log_info!(
             "POSITION_BUG_TEST",
