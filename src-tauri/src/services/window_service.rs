@@ -76,6 +76,7 @@ impl WindowService {
         drop(active_windows);
         
         // Create window state
+        // Default to sticky note proportions: narrow width, tall height
         let window_state = WindowState {
             note_id: note_id.to_string(),
             grid_position,
@@ -83,7 +84,7 @@ impl WindowService {
                 (Some(x_val), Some(y_val)) => Some((x_val, y_val)),
                 _ => None,
             },
-            size: (width.unwrap_or(800.0), height.unwrap_or(600.0)),
+            size: (width.unwrap_or(400.0), height.unwrap_or(600.0)),
             last_focused: chrono::Utc::now().to_rfc3339(),
             is_detached: true,
             always_on_top: false,

@@ -1173,13 +1173,10 @@ pub async fn create_detached_window(
     log_info!("CREATE_DETACHED_WINDOW", "Loading saved spatial data...");
     let saved_window = load_spatial_data(&request.note_id).await;
 
-    // Use requested dimensions first, then saved, then defaults
-    let width = request
-        .width
-        .unwrap_or_else(|| saved_window.as_ref().map(|w| w.size.0).unwrap_or(800.0));
-    let height = request
-        .height
-        .unwrap_or_else(|| saved_window.as_ref().map(|w| w.size.1).unwrap_or(600.0));
+    // Use requested dimensions first, then defaults (ignore saved dimensions for new windows)
+    // Default to sticky note proportions: narrow width, tall height
+    let width = request.width.unwrap_or(400.0);
+    let height = request.height.unwrap_or(600.0);
 
     // For position: if provided in request, use it; otherwise use saved position or calculate offset
     let (mut x, mut y) = match (request.x, request.y) {
@@ -1194,6 +1191,8 @@ pub async fn create_detached_window(
             }
         }
     };
+
+    log_info!("CREATE_DETACHED_WINDOW", "Window dimensions: {}x{} at ({}, {})", width, height, x, y);
 
     // Check if the position would overlap with existing windows
     let mut needs_offset = false;
@@ -1687,7 +1686,7 @@ async fn save_window_position(note_id: String, x: f64, y: f64) -> Result<(), Str
             note_id: note_id.clone(),
             window_label: format!("note-{}", note_id),
             position: (x, y),
-            size: (800.0, 600.0), // Default size
+            size: (400.0, 600.0), // Default to sticky note proportions
             always_on_top: false,
             opacity: 1.0,
             is_shaded: false,

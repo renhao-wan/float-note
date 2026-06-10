@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { invoke } from '@tauri-apps/api/core';
 import { DetachedNoteWindow, DragGhost } from './components/windows';
 import { SettingsPanel, SettingsNavigation } from './components/settings';
 import {
@@ -32,6 +33,7 @@ import { TemplateSelector, TemplatePanel } from './components/templates';
 import { MarkdownRenderer } from './components/common/MarkdownRenderer';
 import type { ViewType } from './components/layout/NavigationSidebar';
 import type { NoteTemplate } from './types/template';
+import type { Note } from './types';
 import { templatesApi } from './services/templates-api';
 
 function App() {
@@ -134,21 +136,31 @@ function App() {
     onSaveError,
   });
 
-  // Create note from template
+  // Create note from template (null means blank note)
   const handleCreateFromTemplate = useCallback(
-    async (template: NoteTemplate) => {
+    async (template: NoteTemplate | null) => {
       try {
-        const title =
-          template.name === '日记'
-            ? `${new Date().toLocaleDateString()} 日记`
-            : template.name === '周报'
-              ? `${new Date().toLocaleDateString()} 周报`
-              : template.name;
+        let newNote;
 
-        const newNote = await templatesApi.createNoteFromTemplate({
-          template_id: template.id,
-          title,
-        });
+        if (template) {
+          // Create from template
+          const title =
+            template.name === '日记'
+              ? `${new Date().toLocaleDateString()} 日记`
+              : template.name === '周报'
+                ? `${new Date().toLocaleDateString()} 周报`
+                : template.name;
+
+          newNote = await templatesApi.createNoteFromTemplate({
+            template_id: template.id,
+            title,
+          });
+        } else {
+          // Create blank note
+          newNote = await invoke<Note>('create_note', {
+            request: { title: 'Untitled', content: '' },
+          });
+        }
 
         // Reload notes and select the new note
         await loadNotes();

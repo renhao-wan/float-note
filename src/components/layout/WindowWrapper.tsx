@@ -17,6 +17,7 @@ export function WindowWrapper({
       style={{
         backgroundColor: `hsl(var(--background))`,
         height: '100%',
+        position: 'relative',
         ...style,
       }}
     >

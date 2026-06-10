@@ -137,9 +137,57 @@ export function CustomTitleBar({
       }}
     >
       {/* Left side content */}
-      {rightContent && (
-        <div className="flex items-center gap-2">{rightContent}</div>
-      )}
+      <div className="flex items-center gap-2">
+        {/* Shade toggle button - only show for detached windows */}
+        {!isMainWindow && noteId && (
+          <button
+            onClick={async () => {
+              try {
+                const currentWindow = getCurrentWebviewWindow();
+                const windowLabel = currentWindow.label;
+                await DetachedWindowsAPI.toggleWindowShade(windowLabel);
+              } catch (error) {
+                console.error('Failed to toggle shade:', error);
+              }
+            }}
+            className="w-6 h-6 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground/80 hover:bg-foreground/5 transition-all duration-150"
+            title={isShaded ? t('titlebar.unshade') : t('titlebar.shade')}
+          >
+            {isShaded ? (
+              // Unshade icon (expand)
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M1 4 L1 1 L4 1" />
+                <path d="M9 6 L9 9 L6 9" />
+              </svg>
+            ) : (
+              // Shade icon (collapse)
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M1 6 L1 9 L4 9" />
+                <path d="M9 4 L9 1 L6 1" />
+              </svg>
+            )}
+          </button>
+        )}
+        {rightContent && rightContent}
+      </div>
 
       {/* Center title area - draggable */}
       <div

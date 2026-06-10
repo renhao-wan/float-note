@@ -62,7 +62,7 @@ pub async fn save_window_position(note_id: String, x: f64, y: f64) -> FloatNoteR
             note_id: note_id.clone(),
             window_label: format!("note-{}", note_id),
             position: (x, y),
-            size: (800.0, 600.0), // Default size
+            size: (400.0, 600.0), // Default to sticky note proportions
             always_on_top: false,
             opacity: 1.0,
             is_shaded: false,

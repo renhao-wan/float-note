@@ -4,7 +4,7 @@ import { NoteTemplate } from '../../types/template';
 
 interface TemplateSelectorProps {
   templates: NoteTemplate[];
-  onSelect: (template: NoteTemplate) => void;
+  onSelect: (template: NoteTemplate | null) => void;
   onClose: () => void;
 }
 
@@ -17,9 +17,12 @@ export function TemplateSelector({
   const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate | null>(
     null
   );
+  const [isBlankSelected, setIsBlankSelected] = useState(false);
 
   const handleSelect = () => {
-    if (selectedTemplate) {
+    if (isBlankSelected) {
+      onSelect(null); // null indicates blank note
+    } else if (selectedTemplate) {
       onSelect(selectedTemplate);
     }
   };
@@ -57,6 +60,50 @@ export function TemplateSelector({
         {/* Template list */}
         <div className="flex-1 overflow-y-auto p-4">
           <div className="space-y-4">
+            {/* Blank template */}
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide mb-2">
+                {t('templates.blank')}
+              </h3>
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setIsBlankSelected(true);
+                    setSelectedTemplate(null);
+                  }}
+                  className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                    isBlankSelected
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border/30 hover:border-primary/50 hover:bg-primary/5'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-medium text-foreground">
+                        {t('templates.blankNote')}
+                      </div>
+                      <div className="text-xs text-muted-foreground/60 mt-1">
+                        {t('templates.blankNoteDescription')}
+                      </div>
+                    </div>
+                    {isBlankSelected && (
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="text-primary"
+                      >
+                        <polyline points="20,6 9,17 4,12" />
+                      </svg>
+                    )}
+                  </div>
+                </button>
+              </div>
+            </div>
+
             {/* Builtin templates */}
             {builtinTemplates.length > 0 && (
               <div>
@@ -67,7 +114,10 @@ export function TemplateSelector({
                   {builtinTemplates.map((template) => (
                     <button
                       key={template.id}
-                      onClick={() => setSelectedTemplate(template)}
+                      onClick={() => {
+                        setSelectedTemplate(template);
+                        setIsBlankSelected(false);
+                      }}
                       className={`w-full text-left p-3 rounded-lg border transition-colors ${
                         selectedTemplate?.id === template.id
                           ? 'border-primary bg-primary/10'
@@ -113,7 +163,10 @@ export function TemplateSelector({
                   {customTemplates.map((template) => (
                     <button
                       key={template.id}
-                      onClick={() => setSelectedTemplate(template)}
+                      onClick={() => {
+                        setSelectedTemplate(template);
+                        setIsBlankSelected(false);
+                      }}
                       className={`w-full text-left p-3 rounded-lg border transition-colors ${
                         selectedTemplate?.id === template.id
                           ? 'border-primary bg-primary/10'

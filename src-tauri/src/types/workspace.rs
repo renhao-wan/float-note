@@ -44,7 +44,7 @@ impl Default for WindowState {
             note_id: String::new(),
             grid_position: None,
             custom_position: None,
-            size: (800.0, 600.0),
+            size: (400.0, 600.0), // Default to sticky note proportions
             last_focused: chrono::Utc::now().to_rfc3339(),
             is_detached: false,
             always_on_top: false,

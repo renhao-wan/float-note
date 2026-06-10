@@ -150,7 +150,9 @@
     "middleClickUnshade": "Middle-click to unshade",
     "wordCountWithCount": "{{count}} words",
     "savedWithTime": "Saved {{time}}",
-    "middleClickShade": "Middle-click to shade"
+    "middleClickShade": "Middle-click to shade",
+    "shade": "Collapse to title bar",
+    "unshade": "Expand window"
   },
   "editor": {
     "saving": "Saving...",
@@ -264,6 +266,7 @@
     "noTemplates": "No templates",
     "noCustomTemplates": "No custom templates",
     "quickStart": "Quick Start",
+    "blank": "Blank",
     "blankNote": "Blank Note",
     "blankNoteDescription": "Start from scratch",
     "builtin": "Built-in",

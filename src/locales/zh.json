@@ -141,7 +141,9 @@
     "middleClickUnshade": "中键点击取消收起",
     "wordCountWithCount": "{{count}} 字",
     "savedWithTime": "已保存 {{time}}",
-    "middleClickShade": "中键点击收起"
+    "middleClickShade": "中键点击收起",
+    "shade": "收起到标题栏",
+    "unshade": "展开窗口"
   },
   "editor": {
     "saving": "保存中...",
@@ -264,6 +266,7 @@
     "noTemplates": "暂无模板",
     "noCustomTemplates": "暂无自定义模板",
     "quickStart": "快速开始",
+    "blank": "空白",
     "blankNote": "空白笔记",
     "blankNoteDescription": "从空白开始",
     "builtin": "内置模板",

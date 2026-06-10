@@ -13,8 +13,9 @@ interface GridPosition {
 export function getGridPosition(slotNumber: number): GridPosition {
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
-  const windowWidth = 600;
-  const windowHeight = 400;
+  // Default to sticky note proportions: narrow width, tall height
+  const windowWidth = 400;
+  const windowHeight = 600;
 
   // Create 3x3 grid with some padding from edges
   const cols = 3;
@@ -44,8 +45,8 @@ export function getGridPosition(slotNumber: number): GridPosition {
  * @returns Centered position
  */
 export function getCenterPosition(
-  width: number = 600,
-  height: number = 400
+  width: number = 400,
+  height: number = 600
 ): GridPosition {
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
