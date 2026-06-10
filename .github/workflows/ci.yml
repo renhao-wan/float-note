@@ -59,8 +59,9 @@ jobs:
             librsvg2-dev \
             patchelf \
             libgtk-3-dev
-          # Install appindicator (try ayatana first, fallback to appindicator)
-          sudo apt-get install -y libayatana-appindicator3-dev || sudo apt-get install -y libappindicator3-dev || true
+          # Install appindicator - remove conflicting packages first
+          sudo apt-get remove -y libappindicator3-1 libappindicator3-dev 2>/dev/null || true
+          sudo apt-get install -y libayatana-appindicator3-dev || true
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -148,8 +149,9 @@ jobs:
             librsvg2-dev \
             patchelf \
             libgtk-3-dev
-          # Install appindicator (try ayatana first, fallback to appindicator)
-          sudo apt-get install -y libayatana-appindicator3-dev || sudo apt-get install -y libappindicator3-dev || true
+          # Install appindicator - remove conflicting packages first
+          sudo apt-get remove -y libappindicator3-1 libappindicator3-dev 2>/dev/null || true
+          sudo apt-get install -y libayatana-appindicator3-dev || true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
