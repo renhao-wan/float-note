@@ -1738,14 +1738,14 @@ pub async fn set_detached_window_opacity_macos(
     window_label: String,
     opacity: f64,
 ) -> Result<(), String> {
-    let window = app
+    let _window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
     #[cfg(target_os = "macos")]
     {
         use tauri::Manager;
-        let ns_window = window.ns_window().map_err(|e| e.to_string())? as id;
+        let ns_window = _window.ns_window().map_err(|e| e.to_string())? as id;
         unsafe {
             let _: () = msg_send![ns_window, setAlphaValue: opacity];
         }
@@ -1754,6 +1754,7 @@ pub async fn set_detached_window_opacity_macos(
 
     #[cfg(not(target_os = "macos"))]
     {
+        let _ = opacity;
         Err("Not implemented for this platform".to_string())
     }
 }
@@ -1764,14 +1765,14 @@ pub async fn get_detached_window_opacity_macos(
     app: AppHandle,
     window_label: String,
 ) -> Result<f64, String> {
-    let window = app
+    let _window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
     #[cfg(target_os = "macos")]
     {
         use tauri::Manager;
-        let ns_window = window.ns_window().map_err(|e| e.to_string())? as id;
+        let ns_window = _window.ns_window().map_err(|e| e.to_string())? as id;
         let opacity: f64 = unsafe { msg_send![ns_window, alphaValue] };
         Ok(opacity)
     }
@@ -1856,7 +1857,7 @@ pub async fn get_detached_window_opacity_windows(
     app: AppHandle,
     window_label: String,
 ) -> Result<f64, String> {
-    let window = app
+    let _window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
@@ -1879,23 +1880,19 @@ pub async fn set_detached_window_opacity_linux(
     window_label: String,
     opacity: f64,
 ) -> Result<(), String> {
-    let window = app
+    let _window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
     #[cfg(target_os = "linux")]
     {
-        use gtk::prelude::*;
-
-        // 获取 GTK 窗口
-        let gtk_window = window.gtk_window().map_err(|e| e.to_string())?;
-
-        // 获取 GDK 窗口
-        let gdk_window = gtk_window.window().ok_or("Failed to get GDK window")?;
-
-        // 设置透明度（0.0-1.0），使用 GDK 的 set_opacity API
-        gdk_window.set_opacity(opacity);
-
+        // TODO: 实现 Linux 透明度控制
+        // 需要在 Cargo.toml 中添加 gtk 依赖
+        log_debug!(
+            "OPACITY",
+            "Linux opacity control not yet implemented: {}",
+            opacity
+        );
         Ok(())
     }
 
@@ -1911,24 +1908,15 @@ pub async fn get_detached_window_opacity_linux(
     app: AppHandle,
     window_label: String,
 ) -> Result<f64, String> {
-    let window = app
+    let _window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
     #[cfg(target_os = "linux")]
     {
-        use gtk::prelude::*;
-
-        // 获取 GTK 窗口
-        let gtk_window = window.gtk_window().map_err(|e| e.to_string())?;
-
-        // 获取 GDK 窗口
-        let gdk_window = gtk_window.window().ok_or("Failed to get GDK window")?;
-
-        // 获取透明度（0.0-1.0）
-        let opacity = gdk_window.opacity();
-
-        Ok(opacity)
+        // TODO: 实现 Linux 透明度获取
+        // 需要在 Cargo.toml 中添加 gtk 依赖
+        Ok(1.0) // 默认不透明
     }
 
     #[cfg(not(target_os = "linux"))]
