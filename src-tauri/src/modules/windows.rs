@@ -1736,9 +1736,9 @@ async fn save_window_size(note_id: String, width: f64, height: f64) -> Result<()
 pub async fn set_detached_window_opacity_macos(
     app: AppHandle,
     window_label: String,
-    _opacity: f64,
+    opacity: f64,
 ) -> Result<(), String> {
-    let _window = app
+    let window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
@@ -1764,7 +1764,7 @@ pub async fn get_detached_window_opacity_macos(
     app: AppHandle,
     window_label: String,
 ) -> Result<f64, String> {
-    let _window = app
+    let window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
@@ -1856,7 +1856,7 @@ pub async fn get_detached_window_opacity_windows(
     app: AppHandle,
     window_label: String,
 ) -> Result<f64, String> {
-    let _window = app
+    let window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
@@ -1877,9 +1877,9 @@ pub async fn get_detached_window_opacity_windows(
 pub async fn set_detached_window_opacity_linux(
     app: AppHandle,
     window_label: String,
-    _opacity: f64,
+    opacity: f64,
 ) -> Result<(), String> {
-    let _window = app
+    let window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
@@ -1911,7 +1911,7 @@ pub async fn get_detached_window_opacity_linux(
     app: AppHandle,
     window_label: String,
 ) -> Result<f64, String> {
-    let _window = app
+    let window = app
         .get_webview_window(&window_label)
         .ok_or("Window not found")?;
 
