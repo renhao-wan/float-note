@@ -1192,7 +1192,14 @@ pub async fn create_detached_window(
         }
     };
 
-    log_info!("CREATE_DETACHED_WINDOW", "Window dimensions: {}x{} at ({}, {})", width, height, x, y);
+    log_info!(
+        "CREATE_DETACHED_WINDOW",
+        "Window dimensions: {}x{} at ({}, {})",
+        width,
+        height,
+        x,
+        y
+    );
 
     // Check if the position would overlap with existing windows
     let mut needs_offset = false;

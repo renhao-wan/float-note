@@ -15,6 +15,7 @@ fn create_test_note(id: &str, title: &str, content: &str, position: Option<i32>)
         created_at: now.clone(),
         updated_at: now,
         position,
+        tags: None,
     }
 }
 

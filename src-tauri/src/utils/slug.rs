@@ -68,7 +68,7 @@ mod tests {
         );
         assert_eq!(generate_slug("Mix123Numbers"), "mix123numbers");
         assert_eq!(generate_slug("UPPERCASE"), "uppercase");
-        assert_eq!(generate_slug(""), "");
+        assert_eq!(generate_slug(""), "untitled");
     }
 
     #[test]
