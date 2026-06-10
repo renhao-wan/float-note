@@ -1,10 +1,10 @@
-# FloatNote v0.2.0 发布说明
+# FloatNote v0.1.0 发布说明
 
-🎉 FloatNote 正式版本发布！
+🎉 FloatNote 首个正式版本发布！
 
 ## 📋 版本信息
 
-- **版本号**：v0.2.0
+- **版本号**：v0.1.0
 - **发布日期**：2026-06-10
 - **技术栈**：Tauri v2 + React + TypeScript
 
