@@ -1,6 +1,6 @@
 [package]
 name = "floatnote"
-version = "0.2.0"
+version = "0.1.0"
 description = "FloatNote - AI-native spatial note-taking application"
 authors = ["Renhao Wan <2653990378@qq.com>"]
 repository = "https://github.com/renhao-wan/float-note"
